@@ -10,7 +10,7 @@ Dont worry, its only 3 steps!
 ##First: If your reading this from github, go ahead pull down the code.
 #############################
     cd to the directory where you want to store the root of your project
-git clone https://github.com/nhumrich/cs428crs.git
+git clone https://github.com/byuCs428CRS/cs428crs.git
 
     Now you can open this project in any IDE you want.
     I used IntelliJ. With intelliJ you can simply do File > Open.. then select the build.gradle file
