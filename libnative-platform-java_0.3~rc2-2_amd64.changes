@@ -1,0 +1,40 @@
+Format: 1.8
+Date: Mon, 06 May 2013 01:20:35 +0200
+Source: libnative-platform-java
+Binary: libnative-platform-java libnative-platform-jni libnative-platform-java-doc
+Architecture: source all amd64
+Version: 0.3~rc2-2
+Distribution: unstable
+Urgency: low
+Maintainer: Debian Java Maintainers <pkg-java-maintainers@lists.alioth.debian.org>
+Changed-By: Damien Raude-Morvan <drazzib@debian.org>
+Description: 
+ libnative-platform-java - Java bindings for various native APIs
+ libnative-platform-java-doc - testing and specification framework for Java and Groovy - Docs
+ libnative-platform-jni - Java bindings for various native APIs - JNI library
+Closes: 704677
+Changes: 
+ libnative-platform-java (0.3~rc2-2) unstable; urgency=low
+ .
+   * Upload to unstable.
+   * d/control: Force Build-Depends on default-jdk (>= 1:1.6) to exclude
+     any platform which may use GCJ as Java runtime (Closes: #704677).
+   * d/watch: Include Bart Martens version. Thanks!
+Checksums-Sha1: 
+ 4e89f246e201fe0726f885aea01fcd38c0a8ef96 1462 libnative-platform-java_0.3~rc2-2.dsc
+ 97508c7e764de9b0c41d8e73fad62d02d9d4b57a 4853 libnative-platform-java_0.3~rc2-2.debian.tar.gz
+ 09ee8bebbd0acfa5e9740f1256446a57dd1ab17d 42114 libnative-platform-java_0.3~rc2-2_all.deb
+ 8ef327468d100c16c8b239e4a2f0d61d36d74b9f 10188 libnative-platform-jni_0.3~rc2-2_amd64.deb
+ 502323668a9431d7670165eaa78be007a0a04db3 71678 libnative-platform-java-doc_0.3~rc2-2_all.deb
+Checksums-Sha256: 
+ ef080079a160955bd62f603a67f0986d58a982fa0573469de2b807fc220a68cd 1462 libnative-platform-java_0.3~rc2-2.dsc
+ 72290d495969d98c0429662cd20dd81b44424ea69435a82269fea8f507ed76cb 4853 libnative-platform-java_0.3~rc2-2.debian.tar.gz
+ 2358e88abaa8cd5a3380eedb1b3600dff00d6edf63d39ab3e835eeaa617960a7 42114 libnative-platform-java_0.3~rc2-2_all.deb
+ 7cffb968813fe0d84e7ad831a748100f72d25f9f80afa052826ef31697cad02d 10188 libnative-platform-jni_0.3~rc2-2_amd64.deb
+ 8bcace224bc01fb918434697a621a0403d74122b7c22900498e38e04f214e029 71678 libnative-platform-java-doc_0.3~rc2-2_all.deb
+Files: 
+ a22923aa0897a77c3ff9f2b99e7f1161 1462 java optional libnative-platform-java_0.3~rc2-2.dsc
+ 70fb086c17cf22a58d78ae174892c6bf 4853 java optional libnative-platform-java_0.3~rc2-2.debian.tar.gz
+ a0bac6f77343637e0f34ad504540cfeb 42114 java optional libnative-platform-java_0.3~rc2-2_all.deb
+ 35957ec52331f4a3da33e7ac6b995271 10188 java optional libnative-platform-jni_0.3~rc2-2_amd64.deb
+ 779ca9ae457dc293bce21e39ec265240 71678 doc optional libnative-platform-java-doc_0.3~rc2-2_all.deb

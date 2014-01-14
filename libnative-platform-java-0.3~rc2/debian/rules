@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+export JAVA_HOME := /usr/lib/jvm/default-java
+
+DEB_VERSION=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([^-]+).*,\1,p')
+DEB_DIR=libnative-platform-java-$(DEB_VERSION)
+VERSION=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([^-]+).*[+~]git([0-9a-z]+).*,\1,p')
+INDEP_DIR := net/rubygrapefruit/native-platform
+
+%:
+	dh $@ --with maven_repo_helper
+
+override_dh_auto_install:
+	dh_install -plibnative-platform-jni build/binaries/libnative-platform*.so /usr/lib/jni/
+	dh_install -plibnative-platform-java-doc build/docs/javadoc/* /usr/share/doc/libnative-platform-java/api/
+
+get-orig-source:
+	# Extract version from github
+	git clone git://github.com/adammurdoch/native-platform.git temp/
+	(cd temp/; \
+		git archive --prefix $(DEB_DIR)/ HEAD | tar --wildcards --delete '*/gradle/*' | gzip -9 > ../../libnative-platform-java_$(DEB_VERSION).orig.tar.gz; \
+	)
+	rm -rf temp/

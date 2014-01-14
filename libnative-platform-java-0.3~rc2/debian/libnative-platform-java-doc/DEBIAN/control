@@ -1,0 +1,18 @@
+Package: libnative-platform-java-doc
+Source: libnative-platform-java
+Version: 0.3~rc2-2
+Architecture: all
+Maintainer: Debian Java Maintainers <pkg-java-maintainers@lists.alioth.debian.org>
+Installed-Size: 946
+Suggests: libnative-platform-java
+Section: doc
+Priority: optional
+Homepage: https://github.com/adammurdoch/native-platform
+Description: testing and specification framework for Java and Groovy - Docs
+ A collection of cross-platform Java APIs for various native APIs.
+ Supports OS X, Linux, Solaris and Windows.
+ .
+ These APIs support Java 5 and later. Some of these APIs overlap with APIs
+ available in later Java versions.
+ .
+ This package contains Javadoc API for libnative-platform-java.

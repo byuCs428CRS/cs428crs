@@ -1,0 +1,31 @@
+--- a/src/main/java/net/rubygrapefruit/platform/internal/Platform.java
++++ b/src/main/java/net/rubygrapefruit/platform/internal/Platform.java
+@@ -168,24 +168,24 @@
+     private static class Linux32Bit extends Linux {
+         @Override
+         public String getLibraryName() {
+-            return "libnative-platform-linux-i386.so";
++            return "libnative-platform.so";
+         }
+ 
+         @Override
+         String getCursesLibraryName() {
+-            return "libnative-platform-curses-linux-i386.so";
++            return "libnative-platform.so";
+         }
+     }
+ 
+     private static class Linux64Bit extends Linux {
+         @Override
+         public String getLibraryName() {
+-            return "libnative-platform-linux-amd64.so";
++            return "libnative-platform.so";
+         }
+ 
+         @Override
+         String getCursesLibraryName() {
+-            return "libnative-platform-curses-linux-amd64.so";
++            return "libnative-platform-curses.so";
+         }
+     }
+ 

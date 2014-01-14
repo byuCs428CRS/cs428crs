@@ -1,0 +1,51 @@
+Source: libnative-platform-java
+Section: java
+Priority: optional
+Maintainer: Debian Java Maintainers <pkg-java-maintainers@lists.alioth.debian.org>
+Uploaders: Damien Raude-Morvan <drazzib@debian.org>
+Build-Depends: ant,
+               debhelper (>= 9),
+               default-jdk (>= 1:1.6),
+               libjoptsimple-java,
+               libncurses5-dev,
+               maven-repo-helper (>= 1.5~)
+Standards-Version: 3.9.4
+Homepage: https://github.com/adammurdoch/native-platform
+Vcs-Git: git://anonscm.debian.org/pkg-java/libnative-platform-java.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-java/libnative-platform-java.git
+
+Package: libnative-platform-java
+Architecture: all
+Depends: libnative-platform-jni (>= ${source:Version}), ${misc:Depends}
+Description: Java bindings for various native APIs
+ A collection of cross-platform Java APIs for various native APIs.
+ Supports OS X, Linux, Solaris and Windows.
+ .
+ These APIs support Java 5 and later. Some of these APIs overlap with APIs
+ available in later Java versions.
+
+Package: libnative-platform-jni
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Java bindings for various native APIs - JNI library
+ A collection of cross-platform Java APIs for various native APIs.
+ Supports OS X, Linux, Solaris and Windows.
+ .
+ These APIs support Java 5 and later. Some of these APIs overlap with APIs
+ available in later Java versions.
+ .
+ This package contains the java JNI library.
+
+Package: libnative-platform-java-doc
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Suggests: libnative-platform-java
+Description: testing and specification framework for Java and Groovy - Docs
+ A collection of cross-platform Java APIs for various native APIs.
+ Supports OS X, Linux, Solaris and Windows.
+ .
+ These APIs support Java 5 and later. Some of these APIs overlap with APIs
+ available in later Java versions.
+ .
+ This package contains Javadoc API for libnative-platform-java.

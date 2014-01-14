@@ -1,0 +1,5 @@
+version=3
+opts=uversionmangle=s/(\d)[\.\-]?((?:rc|RC|pre)(?:\.|-)?\d+(?:-\d+)?)$/$1~$2/,dversionmangle=s/^(0\.3~rc)(\d+)$/$1-$2/ \
+ https://github.com/adammurdoch/native-platform/tags \
+ .*/archive/(?:upstream/)?(?:v||version-|release-|X|R|r)(\d\S*)\.tar\.gz
+# Bart Martens <bartm@debian.org>  Sat, 04 May 2013 09:06:25 +0000
