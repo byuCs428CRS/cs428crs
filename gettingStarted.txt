@@ -15,7 +15,9 @@ git clone https://github.com/byuCs428CRS/cs428crs.git
     Now you can open this project in any IDE you want.
     I used IntelliJ. With intelliJ you can simply do File > Open.. then select the build.gradle file
     it should pull in the whole project.
-    If your using eclipse you might have to download a Gradle Plugin.
+    If your using eclipse you can go: File>Import>Gradle (If this is not an option,
+    install the gradle integration from marketplace via help). Follow the instructions after this. 
+	
 
 #############################
 ##Step 2: Install Gradle
@@ -36,6 +38,9 @@ gradle -v
 
     this will verify installation.
 
+    If you are using windows, add the path to the bin folder to your environmental variables.
+    Also make sure you have a system variable called JAVA_HOME set to the jre or jdk folder. 
+
 
 #############################
 ##Step 3: Start up the server!
@@ -45,7 +50,7 @@ cd cs428crs
     Once your in the right directory, run the following command
 ./gradlew clean build && java -jar build/libs/gs-rest-service-0.1.0.jar
 
-
+    The command for windows is: gradle clean build && java -jar build/libs/gs-rest-service-0.1.0.jar
     You should see some text say "Spring" like this:
 
     BUILD SUCCESSFUL
