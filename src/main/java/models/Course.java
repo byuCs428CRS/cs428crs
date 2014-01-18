@@ -1,5 +1,6 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,12 +10,19 @@ import java.util.List;
 public class Course {
 
   private String title;
-  private String abreviation;
   private String courseId;
   private String description;
   private List<Section> sections;
   private List<String> fulfillments; //reqID's of Requirements it fulfills
   private List<String> prereqs; //courseId's of courses needed as a prereq
+
+  public Course(String title, String courseId) {
+    this.title = title;
+    this.courseId = courseId;
+    sections = new ArrayList<>();
+    fulfillments = new ArrayList<>();
+    prereqs = new ArrayList<>();
+  }
 
   public String getTitle() {
     return title;
@@ -22,14 +30,6 @@ public class Course {
 
   public void setTitle(String title) {
     this.title = title;
-  }
-
-  public String getAbreviation() {
-    return abreviation;
-  }
-
-  public void setAbreviation(String abreviation) {
-    this.abreviation = abreviation;
   }
 
   public String getCourseId() {

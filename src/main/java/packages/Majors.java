@@ -12,13 +12,21 @@ import java.util.List;
 public class Majors {
   private List<Major> majors;
 
-  public List<Major> getMajors() {
-    return majors;
-  }
+
 
   public Majors() {
-    majors = new ArrayList<Major>();
-    Major major = new Major();
+    majors = new ArrayList<>();
+  }
+
+  public void setMajors(List<Major> list) {
+    majors = list;
+  }
+
+  public void addMajor(Major major) {
     majors.add(major);
+  }
+
+  public List<Major> getMajors() {
+    return majors;
   }
 }

@@ -1,6 +1,5 @@
 package models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,10 +12,9 @@ public class Major {
   private String abreviation;
   private List<Course> courses;
 
-  public Major() {
-    this.courses = new ArrayList<Course>();
-    Course course = new Course();
-    courses.add(course);
+  public Major(String title, String abreviation) {
+    this.title = title;
+    this.abreviation = abreviation;
   }
 
   public String getTitle() {

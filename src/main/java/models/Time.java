@@ -10,6 +10,12 @@ public class Time {
   private String startTime;
   private String endTime;
 
+  public Time(Day day, String startTime, String endTime) {
+    this.day = day;
+    this.startTime = startTime;
+    this.endTime = endTime;
+  }
+
   public Day getDay() {
     return day;
   }
