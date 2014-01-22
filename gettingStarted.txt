@@ -48,7 +48,10 @@ gradle -v
     make sure you are in the directory for the project. if you havent moved you should be able to cd into it:
 cd cs428crs
     Once your in the right directory, run the following command
-./gradlew clean build && java -jar build/libs/gs-rest-service-0.1.0.jar
+./gradlew clean build && java -jar build/libs/crs-rest-service-0.1.0.jar
+
+or you can use
+./gradlew run
 
     The command for windows is: gradle clean build && java -jar build/libs/gs-rest-service-0.1.0.jar
     You should see some text say "Spring" like this:

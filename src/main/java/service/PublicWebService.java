@@ -25,7 +25,7 @@ public class PublicWebService {
 
   /*
   * ToDo
-  * NOTE: These create mock functions should be moved to tests once the database is fully functional
+  * NOTE: These "create mock" functions should be moved to tests once the database is fully functional
   *
    */
   public Majors createMockMajors() {
