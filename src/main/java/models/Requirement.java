@@ -9,6 +9,7 @@ import java.util.List;
 public class Requirement {
   private String title;
   private String reqId;
+  private List<Course>  fulfillments;
 
   public String getReqId() {
     return reqId;
@@ -17,8 +18,6 @@ public class Requirement {
   public void setReqId(String reqId) {
     this.reqId = reqId;
   }
-
-  private List<Course>  fulfillments;
 
   public String getTitle() {
     return title;
