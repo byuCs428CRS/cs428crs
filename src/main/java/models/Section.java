@@ -16,6 +16,10 @@ public class Section {
   private List<String> registeredStudents; //student Id's of registered students
 
 
+  public Section() {
+
+  }
+
   public Section(String courseId, String sectionId, int classSize) {
     this.courseId = courseId;
     this.sectionId = sectionId;

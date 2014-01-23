@@ -1,8 +1,10 @@
 package service;
 
+import database.MemoryRegistrationStore;
+import database.RegistrationStore;
 import models.*;
 import packages.Courses;
-import packages.Majors;
+import packages.Departments;
 import packages.Sections;
 
 import java.util.ArrayList;
@@ -13,14 +15,19 @@ import java.util.List;
  * @date: 1/18/14
  */
 public class PublicWebService {
+  private RegistrationStore registrationStore;
 
   public PublicWebService() {
-
+    //ToDo: replace below to read from config and use a factory to choose the store
+    registrationStore = MemoryRegistrationStore.getInstance();
   }
 
-  public Majors getAllMajors() {
-    //ToDo: Fix once database is functional
-    return createMockMajors();
+  public Departments getAllDepartments() {
+    return registrationStore.getAllDepartments();
+  }
+
+  public Departments getMockDepartments() {
+    return createMockDepartments();
   }
 
   /*
@@ -28,21 +35,21 @@ public class PublicWebService {
   * NOTE: These "create mock" functions should be moved to tests once the database is fully functional
   *
    */
-  public Majors createMockMajors() {
-    Majors majors = new Majors();
-    majors.addMajor(createMockMajor("Computer Science", "CS"));
-    majors.addMajor(createMockMajor("English", "EN"));
-    majors.addMajor(createMockMajor("Mathematics", "MA"));
+  public Departments createMockDepartments() {
+    Departments departments = new Departments();
+    departments.addMajor(createMockDepartment("Computer Science", "CS"));
+    departments.addMajor(createMockDepartment("English", "EN"));
+    departments.addMajor(createMockDepartment("Mathematics", "MA"));
 
-    return majors;
+    return departments;
   }
 
-  public Major createMockMajor(String title, String abbreviation) {
-    Major major = new Major(title, abbreviation);
+  public Department createMockDepartment(String title, String abbreviation) {
+    Department department = new Department(title, abbreviation);
 
-    major.setCourses(createMockCourses(abbreviation).getCourses());
+    department.setCourses(createMockCourses(abbreviation).getCourses());
 
-    return major;
+    return department;
   }
 
   public Courses createMockCourses(String majorAbbrev) {
@@ -57,7 +64,9 @@ public class PublicWebService {
 
   public Course createMockCourse(String majorAbbrev, String num) {
     String courseId = majorAbbrev + num;
-    Course course = new Course("TestCourse " + courseId, courseId);
+    Course course = new Course("TestCourse " + courseId, num);
+    course.setOwningDepartment(majorAbbrev);
+    course.setCredits(3.0f);
     course.setDescription("Test Course " + num + " for " + majorAbbrev);
 
     course.setSections(createMockSections(courseId).getSections());

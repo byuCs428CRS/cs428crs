@@ -7,14 +7,21 @@ import java.util.List;
  * @autor: Nick Humrich
  * @date: 1/17/14
  */
-public class Course {
+public class Course implements Comparable<Course> {
 
   private String title;
-  private String courseId;
+  private String owningDepartment; //shortCode of owning department
+  private String courseId;  //number of id does NOT include departments short code
   private String description;
+  private float credits;
   private List<Section> sections;
   private List<String> fulfillments; //reqID's of Requirements it fulfills
   private List<String> prereqs; //courseId's of courses needed as a prereq
+
+
+  public Course() {
+
+  }
 
   public Course(String title, String courseId) {
     this.title = title;
@@ -22,6 +29,22 @@ public class Course {
     sections = new ArrayList<>();
     fulfillments = new ArrayList<>();
     prereqs = new ArrayList<>();
+  }
+
+  public float getCredits() {
+    return credits;
+  }
+
+  public void setCredits(float credits) {
+    this.credits = credits;
+  }
+
+  public String getOwningDepartment() {
+    return owningDepartment;
+  }
+
+  public void setOwningDepartment(String owningDepartment) {
+    this.owningDepartment = owningDepartment;
   }
 
   public String getTitle() {
@@ -70,5 +93,15 @@ public class Course {
 
   public void setPrereqs(List<String> prereqs) {
     this.prereqs = prereqs;
+  }
+
+  @Override
+  public int compareTo(Course o) {
+    if (this != null && o != null) {
+      if (courseId != null && o.courseId != null) {
+        return courseId.compareTo(o.courseId);
+      }
+    }
+    return 0;
   }
 }

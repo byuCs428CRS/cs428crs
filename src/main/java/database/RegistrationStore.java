@@ -1,7 +1,7 @@
 package database;
 
-import exceptions.ServerException;
-import packages.Majors;
+import models.Department;
+import packages.Departments;
 
 /**
  * @author: Nick Humrich
@@ -9,6 +9,8 @@ import packages.Majors;
  */
 public interface RegistrationStore {
 
-  public Majors getAllMajors() throws ServerException;
+  public Departments getAllDepartments();
+
+  public void addDepartment(Department department);
 
 }

@@ -1,4 +1,4 @@
-package models;
+package models.requirements;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import java.util.List;
 public class Requirement {
   private String title;
   private String reqId;
+  private List<RequirementList>  fulfillments;
 
   public String getReqId() {
     return reqId;
@@ -18,8 +19,6 @@ public class Requirement {
     this.reqId = reqId;
   }
 
-  private List<Course>  fulfillments;
-
   public String getTitle() {
     return title;
   }
@@ -28,11 +27,11 @@ public class Requirement {
     this.title = title;
   }
 
-  public List<Course> getFulfillments() {
+  public List<RequirementList> getFulfillments() {
     return fulfillments;
   }
 
-  public void setFulfillments(List<Course> fulfillments) {
+  public void setFulfillments(List<RequirementList> fulfillments) {
     this.fulfillments = fulfillments;
   }
 }

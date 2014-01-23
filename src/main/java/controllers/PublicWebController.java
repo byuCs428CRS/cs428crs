@@ -3,8 +3,9 @@ package controllers;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import packages.Majors;
+import packages.Departments;
 import service.PublicWebService;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -15,6 +16,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  */
 @Controller
 @EnableAutoConfiguration
+@RequestMapping("/public-api")
 public class PublicWebController {
 
   private PublicWebService webService;
@@ -23,8 +25,14 @@ public class PublicWebController {
     webService = new PublicWebService();
   }
 
-  @RequestMapping(value = "/public-api/majors", method = GET)
-  public @ResponseBody Majors getAllMajors() {
-    return webService.getAllMajors();
+  @RequestMapping(value = "/departments", method = GET)
+  public @ResponseBody
+  Departments getAllDepartments(
+      @RequestParam(value = "dummy", required = false, defaultValue = "false") Boolean dummy)
+  {
+    if (dummy) {
+      return webService.getMockDepartments();
+    }
+    return webService.getAllDepartments();
   }
 }

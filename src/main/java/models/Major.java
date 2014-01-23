@@ -1,21 +1,17 @@
 package models;
 
+import models.requirements.Requirement;
+
 import java.util.List;
 
 /**
- * @autor: Nick Humrich
- * @date: 1/17/14
+ * @author: Nick Humrich
+ * @date: 1/21/14
  */
 public class Major {
-
   private String title;
-  private String abreviation;
-  private List<Course> courses;
-
-  public Major(String title, String abreviation) {
-    this.title = title;
-    this.abreviation = abreviation;
-  }
+  private String shortCode;
+  private List<Requirement> requirements;
 
   public String getTitle() {
     return title;
@@ -25,19 +21,19 @@ public class Major {
     this.title = title;
   }
 
-  public String getAbreviation() {
-    return abreviation;
+  public String getShortCode() {
+    return shortCode;
   }
 
-  public void setAbreviation(String abreviation) {
-    this.abreviation = abreviation;
+  public void setShortCode(String shortCode) {
+    this.shortCode = shortCode;
   }
 
-  public List<Course> getCourses() {
-    return courses;
+  public List<Requirement> getRequirements() {
+    return requirements;
   }
 
-  public void setCourses(List<Course> courses) {
-    this.courses = courses;
+  public void setRequirements(List<Requirement> requirements) {
+    this.requirements = requirements;
   }
 }
