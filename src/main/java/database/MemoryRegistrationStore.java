@@ -1,11 +1,10 @@
 package database;
 
 import models.Department;
-import packages.Departments;
+import models.Major;
+import models.requirements.Requirement;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author: Nick Humrich
@@ -14,9 +13,11 @@ import java.util.List;
 public class MemoryRegistrationStore implements RegistrationStore {
   private static MemoryRegistrationStore root = new MemoryRegistrationStore();
   private List<Department> departments;
+  private Map<String, Major> majors;
 
   private MemoryRegistrationStore() {
     departments = new ArrayList<>();
+    majors = new HashMap<>();
   }
 
   public static MemoryRegistrationStore getInstance() {
@@ -28,15 +29,19 @@ public class MemoryRegistrationStore implements RegistrationStore {
   }
 
   @Override
-  public Departments getAllDepartments() {
-    Departments d = new Departments();
-    d.setDepartments(departments);
-    return d;
+  public List<Department> getAllDepartments() {
+    return departments;
   }
 
   @Override
   public void addDepartment(Department department) {
     departments.add(department);
     Collections.sort(departments);
+  }
+
+  @Override
+  public List<Requirement> getRequirementsForMajor(String major) {
+    Major m = majors.get(major);
+    return m.getRequirements();
   }
 }

@@ -1,7 +1,9 @@
 package database;
 
 import models.Department;
-import packages.Departments;
+import models.requirements.Requirement;
+
+import java.util.List;
 
 /**
  * @author: Nick Humrich
@@ -9,8 +11,10 @@ import packages.Departments;
  */
 public interface RegistrationStore {
 
-  public Departments getAllDepartments();
+  public List<Department> getAllDepartments();
 
   public void addDepartment(Department department);
+
+  public List<Requirement> getRequirementsForMajor(String major);
 
 }

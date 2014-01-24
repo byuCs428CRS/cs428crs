@@ -3,8 +3,10 @@ package service;
 import database.MemoryRegistrationStore;
 import database.RegistrationStore;
 import models.*;
+import models.requirements.Requirement;
 import packages.Courses;
 import packages.Departments;
+import packages.Requirements;
 import packages.Sections;
 
 import java.util.ArrayList;
@@ -23,7 +25,20 @@ public class PublicWebService {
   }
 
   public Departments getAllDepartments() {
-    return registrationStore.getAllDepartments();
+    Departments departments = new Departments();
+    List<Department> departmentList = registrationStore.getAllDepartments();
+    departments.setDepartments(departmentList);
+
+    return departments;
+  }
+
+  public Requirements getRequirements(String major) {
+    Requirements reqs = new Requirements();
+
+    List<Requirement> requirementList = registrationStore.getRequirementsForMajor(major);
+    reqs.setRequirements(requirementList);
+
+    return new Requirements();
   }
 
   public Departments getMockDepartments() {
