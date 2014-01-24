@@ -1,6 +1,5 @@
 package controllers;
 
-import exceptions.FunException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,11 +11,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @EnableAutoConfiguration
-@RequestMapping("/")
 public class IndexWebController {
 
-  @RequestMapping("/index")
+  @RequestMapping("/")
   public @ResponseBody String index() {
-    throw new FunException();
+    return "Hello from CRS!";
   }
 }
