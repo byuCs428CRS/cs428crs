@@ -51,8 +51,12 @@ public class PublicWebController {
   @RequestMapping(value = "/requirements", method = GET)
   public @ResponseBody
   Requirements getRequirements(
-      @RequestParam(value = "major", required = false, defaultValue = "none") String major)
+      @RequestParam(value = "major", required = false, defaultValue = "none") String major,
+      @RequestParam(value = "dummy", required = false, defaultValue = "false")Boolean dummy)
   {
+    if (dummy) {
+      return webService.getMockRequirements(major);
+    }
     return webService.getRequirements(major);
 
   }

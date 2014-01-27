@@ -1,5 +1,6 @@
 package database;
 
+import models.Course;
 import models.Department;
 import models.Major;
 import models.requirements.Requirement;
@@ -42,6 +43,14 @@ public class MemoryRegistrationStore implements RegistrationStore {
   @Override
   public List<Requirement> getRequirementsForMajor(String major) {
     Major m = majors.get(major);
+    if (m == null) {
+      return new ArrayList<>();
+    }
     return m.getRequirements();
+  }
+
+  @Override
+  public Course getCourse(String courseId) {
+    return null;
   }
 }

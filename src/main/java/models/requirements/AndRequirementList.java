@@ -4,9 +4,9 @@ package models.requirements;
  * @author: Nick Humrich
  * @date: 1/21/14
  */
-public class AndRequirementsList extends RequirementList {
+public class AndRequirementList extends RequirementList {
 
-  public AndRequirementsList() {
+  public AndRequirementList() {
     super();
     super.setType(LogicType.AND);
   }

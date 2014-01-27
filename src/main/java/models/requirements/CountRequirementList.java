@@ -4,9 +4,9 @@ package models.requirements;
  * @author: Nick Humrich
  * @date: 1/21/14
  */
-public class CountRequirementsList extends RequirementList {
+public class CountRequirementList extends RequirementList {
 
-  public CountRequirementsList() {
+  public CountRequirementList() {
     super();
     super.setType(LogicType.COUNT);
   }

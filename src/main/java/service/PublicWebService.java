@@ -3,7 +3,10 @@ package service;
 import database.MemoryRegistrationStore;
 import database.RegistrationStore;
 import models.*;
+import models.requirements.CountRequirementList;
+import models.requirements.OrRequirementList;
 import models.requirements.Requirement;
+import models.requirements.RequirementList;
 import packages.Courses;
 import packages.Departments;
 import packages.Requirements;
@@ -38,7 +41,11 @@ public class PublicWebService {
     List<Requirement> requirementList = registrationStore.getRequirementsForMajor(major);
     reqs.setRequirements(requirementList);
 
-    return new Requirements();
+    return reqs;
+  }
+
+  public Requirements getMockRequirements(String major) {
+    return createMockRequirements(major);
   }
 
   public Departments getMockDepartments() {
@@ -50,6 +57,56 @@ public class PublicWebService {
   * NOTE: These "create mock" functions should be moved to tests once the database is fully functional
   *
    */
+
+  public Requirements createMockRequirements(String major) {
+    Requirements reqs = new Requirements();
+    if (major.equals("none")) {
+      //add base requirement
+      Requirement is = new Requirement();
+      reqs.addRequirement(is);
+      is.setReqId("geIS");
+      is.setTitle("The Individual and Society");
+      List<RequirementList> reqList = new ArrayList<>();
+      is.setFulfillments(reqList);
+
+        //add sub requirements
+        OrRequirementList amHer = new OrRequirementList();
+        amHer.setTitle("American Heritage");
+        amHer.setId("geIS1");
+        reqList.add(amHer);
+        List<Object> optionsList = new ArrayList<>();
+        amHer.setFulfillments(optionsList);
+
+
+          //add sub requirements
+          OrRequirementList am11 = new OrRequirementList();
+          am11.setId("geIS1.1");
+          am11.setTitle("OPTION 1");
+
+            //add classes
+            List<Object> courseList = new ArrayList<>();
+            courseList.add(createMockCourse("ahtg", "100"));
+            courseList.add(createMockCourse("honrs", "240"));
+          am11.setFulfillments(courseList);
+          optionsList.add(am11);
+
+          //add sub requirements
+          CountRequirementList am12 = new CountRequirementList();
+          am12.setId("geIS1.2");
+          am12.setTitle("OPTION 2");
+
+            //add classes
+            courseList = new ArrayList<>();
+
+          am12.setFulfillments(courseList);
+          optionsList.add(am12);
+
+    }
+
+
+    return reqs;
+  }
+
   public Departments createMockDepartments() {
     Departments departments = new Departments();
     departments.addMajor(createMockDepartment("Computer Science", "CS"));
