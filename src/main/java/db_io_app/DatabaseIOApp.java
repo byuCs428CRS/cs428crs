@@ -1,10 +1,13 @@
 package db_io_app;
 
+import com.mongodb.*;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,16 +17,16 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 public class DatabaseIOApp extends JFrame {
+	private static DB db;
 	private static final long serialVersionUID = -1687041352632171598L;
 	private JPanel contentPane;
-	private JTextField studentIdTextField;
-	private JTextField studentFirstNameTextField;
+	
 	private JTextField courseTitleTextField;
 	private JTextField courseIdTextField;
 	private JTextField courseDescriptionTextField;
 	private JTextField courseSectionsTextField;
 	private JTextField coursePrereqsTextField;
-
+	
 	/**
 	 * Launch the application.
 	 */
@@ -31,6 +34,7 @@ public class DatabaseIOApp extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					db = connectDB();
 					DatabaseIOApp frame = new DatabaseIOApp();
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -54,51 +58,9 @@ public class DatabaseIOApp extends JFrame {
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
-
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("Student", null, panel, null);
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 0, 90, 291, 0, 0 };
-		gbl_panel.rowHeights = new int[] { 0, 20, 0, 0, 0, 0 };
-		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0,
-				Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0,
-				Double.MIN_VALUE };
-		panel.setLayout(gbl_panel);
-
-		JLabel lblStudentId = new JLabel("Student Id");
-		GridBagConstraints gbc_lblStudentId = new GridBagConstraints();
-		gbc_lblStudentId.anchor = GridBagConstraints.EAST;
-		gbc_lblStudentId.insets = new Insets(0, 0, 5, 5);
-		gbc_lblStudentId.gridx = 1;
-		gbc_lblStudentId.gridy = 0;
-		panel.add(lblStudentId, gbc_lblStudentId);
-
-		studentIdTextField = new JTextField();
-		GridBagConstraints gbc_studentIdTextField = new GridBagConstraints();
-		gbc_studentIdTextField.insets = new Insets(0, 0, 5, 5);
-		gbc_studentIdTextField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_studentIdTextField.gridx = 2;
-		gbc_studentIdTextField.gridy = 0;
-		panel.add(studentIdTextField, gbc_studentIdTextField);
-		studentIdTextField.setColumns(10);
-
-		JLabel lblStudentFirstName = new JLabel("Student First Name");
-		GridBagConstraints gbc_lblStudentFirstName = new GridBagConstraints();
-		gbc_lblStudentFirstName.anchor = GridBagConstraints.EAST;
-		gbc_lblStudentFirstName.insets = new Insets(0, 0, 5, 5);
-		gbc_lblStudentFirstName.gridx = 1;
-		gbc_lblStudentFirstName.gridy = 1;
-		panel.add(lblStudentFirstName, gbc_lblStudentFirstName);
-
-		studentFirstNameTextField = new JTextField();
-		GridBagConstraints gbc_studentFirstNameTextField = new GridBagConstraints();
-		gbc_studentFirstNameTextField.insets = new Insets(0, 0, 5, 5);
-		gbc_studentFirstNameTextField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_studentFirstNameTextField.gridx = 2;
-		gbc_studentFirstNameTextField.gridy = 1;
-		panel.add(studentFirstNameTextField, gbc_studentFirstNameTextField);
-		studentFirstNameTextField.setColumns(10);
+		
+		AddStudent pnlAddStudent = new AddStudent(db);
+		tabbedPane.addTab("Student", null, pnlAddStudent.panel, null);
 
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Course", null, panel_1, null);
@@ -199,5 +161,25 @@ public class DatabaseIOApp extends JFrame {
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Professor", null, panel_2, null);
 	}
-
+	
+	/**
+	 * Gets our database to modify or query
+	 * @return DB, the connected Database (or null if it is offline)
+	 */
+	public static DB connectDB() {
+		
+		MongoClientURI uri = new MongoClientURI("mongodb://classreg428:ad428min@" + 
+				"ds063297.mongolab.com:63297/classreg");
+		MongoClient client;
+		DB database = null;
+		try {
+			client = new MongoClient(uri);
+			database = client.getDB(uri.getDatabase());
+		} catch (UnknownHostException e) {
+			
+			System.out.println("ERROR: Could not connect to Database");
+			e.printStackTrace();
+		}
+		return database;
+	}
 }
