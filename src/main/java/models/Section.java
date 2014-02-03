@@ -11,6 +11,7 @@ public class Section {
   private String courseId;
   private String sectionId;
   private String professor;
+  private String location;
   private List<Time> times;
   private int classSize;
   private List<String> registeredStudents; //student Id's of registered students
@@ -18,6 +19,14 @@ public class Section {
 
   public Section() {
 
+  }
+
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
   }
 
   public Section(String courseId, String sectionId, int classSize) {

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import packages.Courses;
 import packages.Departments;
 import packages.Requirements;
 import service.PublicWebService;
@@ -59,6 +60,15 @@ public class PublicWebController {
     }
     return webService.getRequirements(major);
 
+  }
+
+  @RequestMapping(value = "/requirements", method = GET)
+  public @ResponseBody
+  Courses getCourses(
+      @RequestParam(value = "ids", required = true) String ids)
+  {
+
+    return new Courses();
   }
 
 }

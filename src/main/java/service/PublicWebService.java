@@ -3,10 +3,8 @@ package service;
 import database.MemoryRegistrationStore;
 import database.RegistrationStore;
 import models.*;
-import models.requirements.CountRequirementList;
-import models.requirements.OrRequirementList;
+import models.requirements.CountType;
 import models.requirements.Requirement;
-import models.requirements.RequirementList;
 import packages.Courses;
 import packages.Departments;
 import packages.Requirements;
@@ -33,6 +31,10 @@ public class PublicWebService {
     departments.setDepartments(departmentList);
 
     return departments;
+  }
+
+  public String test() {
+    return null;
   }
 
   public Requirements getRequirements(String major) {
@@ -64,43 +66,49 @@ public class PublicWebService {
       //add base requirement
       Requirement is = new Requirement();
       reqs.addRequirement(is);
-      is.setReqId("geIS");
+      is.setId("geIS");
       is.setTitle("The Individual and Society");
-      List<RequirementList> reqList = new ArrayList<>();
-      is.setFulfillments(reqList);
+      is.setCountType(CountType.COURSES);
+      is.setRequiredCount(1.0f);
 
-        //add sub requirements
-        OrRequirementList amHer = new OrRequirementList();
-        amHer.setTitle("American Heritage");
-        amHer.setId("geIS1");
-        reqList.add(amHer);
-        List<Object> optionsList = new ArrayList<>();
-        amHer.setFulfillments(optionsList);
+      //add sub requirements
+      Requirement amHer = new Requirement();
+      amHer.setTitle("American Heritage");
+      amHer.setId("geIS1");
+      amHer.setCountType(CountType.COURSES);
+      amHer.setRequiredCount(1.0f);
+      is.addChild(amHer);
+      reqs.addRequirement(amHer);
 
 
-          //add sub requirements
-          OrRequirementList am11 = new OrRequirementList();
-          am11.setId("geIS1.1");
-          am11.setTitle("OPTION 1");
+      //add sub requirements
+      Requirement am11 = new Requirement();
+      am11.setId("geIS1.1");
+      am11.setTitle("OPTION 1");
+      am11.setCountType(CountType.COURSES);
+      am11.setRequiredCount(1.0f);
+      reqs.addRequirement(am11);
+      amHer.addChild(am11);
 
-            //add classes
-            List<Object> courseList = new ArrayList<>();
-            courseList.add(createMockCourse("ahtg", "100"));
-            courseList.add(createMockCourse("honrs", "240"));
-          am11.setFulfillments(courseList);
-          optionsList.add(am11);
+      //add classes
+      List<String> courseList = new ArrayList<>();
+      courseList.add(createMockCourse("ahtg", "100").getFullId());
+      courseList.add(createMockCourse("honrs", "240").getFullId());
+      am11.setCourses(courseList);
 
-          //add sub requirements
-          CountRequirementList am12 = new CountRequirementList();
-          am12.setId("geIS1.2");
-          am12.setTitle("OPTION 2");
+      //add sub requirements
+      Requirement am12 = new Requirement();
+      am12.setId("geIS1.2");
+      am12.setTitle("OPTION 2");
+      am12.setRequiredCount(2.0f);
+      am12.setCountType(CountType.COURSES);
+      reqs.addRequirement(am12);
 
-            //add classes
-            courseList = new ArrayList<>();
+      //add classes
+      courseList = new ArrayList<>();
 
-          am12.setFulfillments(courseList);
-          optionsList.add(am12);
-
+      am12.setCourses(courseList);
+      amHer.addChild(am12);
     }
 
 
@@ -119,8 +127,11 @@ public class PublicWebService {
   public Department createMockDepartment(String title, String abbreviation) {
     Department department = new Department(title, abbreviation);
 
-    department.setCourses(createMockCourses(abbreviation).getCourses());
+    List<Course> courses = createMockCourses(abbreviation).getCourses();
 
+    for (Course course : courses) {
+      department.addCourse(course.getCourseId());
+    }
     return department;
   }
 
@@ -155,6 +166,7 @@ public class PublicWebService {
     times1.add(new Time(Day.TUESDAY, "2:00", "3:15"));
     times1.add(new Time(Day.THURSDAY, "2:00", "3:15"));
     section1.setTimes(times1);
+    section1.setLocation("RB 324");
 
     //section 2
     Section section2 = new Section(courseId, "2", 23);
@@ -163,6 +175,7 @@ public class PublicWebService {
     times2.add(new Time(Day.MONDAY, "11:00", "11:50"));
     times2.add(new Time(Day.WEDNESDAY, "11:00", "11:50"));
     times2.add(new Time(Day.FRIDAY, "11:00", "11:50"));
+    section2.setLocation("TMCB 1143");
 
     sections.addSection(section1);
     sections.addSection(section2);

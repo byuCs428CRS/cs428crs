@@ -2,8 +2,8 @@ package models.requirements;
 
 /**
  * @author: Nick Humrich
- * @date: 1/21/14
+ * @date: 1/31/14
  */
-public enum LogicType {
-  AND, OR, COUNT;
+public enum CountType {
+  COURSES, CREDITS
 }

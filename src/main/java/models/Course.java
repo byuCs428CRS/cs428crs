@@ -31,6 +31,9 @@ public class Course implements Comparable<Course> {
     prereqs = new ArrayList<>();
   }
 
+  public String getFullId() {
+    return owningDepartment + " " + courseId;
+  }
   public float getCredits() {
     return credits;
   }

@@ -10,7 +10,7 @@ public class Department implements Comparable<Department> {
 
   private String title;
   private String shortCode;
-  private List<Course> courses;
+  private List<String> courses;
 
   public Department() {
 
@@ -37,12 +37,16 @@ public class Department implements Comparable<Department> {
     this.shortCode = shortCode;
   }
 
-  public List<Course> getCourses() {
+  public List<String> getCourses() {
     return courses;
   }
 
-  public void setCourses(List<Course> courses) {
+  public void setCourses(List<String> courses) {
     this.courses = courses;
+  }
+
+  public void addCourse(String courseId) {
+    courses.add(courseId);
   }
 
   @Override
