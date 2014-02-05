@@ -3,10 +3,13 @@ buildscript {
         maven { url "http://repo.spring.io/libs-snapshot"  }
         mavenCentral()
         mavenLocal()
+        jcenter()
     }
+
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.M6")
         classpath("org.mongodb:mongo-java-driver:2.11.3")
+        classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.0'
     }
 
 }
@@ -17,6 +20,7 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 apply plugin: 'application'
 apply plugin: 'war'
+apply plugin: 'tomcat'
 
 mainClassName = "controllers.WebApplication"
 
