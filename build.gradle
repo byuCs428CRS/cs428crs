@@ -16,6 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 apply plugin: 'application'
+apply plugin: 'war'
 
 mainClassName = "controllers.WebApplication"
 
@@ -38,4 +39,8 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
+}
+
+war {
+    from '../crs-frontend/app'
 }
