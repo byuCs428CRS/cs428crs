@@ -44,7 +44,7 @@ public class PublicWebController {
   }
 
   /**
-   * Gets all requirements for the given major. If no major is given or major 'none', then all
+   * Gets all requirements for the given major.a If no major is given or major 'none', then all
    * the general requirements will be given
    * @param major shortCode for major
    * @return requirements for given major
