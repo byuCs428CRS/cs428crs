@@ -33,8 +33,8 @@ public class AdminWebController {
 
   @RequestMapping(value="/addClass", method = POST)
   public @ResponseBody String addClass(@RequestBody AddRequest addRequest) {
-	webService.addClass(addRequest);
-	return "ok";
+    webService.addClass(addRequest);
+    return "ok";
   }
 
 }

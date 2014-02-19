@@ -62,7 +62,7 @@ public class PublicWebController {
 
   }
 
-  @RequestMapping(value = "/requirements", method = GET)
+  @RequestMapping(value = "/courses", method = GET)
   public @ResponseBody
   Courses getCourses(
       @RequestParam(value = "ids", required = true) String ids)
