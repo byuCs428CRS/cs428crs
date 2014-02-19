@@ -2,6 +2,7 @@ package service;
 
 import database.MemoryRegistrationStore;
 import database.RegistrationStore;
+import models.AddRequest;
 import models.Department;
 
 /**
@@ -23,5 +24,9 @@ public class AdminWebService {
 
   public void addDepartment(Department department) {
     registrationStore.addDepartment(department);
+  }
+
+  public void addClass(AddRequest addRequest) {
+
   }
 }

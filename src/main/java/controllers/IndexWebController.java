@@ -15,6 +15,6 @@ public class IndexWebController {
 
   @RequestMapping("/")
   public @ResponseBody String index() {
-    return "Hello from CRS!";
+    return "redirect:../crs-frontend/app/index.html";
   }
 }
