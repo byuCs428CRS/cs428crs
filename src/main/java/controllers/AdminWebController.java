@@ -1,6 +1,5 @@
 package controllers;
 
-import models.AddRequest;
 import models.Department;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
@@ -28,12 +27,6 @@ public class AdminWebController {
   @RequestMapping(value = "/department", method = POST)
   public @ResponseBody String addDepartment(@RequestBody Department department) {
     webService.addDepartment(department);
-    return "ok";
-  }
-
-  @RequestMapping(value="/addClass", method = POST)
-  public @ResponseBody String addClass(@RequestBody AddRequest addRequest) {
-    webService.addClass(addRequest);
     return "ok";
   }
 
