@@ -41,3 +41,9 @@ dependencies {
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
 }
+
+task buildFrontEnd(type: Copy) {
+    from('../crs-frontend/app')
+    into('build/resources/main/public')
+}
+build.dependsOn buildFrontEnd
