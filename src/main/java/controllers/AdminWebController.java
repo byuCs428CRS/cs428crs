@@ -18,16 +18,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping("/admin-api")
 public class AdminWebController {
 
-  private AdminWebService webService;
+	private AdminWebService webService;
 
-  public AdminWebController() {
-    webService = new AdminWebService();
-  }
+	public AdminWebController() {
+		webService = new AdminWebService();
+	}
 
-  @RequestMapping(value = "/department", method = POST)
-  public @ResponseBody String addDepartment(@RequestBody Department department) {
-    webService.addDepartment(department);
-    return "ok";
-  }
+	@RequestMapping(value = "/department", method = POST)
+	public @ResponseBody String addDepartment(@RequestBody Department department) {
+		webService.addDepartment(department);
+		return "ok";
+	}
 
 }

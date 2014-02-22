@@ -4,7 +4,7 @@ package models;
  * @author: Nick Humrich
  * @date: 2/20/14
  */
-public class UserLogin {
+public class UserCredentials {
   private String username;
   private String pass;
   private String salt;

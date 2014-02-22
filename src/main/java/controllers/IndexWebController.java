@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @EnableAutoConfiguration
 public class IndexWebController {
 
-  @RequestMapping("/")
-  public @ResponseBody String index() {
-    return "redirect:../crs-frontend/app/index.html";
-  }
+	@RequestMapping("/")
+	public @ResponseBody String index() {
+		return "redirect:../crs-frontend/app/index.html";
+	}
 }

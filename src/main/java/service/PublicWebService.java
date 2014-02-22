@@ -40,9 +40,9 @@ public class PublicWebService {
   public Requirements getRequirements(String major) {
     Requirements reqs = new Requirements();
 
-    List<Requirement> requirementList = registrationStore.getRequirementsForMajor(major);
-    reqs.setRequirements(requirementList);
-
+//    List<Requirement> requirementList = registrationStore.getRequirementsForMajor(major);
+//    reqs.setRequirements(requirementList);
+//
     return reqs;
   }
 
