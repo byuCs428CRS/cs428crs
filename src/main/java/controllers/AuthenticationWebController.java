@@ -3,10 +3,12 @@ package controllers;
 import exceptions.NotAuthorizedException;
 import models.UserCredentials;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import service.AuthenticationService;
 
 import javax.servlet.http.HttpSession;
@@ -39,24 +41,31 @@ public class AuthenticationWebController {
 
 
 	@RequestMapping(value = "/login", method = POST)
+	@ResponseStatus(value = HttpStatus.OK)
 	public void login(@RequestBody UserCredentials user, HttpSession session)
 	{
 		if (session.getAttribute("pepper") == null) {
 			throw new NotAuthorizedException("Invalid pepper");
 		}
 
+		int pepper = (int) session.getAttribute("pepper");
+		user.setPepper(pepper);
 		String userId = service.login(user);
 		session.setAttribute("uid", userId);
 		session.removeAttribute("pepper");
 	}
 
-	@RequestMapping(value = "/register", method = POST)
+	@RequestMapping(value = "/register", method = POST,
+		consumes = "application/json")
+	@ResponseStatus(value = HttpStatus.OK)
 	public void register(@RequestBody UserCredentials user, HttpSession session)
 	{
 		if (session.getAttribute("pepper") == null) {
 			throw new NotAuthorizedException("Invalid pepper");
 		}
 
+		int pepper = (int) session.getAttribute("pepper");
+		user.setPepper(pepper);
 		String userId = service.register(user);
 		session.setAttribute("uid", userId);
 		session.removeAttribute("pepper");

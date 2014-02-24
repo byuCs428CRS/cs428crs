@@ -77,6 +77,8 @@ public class AuthenticationService {
 
 	public String register(UserCredentials user) {
 		user.setSalt(getRandomSalt());
+		String hash = completeHash(user);
+		user.setPass(hash);
 		int id = store.addUser(user);
 		String encoded = encodeId(id);
 		return encoded;
