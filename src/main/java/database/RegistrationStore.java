@@ -3,7 +3,9 @@ package database;
 import exceptions.AccountAlreadyExistsException;
 import models.Course;
 import models.Department;
+import models.Schedule;
 import models.UserCredentials;
+import models.requirements.Requirement;
 
 import java.util.List;
 
@@ -15,11 +17,21 @@ public interface RegistrationStore {
 
 	public List<Department> getAllDepartments();
 
+	@Deprecated
 	public void addDepartment(Department department);
 
-	//public List<Requirement> getRequirementsForMajor(String major);
+	@Deprecated
+	public List<Requirement> getRequirementsForMajor(String major);
 
 	public Course getCourse(String courseId);
+
+	public List<Course> getCoursesForDepartment(String departmentId);
+
+	public List<Course> getAllCourses();
+
+	public void saveSchedule(int userId, Schedule schedule);
+
+	public List<Schedule> getSchedules(int userId);
 
 	/**
 	 * Gets the credentials for a given username. If username is invalid, dummy credentials may be returned.
@@ -37,6 +49,11 @@ public interface RegistrationStore {
 	 */
 	public int addUser(UserCredentials user) throws AccountAlreadyExistsException;
 
+	/**
+	 * Returns the id for the given username
+	 * @param username
+	 * @return id
+	 */
 	public int getUserId(String username);
 
 

@@ -1,10 +1,8 @@
 package database;
 
 import exceptions.AccountAlreadyExistsException;
-import models.Course;
-import models.Department;
-import models.Major;
-import models.UserCredentials;
+import models.*;
+import models.requirements.Requirement;
 
 import java.util.*;
 
@@ -50,17 +48,37 @@ public class MemoryRegistrationStore implements RegistrationStore {
 		Collections.sort(departments);
 	}
 
-//  @Override
-//  public List<Requirement> getRequirementsForMajor(String major) {
-//    Major m = majors.get(major);
-//    if (m == null) {
-//      return new ArrayList<>();
-//    }
-//    return m.getRequirements();
-//  }
+  @Override
+  public List<Requirement> getRequirementsForMajor(String major) {
+    Major m = majors.get(major);
+    if (m == null) {
+      return new ArrayList<>();
+    }
+    return m.getRequirements();
+  }
 
 	@Override
 	public Course getCourse(String courseId) {
+		return null;
+	}
+
+	@Override
+	public List<Course> getCoursesForDepartment(String departmentId) {
+		return null;
+	}
+
+	@Override
+	public List<Course> getAllCourses() {
+		return null;
+	}
+
+	@Override
+	public void saveSchedule(int userId, Schedule schedule) {
+
+	}
+
+	@Override
+	public List<Schedule> getSchedules(int userId) {
 		return null;
 	}
 
