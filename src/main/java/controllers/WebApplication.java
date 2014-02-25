@@ -14,7 +14,7 @@ public class WebApplication {
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(WebApplication.class);
-		System.out.println("Starting app with System Args: ");
+		System.out.println("Starting app with System Args: " + args.toString());
 		app.run(args);
 	}
 }
