@@ -43,6 +43,12 @@ dependencies {
     testCompile("junit:junit:4.11")
 }
 
+run {
+    if(project.hasProperty('args')){
+        args project.args.split('\\s+')
+    }
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
 }
