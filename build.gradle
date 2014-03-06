@@ -55,4 +55,10 @@ task buildFrontEnd(type: Copy) {
     from('../crs-frontend/app')
     into('build/resources/main/public')
 }
+
+task cleanFrontEnd(type: Delete) {
+    delete 'build/resources/main/public'
+}
+
 build.dependsOn buildFrontEnd
+buildFrontEnd.dependsOn cleanFrontEnd
