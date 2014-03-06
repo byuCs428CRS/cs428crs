@@ -30,7 +30,7 @@ public class Parser {
     			line += "\n" + temp;
     			while (line.contains("#")) {
     			
-    				insert(line.substring(0, line.indexOf("#")));	
+    				insert(line.substring(0, line.indexOf("#")));
     				line = line.substring(line.indexOf("#") + 1);
     			}
     		}

@@ -51,7 +51,7 @@ public class AuthenticationService {
 		return encoded;
 	}
 
-	public String encodeId(int id) {
+	public static String encodeId(int id) {
 		String encodedId = "";
 		while (id > 0) { //get new number
 			int r = id % 16;
@@ -64,7 +64,7 @@ public class AuthenticationService {
 		return encodedId;
 	}
 
-	public int decodeId(String id) {
+	public static int decodeId(String id) {
 		int decodedId = 0;
 		while (id.length() > 0) {
 			char c = id.charAt(0);

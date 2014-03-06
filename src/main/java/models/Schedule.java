@@ -7,12 +7,21 @@ import java.util.List;
  * @date: 1/17/14
  */
 public class Schedule {
+    private String id;
     private String name;
     private Semester semester;
     private List<Section> classes;
 
   public String getName() {
     return name;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getId() {
+    return id;
   }
 
   public void setName(String name) {

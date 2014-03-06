@@ -1,6 +1,7 @@
 package database;
 
 import exceptions.AccountAlreadyExistsException;
+import exceptions.ResourceNotFoundException;
 import models.*;
 import models.requirements.Requirement;
 
@@ -17,7 +18,10 @@ public class MemoryRegistrationStore implements RegistrationStore {
 	private Map<String, UserCredentials> userLogins;
 	private Map<Integer, UserCredentials> userList;
 	private Map<String, Integer> idLookup;
+  private Map<Integer, Schedule> schedules;
+  private Map<Integer, Integer> scheduleUserMappings;
 	private int userIdCount;
+  private int scheduleIdCount;
 
 
 	private MemoryRegistrationStore() {
@@ -26,7 +30,10 @@ public class MemoryRegistrationStore implements RegistrationStore {
 		userLogins = new HashMap<>();
 		userList = new HashMap<>();
 		idLookup = new HashMap<>();
+    schedules = new HashMap<>();
+    scheduleUserMappings = new HashMap<>();
 		userIdCount = 1;
+    scheduleIdCount = 1;
 	}
 
 	public static MemoryRegistrationStore getInstance() {
@@ -72,17 +79,62 @@ public class MemoryRegistrationStore implements RegistrationStore {
 		return null;
 	}
 
-	@Override
-	public void saveSchedule(int userId, Schedule schedule) {
+  @Override
+  public int addSchedule(int userId, Schedule schedule) {
+    int id = scheduleIdCount++;
+    schedules.put(id, schedule);
+    scheduleUserMappings.put(id, userId);
+    return id;
+  }
 
-	}
+  @Override
+  public List<Schedule> getAllSchedules(int userId) {
+    List<Schedule> listOfSchedules = new ArrayList<>();
+    for (Map.Entry<Integer, Integer> e : scheduleUserMappings.entrySet()) {
+      if (e.getValue() == userId) {
+        Schedule s = schedules.get(e.getKey());
+        s.setId("" + e.getKey());
+        listOfSchedules.add(s);
+      }
+    }
+    return listOfSchedules;
+  }
 
-	@Override
-	public List<Schedule> getSchedules(int userId) {
-		return null;
-	}
+  @Override
+  public Schedule getSchedule(int scheduleId) {
+    if (!schedules.containsKey(scheduleId)) {
+      throw new ResourceNotFoundException("No schedule by id: " + scheduleId + " found.");
+    }
+    return schedules.get(scheduleId);
+  }
 
-	@Override
+  @Override
+  public void editSchedule(int scheduleId, Schedule scheduleEdit) {
+    if (!schedules.containsKey(scheduleId)) {
+      throw new ResourceNotFoundException("No schedule by id: " + scheduleId + " found.");
+    }
+    schedules.put(scheduleId, scheduleEdit);
+  }
+
+  @Override
+  public void removeSchedule(int scheduleId) {
+    if (!schedules.containsKey(scheduleId)) {
+      throw new ResourceNotFoundException("No schedule by id: " + scheduleId + " found.");
+    }
+    schedules.remove(scheduleId);
+    scheduleUserMappings.remove(scheduleId);
+  }
+
+  @Override
+  public int getOwningUserForSchedule(int scheduleId) {
+    if (!schedules.containsKey(scheduleId)) {
+      throw new ResourceNotFoundException("No schedule by id: " + scheduleId + " found.");
+    }
+    return scheduleUserMappings.get(scheduleId);
+  }
+
+
+  @Override
 	public UserCredentials getCredentials(String username) {
 		UserCredentials user = new UserCredentials();
 		user.setUsername(username);

@@ -1,16 +1,20 @@
 package controllers;
 
+import exceptions.NotAuthorizedException;
+import models.Schedule;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import packages.Courses;
 import packages.Departments;
 import packages.Requirements;
+import packages.Schedules;
 import service.PublicWebService;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import javax.servlet.http.HttpSession;
+
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * @autor: Nick Humrich
@@ -70,5 +74,58 @@ public class PublicWebController {
 
 		return new Courses();
 	}
+
+  @RequestMapping(value = "/schedules/all", method = GET)
+  public @ResponseBody
+  Schedules getSchedulesForUser(HttpSession session)
+  {
+    String uid = getUserId(session);
+    return webService.getAllSchedulesForUser(uid);
+  }
+
+  @RequestMapping(value = "/schedules", method = POST,
+      consumes = "application/json")
+  @ResponseStatus(value = HttpStatus.OK)
+  public void addSchedule(
+      @RequestBody Schedule schedule, HttpSession session)
+  {
+    String uid = getUserId(session);
+    webService.addSchedule(uid, schedule);
+  }
+
+  @RequestMapping(value = "/schedules/{id}", method = PUT,
+      consumes = "application/json")
+  @ResponseStatus(value = HttpStatus.OK)
+  public void updateSchedule(@RequestBody Schedule schedule,
+       @PathVariable String id, HttpSession session)
+  {
+    String uid = getUserId(session);
+    webService.editSchedule(uid, id, schedule);
+  }
+
+  @RequestMapping(value = "schedules/{id}", method = DELETE,
+    consumes = "application/json")
+  @ResponseStatus(value = HttpStatus.OK)
+  public void removeSchedule(@PathVariable String id, HttpSession session)
+  {
+    String uid = getUserId(session);
+    webService.removeSchedule(uid, id);
+  }
+
+  @RequestMapping(value = "schedules/{id}", method = GET)
+  public @ResponseBody Schedule
+  getSchedule(@PathVariable String id, HttpSession session)
+  {
+    String uid = getUserId(session);
+    return webService.getSchedule(uid, id);
+  }
+
+  private String getUserId(HttpSession session) {
+    Object uid = session.getAttribute("uid");
+    if (uid == null) {
+      throw new NotAuthorizedException("User must be logged in.");
+    }
+    return (String) uid;
+  }
 
 }

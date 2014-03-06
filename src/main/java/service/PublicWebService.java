@@ -2,13 +2,11 @@ package service;
 
 import database.MemoryRegistrationStore;
 import database.RegistrationStore;
+import exceptions.ForbiddenException;
 import models.*;
 import models.requirements.CountType;
 import models.requirements.Requirement;
-import packages.Courses;
-import packages.Departments;
-import packages.Requirements;
-import packages.Sections;
+import packages.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +21,67 @@ public class PublicWebService {
   public PublicWebService() {
     //ToDo: replace below to read from config and use a factory to choose the store
     registrationStore = MemoryRegistrationStore.getInstance();
+  }
+
+  public Schedules getAllSchedulesForUser(String uid) {
+    Schedules schedules = new Schedules();
+    int userId = AuthenticationService.decodeId(uid);
+
+    List<Schedule> list = registrationStore.getAllSchedules(userId);
+    for (Schedule s : list) {
+      s.setId(AuthenticationService.encodeId( Integer.parseInt(s.getId())));
+    }
+
+    schedules.setSchedules(list);
+    return schedules;
+  }
+
+
+  public Schedule getSchedule(String uid, String sid) {
+    int scheduleId = AuthenticationService.decodeId(sid);
+    int userId = AuthenticationService.decodeId(uid);
+
+    int ownerId = registrationStore.getOwningUserForSchedule(scheduleId);
+
+    if (ownerId != userId) {
+      throw new ForbiddenException("Not allowed to retrieve this schedule");
+    }
+    Schedule schedule = registrationStore.getSchedule(scheduleId);
+    schedule.setId(sid);
+    return schedule;
+  }
+
+  public void addSchedule(String uid, Schedule schedule) {
+    int userId = AuthenticationService.decodeId(uid);
+
+    registrationStore.addSchedule(userId, schedule);
+  }
+
+  public void editSchedule(String uid, String sid, Schedule schedule) {
+    int userId = AuthenticationService.decodeId(uid);
+    int scheduleId = AuthenticationService.decodeId(sid);
+
+    int ownerId = registrationStore.getOwningUserForSchedule(scheduleId);
+
+    if (ownerId != userId) {
+      throw new ForbiddenException("Not allowed to edit this schedule");
+    }
+
+    registrationStore.editSchedule(scheduleId, schedule);
+  }
+
+  public void removeSchedule(String uid, String sid) {
+    int userId = AuthenticationService.decodeId(uid);
+    int scheduleId = AuthenticationService.decodeId(sid);
+
+    int ownerId = registrationStore.getOwningUserForSchedule(scheduleId);
+
+    if (ownerId != userId) {
+      throw new ForbiddenException("Not allowed to remove this schedule");
+    }
+
+    registrationStore.removeSchedule(scheduleId);
+
   }
 
   public Departments getAllDepartments() {

@@ -29,9 +29,17 @@ public interface RegistrationStore {
 
 	public List<Course> getAllCourses();
 
-	public void saveSchedule(int userId, Schedule schedule);
+	public int addSchedule(int userId, Schedule schedule);
 
-	public List<Schedule> getSchedules(int userId);
+	public List<Schedule> getAllSchedules(int userId);
+
+  public Schedule getSchedule(int scheduleId);
+
+  public void editSchedule(int scheduleId, Schedule scheduleEdit);
+
+  public void removeSchedule(int scheduleId);
+
+  public int getOwningUserForSchedule(int scheduleId);
 
 	/**
 	 * Gets the credentials for a given username. If username is invalid, dummy credentials may be returned.
