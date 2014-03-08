@@ -30,9 +30,16 @@ public class Section {
 	public String classSize;
 	public String waitList;
 	
-	public void insert(int i, String element) {
+	/**
+	 * Sets one of this class's many variables to the element String
+	 * Whichever variable is set is determined by the index i, handled by a switch statement
+	 * @param i The index of the variable to be set (using switch)
+	 * @param element The overall string to modify/set
+	 */
+	public void setElement(int i, String element) {
 		
     	switch (i) {
+    	
 			case 0: courseID = element;
 		    		break;
 		    		
@@ -89,22 +96,22 @@ public class Section {
 					 break;
 			
 			case 17: seatsAvailable = element.substring(0, element.indexOf("/") - 1);
-					  classSize = element.substring(element.indexOf("/") + 2);
-					  break;
+					 classSize = element.substring(element.indexOf("/") + 2);
+					 break;
 					 
 			case 18: waitList = element;
 					 break;
 					
-			default: System.out.println("ERROR: Your index isn't between 0 and x!");
+			default: System.out.println("ERROR: Your index isn't between 0 and 18!");
 					 break;
     	}
 	}
 	
-	/*
-	* Some courses have different numbers of days, times, and locations
-	* (e.g. search for "Beecher, Mark", his course has 3 days and times, but only one "TBA" for location)
-	* This method adds "NULL" to fields that are lacking (so we can create objects with them in the future if needed)
-	*/
+	/**
+	 * Some courses have different numbers of days, times, and locations
+	 * (e.g. search for "Beecher, Mark", his course has 3 days and times, but only one "TBA" for location)
+	 * This method adds "TBA" to fields that are lacking (so we can create TimePlace objects)
+	 */
 	public void fillRemainingFields() {
 		
 		int maxSize = 0;
@@ -127,7 +134,12 @@ public class Section {
 			locations.add("TBA");
 	}
 	
-	// Split a string on newline chars
+	/**
+	 * Split a string on newline chars 
+	 * (Used for splitting the days/times/locations into lists)
+	 * @param element the entire string to split on newline
+	 * @return List<String> A list of remnant strings after splitting
+	 */
 	public List<String> splitNewline(String element) {
 		
 		String[] textStr = element.split("\\r?\\n");
@@ -138,7 +150,9 @@ public class Section {
 		return tempList;
 	}
 	
-	// Prints all of the class variables
+	/**
+	 * Prints all of this Section's variables
+	 */
 	public void print() {
 		
 		System.out.println();
@@ -166,7 +180,10 @@ public class Section {
 		System.out.println();
 	}
 	
-	/* Create a BasicDBObject out of this Section Object and return it */
+	/**
+	 * Create a BasicDBObject out of this Section Object and return it 
+	 * @return BasicDBObject A database object that represents this section
+	 */
 	public BasicDBObject getDBObject() {
 		
 		BasicDBObject sectionObject = new BasicDBObject();
@@ -180,7 +197,7 @@ public class Section {
 		sectionObject.put("seatsTotal", classSize);
 		sectionObject.put("waitList", waitList);
 		
-		// Add the Notes
+		// Add the Notes by creating a List of DB Objects (one object for each note)
 		List<BasicDBObject> notesObject = new ArrayList<>();
 		for (int i = 0; i < notes.size(); i++) {
 			
@@ -190,7 +207,7 @@ public class Section {
 		}
 		sectionObject.put("notes", notesObject);
 		
-		// Add the TimePlaces
+		// Add the TimePlaces by creating a DB Object for each one
 		List<BasicDBObject> timeplaces = new ArrayList<>();
 		for (int i = 0; i < timePlaces.size(); i++) {
 			
@@ -201,6 +218,9 @@ public class Section {
 		return sectionObject;
 	}
 
+	/**
+	 * With the current days/startTimes/endTimes/locations, create an object to hold them
+	 */
 	public void makeTimePlaces() {
 		
 		timePlaces = new ArrayList<>();

@@ -17,12 +17,19 @@ public class TimePlace {
 		this.location = location;
 	}
 	
+	/**
+	 * Print the values of this TimePlace in a format that can be read
+	 * @param append Anything to append before the TimePlace (e.g. "\t\t" to have each TimePlace be tabbed over)
+	 */
 	public void print(String append) {
 		
 		System.out.println(append + day + " / " + startTime + " / " + endTime + " / " + location);
 	}
 	
-	/* create a BasicDBObject out of this TimePlace object and return it */
+	/** 
+	 * Create a BasicDBObject out of this TimePlace object and return it
+	 * @return BasicDBObject
+	 */
 	public BasicDBObject getDBObject() {
 		
 		BasicDBObject curTP = new BasicDBObject();
