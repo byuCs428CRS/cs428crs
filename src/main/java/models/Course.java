@@ -31,7 +31,9 @@ public class Course implements Comparable<Course> {
     prereqs = new ArrayList<>();
   }
 
-  public String getFullId() {
+
+
+    public String getFullId() {
     return owningDepartment + " " + courseId;
   }
   public float getCredits() {
@@ -96,6 +98,40 @@ public class Course implements Comparable<Course> {
 
   public void setPrereqs(List<String> prereqs) {
     this.prereqs = prereqs;
+  }
+
+  @Override
+  public String toString(){
+
+    /*
+      private String title;
+  private String owningDepartment; //shortCode of owning department
+  private String courseId;  //number of id does NOT include departments short code
+  private String description;
+  private float credits;
+  private List<Section> sections;
+  private List<String> fulfillments; //reqID's of Requirements it fulfills
+  private List<String> prereqs; //courseId's of courses needed as a prereq
+     */
+    String s =  "Id: " + courseId + "\tCredits: " + credits +"\tDept: " + owningDepartment + "\t\tDescription: " + description + "\t\tTitle: " + title;
+
+/*
+      s += "\nSections:\t";
+      for(Section sec : sections){
+          s += " " + sec.toString();
+      }
+      s += "\nFulfillments:\t";
+      for(String str : fulfillments){
+          s += " " + str;
+      }
+      s += "\nPrereqs:\t";
+      for(String str : prereqs){
+          s += " " + str;
+      }
+*/
+
+
+    return s;
   }
 
   @Override
