@@ -2,7 +2,10 @@ package controllers;
 
 import exceptions.NotAuthorizedException;
 import models.Schedule;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.HttpGet;
+import org.json.JSONObject;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -15,11 +18,9 @@ import service.PublicWebService;
 
 import javax.servlet.http.HttpSession;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -141,10 +142,22 @@ public class PublicWebController {
 		  conn = (HttpURLConnection) url.openConnection();
 		  conn.setRequestMethod("GET");
 		  rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		  int i=0;
+		  String challenge = null;
 		  while ((line = rd.readLine()) != null) {
 			  result.append(line);
+			  if( i++ == 4 ) {
+				  challenge = line.substring(line.indexOf("'")+1, line.length()-2);
+				  break;
+			  }
 		  }
 		  rd.close();
+		  System.out.println("challenge =\n" + challenge);
+		  JSONObject jsonObject = new JSONObject();
+		  jsonObject.put("challenge", challenge);
+		  jsonObject.put("image", getRecaptchaImage(challenge));
+
+		  return jsonObject.toString();
 	  } catch (IOException e) {
 		  e.printStackTrace();
 		  return e.getMessage();
@@ -152,7 +165,6 @@ public class PublicWebController {
 		  e.printStackTrace();
 		  return e.getMessage();
 	  }
-	  return result.toString();
   }
 
   private String getUserId(HttpSession session) {
@@ -162,5 +174,16 @@ public class PublicWebController {
     }
     return (String) uid;
   }
+
+	String getRecaptchaImage(String recaptchaChallenge) throws IOException {
+		URL url = new URL("https://www.google.com/recaptcha/api/image?c=" + recaptchaChallenge);
+
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		InputStream is = conn.getInputStream();
+		String result = new String(Base64.encodeBase64(IOUtils.toByteArray(is)), "UTF-8");
+		is.close();
+		return result;
+	}
 
 }
