@@ -1,5 +1,6 @@
 package service;
 
+import database.DatabaseRegistrationStore;
 import database.MemoryRegistrationStore;
 import database.RegistrationStore;
 import exceptions.ForbiddenException;
@@ -16,18 +17,37 @@ import java.util.List;
  * @date: 1/18/14
  */
 public class PublicWebService {
+  private RegistrationStore tempRegistrationStore;
   private RegistrationStore registrationStore;
 
   public PublicWebService() {
     //ToDo: replace below to read from config and use a factory to choose the store
-    registrationStore = MemoryRegistrationStore.getInstance();
+    tempRegistrationStore = MemoryRegistrationStore.getInstance();
+    registrationStore = DatabaseRegistrationStore.getInstance();
+  }
+
+  public Courses getAllCourses() {
+    String semester = getCurrentSemester();
+    return getAllCourses(semester);
+  }
+
+  public Courses getAllCourses(String semester) {
+    Courses courses = new Courses();
+    //ToDo: edit below to reflect semester
+    List<Course> list = registrationStore.getAllCourses();
+    courses.setCourses(list);
+    return courses;
+  }
+
+  public String getCurrentSemester() {
+    return "Spring2014"; //ToDo: change this
   }
 
   public Schedules getAllSchedulesForUser(String uid) {
     Schedules schedules = new Schedules();
     int userId = AuthenticationService.decodeId(uid);
 
-    List<Schedule> list = registrationStore.getAllSchedules(userId);
+    List<Schedule> list = tempRegistrationStore.getAllSchedules(userId);
     for (Schedule s : list) {
       s.setId(AuthenticationService.encodeId( Integer.parseInt(s.getId())));
     }
@@ -41,12 +61,12 @@ public class PublicWebService {
     int scheduleId = AuthenticationService.decodeId(sid);
     int userId = AuthenticationService.decodeId(uid);
 
-    int ownerId = registrationStore.getOwningUserForSchedule(scheduleId);
+    int ownerId = tempRegistrationStore.getOwningUserForSchedule(scheduleId);
 
     if (ownerId != userId) {
       throw new ForbiddenException("Not allowed to retrieve this schedule");
     }
-    Schedule schedule = registrationStore.getSchedule(scheduleId);
+    Schedule schedule = tempRegistrationStore.getSchedule(scheduleId);
     schedule.setId(sid);
     return schedule;
   }
@@ -54,39 +74,39 @@ public class PublicWebService {
   public void addSchedule(String uid, Schedule schedule) {
     int userId = AuthenticationService.decodeId(uid);
 
-    registrationStore.addSchedule(userId, schedule);
+    tempRegistrationStore.addSchedule(userId, schedule);
   }
 
   public void editSchedule(String uid, String sid, Schedule schedule) {
     int userId = AuthenticationService.decodeId(uid);
     int scheduleId = AuthenticationService.decodeId(sid);
 
-    int ownerId = registrationStore.getOwningUserForSchedule(scheduleId);
+    int ownerId = tempRegistrationStore.getOwningUserForSchedule(scheduleId);
 
     if (ownerId != userId) {
       throw new ForbiddenException("Not allowed to edit this schedule");
     }
 
-    registrationStore.editSchedule(scheduleId, schedule);
+    tempRegistrationStore.editSchedule(scheduleId, schedule);
   }
 
   public void removeSchedule(String uid, String sid) {
     int userId = AuthenticationService.decodeId(uid);
     int scheduleId = AuthenticationService.decodeId(sid);
 
-    int ownerId = registrationStore.getOwningUserForSchedule(scheduleId);
+    int ownerId = tempRegistrationStore.getOwningUserForSchedule(scheduleId);
 
     if (ownerId != userId) {
       throw new ForbiddenException("Not allowed to remove this schedule");
     }
 
-    registrationStore.removeSchedule(scheduleId);
+    tempRegistrationStore.removeSchedule(scheduleId);
 
   }
 
   public Departments getAllDepartments() {
     Departments departments = new Departments();
-    List<Department> departmentList = registrationStore.getAllDepartments();
+    List<Department> departmentList = tempRegistrationStore.getAllDepartments();
     departments.setDepartments(departmentList);
 
     return departments;
@@ -99,7 +119,7 @@ public class PublicWebService {
   public Requirements getRequirements(String major) {
     Requirements reqs = new Requirements();
 
-//    List<Requirement> requirementList = registrationStore.getRequirementsForMajor(major);
+//    List<Requirement> requirementList = tempRegistrationStore.getRequirementsForMajor(major);
 //    reqs.setRequirements(requirementList);
 //
     return reqs;
@@ -189,7 +209,7 @@ public class PublicWebService {
     List<Course> courses = createMockCourses(abbreviation).getCourses();
 
     for (Course course : courses) {
-      department.addCourse(course.getCourseId());
+      //department.addCourse(course.getCourseId());
     }
     return department;
   }

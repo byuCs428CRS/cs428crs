@@ -4,7 +4,6 @@ import exceptions.NotAuthorizedException;
 import models.Schedule;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.HttpGet;
 import org.json.JSONObject;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
@@ -17,10 +16,11 @@ import packages.Schedules;
 import service.PublicWebService;
 
 import javax.servlet.http.HttpSession;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -74,6 +74,18 @@ public class PublicWebController {
 		return webService.getRequirements(major);
 
 	}
+
+  @RequestMapping(value = "/courses/all", method = GET)
+  public @ResponseBody
+  Courses getAllCourses(
+      @RequestParam(value = "semester", required = false, defaultValue ="current") String semester)
+  {
+    if ("current".equals(semester)) {
+      return webService.getAllCourses();
+    } else {
+      return webService.getAllCourses(semester);
+    }
+  }
 
 	@RequestMapping(value = "/courses", method = GET)
 	public @ResponseBody

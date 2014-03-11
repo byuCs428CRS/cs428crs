@@ -14,7 +14,9 @@ public class Section {
   private String location;
   private List<Time> times;
   private int classSize;
-  private List<String> registeredStudents; //student Id's of registered students
+  private int seatsAvailable;
+  private int waitListCount;
+  //private List<String> registeredStudents; //student Id's of registered students
 
 
   public Section() {
@@ -34,7 +36,6 @@ public class Section {
     this.sectionId = sectionId;
     this.classSize = classSize;
     times = new ArrayList<>();
-    registeredStudents = new ArrayList<>();
   }
 
   public String getCourseId() {
@@ -77,11 +78,4 @@ public class Section {
     this.classSize = classSize;
   }
 
-  public List<String> getRegisteredStudents() {
-    return registeredStudents;
-  }
-
-  public void setRegisteredStudents(List<String> registeredStudents) {
-    this.registeredStudents = registeredStudents;
-  }
 }

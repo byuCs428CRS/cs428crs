@@ -13,10 +13,12 @@ public class Course implements Comparable<Course> {
   private String owningDepartment; //shortCode of owning department
   private String courseId;  //number of id does NOT include departments short code
   private String description;
+  private String byuId;
+  private String titleCode;
   private float credits;
   private List<Section> sections;
-  private List<String> fulfillments; //reqID's of Requirements it fulfills
-  private List<String> prereqs; //courseId's of courses needed as a prereq
+  //private List<String> fulfillments; //reqID's of Requirements it fulfills
+  //private List<String> prereqs; //courseId's of courses needed as a prereq
 
 
   public Course() {
@@ -27,8 +29,8 @@ public class Course implements Comparable<Course> {
     this.title = title;
     this.courseId = courseId;
     sections = new ArrayList<>();
-    fulfillments = new ArrayList<>();
-    prereqs = new ArrayList<>();
+    //fulfillments = new ArrayList<>();
+    //prereqs = new ArrayList<>();
   }
 
 
@@ -76,6 +78,22 @@ public class Course implements Comparable<Course> {
     this.description = description;
   }
 
+  public String getByuId() {
+    return byuId;
+  }
+
+  public void setByuId(String byuId) {
+    this.byuId = byuId;
+  }
+
+  public String getTitleCode() {
+    return titleCode;
+  }
+
+  public void setTitleCode(String titleCode) {
+    this.titleCode = titleCode;
+  }
+
   public List<Section> getSections() {
     return sections;
   }
@@ -84,21 +102,21 @@ public class Course implements Comparable<Course> {
     this.sections = sections;
   }
 
-  public List<String> getFulfillments() {
-    return fulfillments;
-  }
-
-  public void setFulfillments(List<String> fulfillments) {
-    this.fulfillments = fulfillments;
-  }
-
-  public List<String> getPrereqs() {
-    return prereqs;
-  }
-
-  public void setPrereqs(List<String> prereqs) {
-    this.prereqs = prereqs;
-  }
+//  public List<String> getFulfillments() {
+//    return fulfillments;
+//  }
+//
+//  public void setFulfillments(List<String> fulfillments) {
+//    this.fulfillments = fulfillments;
+//  }
+//
+//  public List<String> getPrereqs() {
+//    return prereqs;
+//  }
+//
+//  public void setPrereqs(List<String> prereqs) {
+//    this.prereqs = prereqs;
+//  }
 
   @Override
   public String toString(){

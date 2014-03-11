@@ -1,7 +1,5 @@
 package models;
 
-import java.util.List;
-
 /**
  * @autor: Nick Humrich
  * @date: 1/17/14
@@ -10,7 +8,7 @@ public class Department implements Comparable<Department> {
 
   private String title;
   private String shortCode;
-  private List<String> courses;
+  //private List<String> courses;
 
   public Department() {
 
@@ -37,17 +35,17 @@ public class Department implements Comparable<Department> {
     this.shortCode = shortCode;
   }
 
-  public List<String> getCourses() {
-    return courses;
-  }
+//  public List<String> getCourses() {
+//    return courses;
+//  }
+//
+//  public void setCourses(List<String> courses) {
+//    this.courses = courses;
+//  }
 
-  public void setCourses(List<String> courses) {
-    this.courses = courses;
-  }
-
-  public void addCourse(String courseId) {
-    courses.add(courseId);
-  }
+//  public void addCourse(String courseId) {
+//    courses.add(courseId);
+//  }
 
   @Override
   public int compareTo(Department o) {
