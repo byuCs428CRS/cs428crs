@@ -59,7 +59,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
 
         for(DBObject dbObject : courseCollection.find()){
 
-            System.out.println(dbObject.toString());
+            //System.out.println(dbObject.toString());
             Course c = new Course();
 
            /* TODO - These are the fields we need to set
@@ -75,10 +75,13 @@ public class DatabaseRegistrationStore implements RegistrationStore {
 
             //Set the fields here
             c.setTitle(             dbObject.get("courseName").toString());
-            c.setOwningDepartment(  dbObject.get("department").toString());
-            c.setCourseId(          dbObject.get("courseID").toString());
+            c.setOwningDepartment(dbObject.get("department").toString());
+            c.setCourseId(dbObject.get("courseNumber").toString());
+            c.setTitleCode(dbObject.get("newTitleCode").toString());
+            c.setByuId(             dbObject.get("courseID").toString());
             c.setDescription(       "NONE"); //TODO - Parse a file with Descriptions
-            //TODO - write a getSection() method, then store them here
+          
+            //write a getSection() method, then store them here
 
 
             courseList.add(c);
