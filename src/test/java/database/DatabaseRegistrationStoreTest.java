@@ -1,6 +1,7 @@
 package database;
 
 import models.Course;
+import models.Section;
 import org.junit.Test;
 
 import java.util.List;
@@ -30,6 +31,10 @@ public class DatabaseRegistrationStoreTest {
         List<Course> courses = data.getAllCourses();
         for(Course c : courses){
             System.out.println(c.toString());
+            List<Section> sections = c.getSections();
+            for(Section s : sections){
+                System.out.println("\t\t"+s.toString());
+            }
         }
 
     }
@@ -49,7 +54,6 @@ public class DatabaseRegistrationStoreTest {
     public void testGetCoursesForDepartment() throws Exception {
 
     }
-
 
 
     public void testAddSchedule() throws Exception {

@@ -1,6 +1,6 @@
 package parser;
 
-import com.mongodb.DBObject;
+import java.util.List;
 
 public class Course {
 
@@ -10,23 +10,39 @@ public class Course {
 	public String department;
 	public String registrationType;
 	public String courseNumber;
+    public List<Section> sections;
 
-    public Course(DBObject dbObject){
-        this.courseID = dbObject.get("courseID").toString();
-        this.courseName = dbObject.get("courseName").toString();
-        this.newTitleCode = dbObject.get("newTitleCode").toString();
-        this.department = dbObject.get("department").toString();
-        this.registrationType = dbObject.get("registrationType").toString();
-        this.courseNumber = dbObject.get("courseNumber").toString();
+    public Course(String courseID, String courseName, String newTitleCode, String department, String registrationType, String courseNumber) {
+
+        this.courseID = courseID;
+        this.courseName = courseName;
+        this.newTitleCode = newTitleCode;
+        this.department = department;
+        this.registrationType = registrationType;
+        this.courseNumber = courseNumber;
     }
-	
-	public Course(String courseID, String courseName, String newTitleCode, String department, String registrationType, String courseNumber) {
-		
-		this.courseID = courseID;
-		this.courseName = courseName;
-		this.newTitleCode = newTitleCode;
-		this.department = department;
-		this.registrationType = registrationType;
-		this.courseNumber = courseNumber;
-	}
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+
+
+    /*
+      private String title;
+
+
+  private String description;
+  private String byuId;
+
+  private float credits;
+  private List<Section> sections;
+     */
+
+
+
 }

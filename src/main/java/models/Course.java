@@ -1,164 +1,91 @@
 package models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @autor: Nick Humrich
- * @date: 1/17/14
+ * Created with IntelliJ IDEA.
+ * User: Keith
+ * Date: 3/14/14
+ * Time: 3:07 PM
+ * To change this template use File | Settings | File Templates.
  */
-public class Course implements Comparable<Course> {
 
-  private String title;
-  private String owningDepartment; //shortCode of owning department
-  private String courseId;  //number of id does NOT include departments short code
-  private String description;
-  private String byuId;
-  private String titleCode;
-  private float credits;
-  private List<Section> sections;
-  //private List<String> fulfillments; //reqID's of Requirements it fulfills
-  //private List<String> prereqs; //courseId's of courses needed as a prereq
+public class Course {
+    private String courseID;
+    private String courseName;
+    private String newTitleCode;
+    private String department;
+    private String registrationType;
+    private String courseNumber;
+    private List<Section> sections;
 
+    public Course() {
 
-  public Course() {
-
-  }
-
-  public Course(String title, String courseId) {
-    this.title = title;
-    this.courseId = courseId;
-    sections = new ArrayList<>();
-    //fulfillments = new ArrayList<>();
-    //prereqs = new ArrayList<>();
-  }
-
-
-
-    public String getFullId() {
-    return owningDepartment + " " + courseId;
-  }
-  public float getCredits() {
-    return credits;
-  }
-
-  public void setCredits(float credits) {
-    this.credits = credits;
-  }
-
-  public String getOwningDepartment() {
-    return owningDepartment;
-  }
-
-  public void setOwningDepartment(String owningDepartment) {
-    this.owningDepartment = owningDepartment;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getCourseId() {
-    return courseId;
-  }
-
-  public void setCourseId(String courseId) {
-    this.courseId = courseId;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getByuId() {
-    return byuId;
-  }
-
-  public void setByuId(String byuId) {
-    this.byuId = byuId;
-  }
-
-  public String getTitleCode() {
-    return titleCode;
-  }
-
-  public void setTitleCode(String titleCode) {
-    this.titleCode = titleCode;
-  }
-
-  public List<Section> getSections() {
-    return sections;
-  }
-
-  public void setSections(List<Section> sections) {
-    this.sections = sections;
-  }
-
-//  public List<String> getFulfillments() {
-//    return fulfillments;
-//  }
-//
-//  public void setFulfillments(List<String> fulfillments) {
-//    this.fulfillments = fulfillments;
-//  }
-//
-//  public List<String> getPrereqs() {
-//    return prereqs;
-//  }
-//
-//  public void setPrereqs(List<String> prereqs) {
-//    this.prereqs = prereqs;
-//  }
-
-  @Override
-  public String toString(){
-
-    /*
-      private String title;
-  private String owningDepartment; //shortCode of owning department
-  private String courseId;  //number of id does NOT include departments short code
-  private String description;
-  private float credits;
-  private List<Section> sections;
-  private List<String> fulfillments; //reqID's of Requirements it fulfills
-  private List<String> prereqs; //courseId's of courses needed as a prereq
-     */
-    String s =  "Id: " + courseId + "\tCredits: " + credits +"\tDept: " + owningDepartment + "\t\tDescription: " + description + "\t\tTitle: " + title;
-
-/*
-      s += "\nSections:\t";
-      for(Section sec : sections){
-          s += " " + sec.toString();
-      }
-      s += "\nFulfillments:\t";
-      for(String str : fulfillments){
-          s += " " + str;
-      }
-      s += "\nPrereqs:\t";
-      for(String str : prereqs){
-          s += " " + str;
-      }
-*/
-
-
-    return s;
-  }
-
-  @Override
-  public int compareTo(Course o) {
-    if (this != null && o != null) {
-      if (courseId != null && o.courseId != null) {
-        return courseId.compareTo(o.courseId);
-      }
     }
-    return 0;
-  }
+
+    public String toString(){
+
+        String output =  "Course: " + courseID + " \t " + courseName + " \t " + newTitleCode + " \t " + department + " \t " + registrationType + " \t " + courseNumber;
+        for(Section s : sections){
+            output += "\n\t" + sections.toString();
+        }
+        return output;
+
+    }
+    public void setCourseID(String courseID) {
+        this.courseID = courseID;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public void setNewTitleCode(String newTitleCode) {
+        this.newTitleCode = newTitleCode;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public void setRegistrationType(String registrationType) {
+        this.registrationType = registrationType;
+    }
+
+    public void setCourseNumber(String courseNumber) {
+        this.courseNumber = courseNumber;
+    }
+
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+
+    public String getCourseID() {
+        return courseID;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public String getNewTitleCode() {
+        return newTitleCode;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public String getRegistrationType() {
+        return registrationType;
+    }
+
+    public String getCourseNumber() {
+        return courseNumber;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 }

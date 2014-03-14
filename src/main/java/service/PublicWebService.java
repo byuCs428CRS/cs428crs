@@ -171,8 +171,8 @@ public class PublicWebService {
 
       //add classes
       List<String> courseList = new ArrayList<>();
-      courseList.add(createMockCourse("ahtg", "100").getFullId());
-      courseList.add(createMockCourse("honrs", "240").getFullId());
+//      courseList.add(createMockCourse("ahtg", "100").getFullId());
+//      courseList.add(createMockCourse("honrs", "240").getFullId());
       am11.setCourses(courseList);
 
       //add sub requirements
@@ -226,39 +226,41 @@ public class PublicWebService {
 
   public Course createMockCourse(String majorAbbrev, String num) {
     String courseId = majorAbbrev + num;
-    Course course = new Course("TestCourse " + courseId, num);
-    course.setOwningDepartment(majorAbbrev);
-    course.setCredits(3.0f);
-    course.setDescription("Test Course " + num + " for " + majorAbbrev);
+//    Course course = new Course("TestCourse " + courseId, num);
+//    course.setDepartment(majorAbbrev);
+ //   course.setCredits(3.0f);
+ //   course.setDescription("Test Course " + num + " for " + majorAbbrev);
 
-    course.setSections(createMockSections(courseId).getSections());
-    return course;
+ //   course.setSections(createMockSections(courseId).getSections());
+//    return course;
+      return null;
   }
 
-  public Sections createMockSections(String courseId) {
+ /* public Sections createMockSections(String courseId) {
     Sections sections = new Sections();
 
     //section 1
     Section section1 = new Section(courseId, "1", 30);
     section1.setProfessor("Dr. Apple");
-    List<Time> times1 = new ArrayList<>();
-    times1.add(new Time(Day.TUESDAY, "2:00", "3:15"));
-    times1.add(new Time(Day.THURSDAY, "2:00", "3:15"));
-    section1.setTimes(times1);
-    section1.setLocation("RB 324");
+//    List<Time> times1 = new ArrayList<>();
+//    times1.add(new Time(Day.TUESDAY, "2:00", "3:15"));
+//    times1.add(new Time(Day.THURSDAY, "2:00", "3:15"));
+//    section1.setTimes(times1);
+ //   section1.setLocation("RB 324");
 
     //section 2
     Section section2 = new Section(courseId, "2", 23);
     section2.setProfessor("Dr. Pear");
-    List<Time> times2 = new ArrayList<>();
-    times2.add(new Time(Day.MONDAY, "11:00", "11:50"));
-    times2.add(new Time(Day.WEDNESDAY, "11:00", "11:50"));
-    times2.add(new Time(Day.FRIDAY, "11:00", "11:50"));
-    section2.setLocation("TMCB 1143");
+//    List<Time> times2 = new ArrayList<>();
+//    times2.add(new Time(Day.MONDAY, "11:00", "11:50"));
+  //  times2.add(new Time(Day.WEDNESDAY, "11:00", "11:50"));
+ //   times2.add(new Time(Day.FRIDAY, "11:00", "11:50"));
+ //   section2.setLocation("TMCB 1143");
 
     sections.addSection(section1);
     sections.addSection(section2);
 
     return sections;
   }
+  */
 }

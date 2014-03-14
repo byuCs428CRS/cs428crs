@@ -1,9 +1,9 @@
 package parser;
 
+import com.mongodb.BasicDBObject;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.mongodb.BasicDBObject;
 
 public class Section {
 
@@ -13,7 +13,7 @@ public class Section {
 	public String registrationType;
 	public String courseNumber;
 	
-	public String sectionNumber;
+	public String sectionID;
 	public String sectionType;
 	public String courseName;
 	public String professor;
@@ -27,7 +27,7 @@ public class Section {
 	
 	public List<String> notes;
 	public String seatsAvailable;
-	public String classSize;
+	public String totalSeats;
 	public String waitList;
 	
 	/**
@@ -59,7 +59,7 @@ public class Section {
 						System.out.println("BEFORE SEC NUMBER: " + element);*/
 					break;
 					
-			case 6: sectionNumber = element;
+			case 6: sectionID = element;
 					break;
 					
 			case 7: /*if (element.length() > 0)
@@ -96,7 +96,7 @@ public class Section {
 					 break;
 			
 			case 17: seatsAvailable = element.substring(0, element.indexOf("/") - 1);
-					 classSize = element.substring(element.indexOf("/") + 2);
+					 totalSeats = element.substring(element.indexOf("/") + 2);
 					 break;
 					 
 			case 18: waitList = element;
@@ -161,7 +161,7 @@ public class Section {
 		System.out.println("department:\t" + department);
 		System.out.println("registrationType:\t" + registrationType);
 		System.out.println("courseNumber:\t" + courseNumber);
-		System.out.println("sectionNumber:\t" + sectionNumber);
+		System.out.println("sectionID:\t" + sectionID);
 		System.out.println("sectionType:\t" + sectionType);
 		System.out.println("courseName:\t" + courseName);
 		System.out.println("professor:\t" + professor);
@@ -175,7 +175,7 @@ public class Section {
 		for (int i = 0; i < notes.size(); i++)
 			System.out.println("\t" + (i+1) + "- " + notes.get(i));
 		
-		System.out.println("Seats available: " + seatsAvailable + " (out of " + classSize + ")");
+		System.out.println("Seats available: " + seatsAvailable + " (out of " + totalSeats + ")");
 		System.out.println("waitList: " + waitList);
 		System.out.println();
 	}
@@ -188,13 +188,13 @@ public class Section {
 		
 		BasicDBObject sectionObject = new BasicDBObject();
 		
-		sectionObject.put("sectionID", sectionNumber);
+		sectionObject.put("sectionID", sectionID);
 		sectionObject.put("type", sectionType);
 		sectionObject.put("courseName", courseName);
 		sectionObject.put("professor", professor);
 		sectionObject.put("creditHours", creditHours);
 		sectionObject.put("seatsAvailable", seatsAvailable);
-		sectionObject.put("seatsTotal", classSize);
+		sectionObject.put("totalSeats", totalSeats);
 		sectionObject.put("waitList", waitList);
 		
 		// Add the Notes by creating a List of DB Objects (one object for each note)
@@ -213,7 +213,7 @@ public class Section {
 			
 			timeplaces.add(timePlaces.get(i).getDBObject());
 		}
-		sectionObject.put("timeplaces", timeplaces);
+		sectionObject.put("timePlaces", timeplaces);
 		
 		return sectionObject;
 	}
