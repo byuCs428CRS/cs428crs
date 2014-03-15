@@ -1,0 +1,11 @@
+body {
+    background-color: white;
+}
+
+td {
+    padding: 10px;
+}
+
+input {
+    border: 1px solid #3c3c3c; width: 302px;
+}

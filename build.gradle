@@ -5,7 +5,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.M6")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.BUILD-SNAPSHOT")
         classpath("org.mongodb:mongo-java-driver:2.11.3")
         classpath("org.seleniumhq.selenium:selenium-java:2.37.1")
         classpath("com.google.guava:guava:16.0.1")
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:0.5.0.M6")
+    compile("org.springframework.boot:spring-boot-starter-web:1.0.0.BUILD-SNAPSHOT")
     compile("com.fasterxml.jackson.core:jackson-databind")
     compile("org.mongodb:mongo-java-driver:2.11.3")
     compile("org.seleniumhq.selenium:selenium-java:2.37.1")
@@ -52,15 +52,3 @@ run {
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
 }
-
-task buildFrontEnd(type: Copy) {
-    from('../crs-frontend/app')
-    into('build/resources/main/public')
-}
-
-task cleanFrontEnd(type: Delete) {
-    delete 'build/resources/main/public'
-}
-
-build.dependsOn buildFrontEnd
-buildFrontEnd.dependsOn cleanFrontEnd
