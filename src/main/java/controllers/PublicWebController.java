@@ -164,7 +164,6 @@ public class PublicWebController {
 			  }
 		  }
 		  rd.close();
-		  System.out.println("challenge =\n" + challenge);
 		  JSONObject jsonObject = new JSONObject();
 		  jsonObject.put("challenge", challenge);
 		  jsonObject.put("image", getRecaptchaImage(challenge));
