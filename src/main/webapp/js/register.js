@@ -1,6 +1,8 @@
 var recaptchaChallenge;
+var classes;
 
 function detectIfRecaptchaIsNecessary() {
+    classes = JSON.parse(Cookies.get('classes'));
     if( Cookies.get('recaptchaChallenge') === undefined || Cookies.get('recaptchaAnswer') === undefined ) {
         $.get('/public-api/recaptcha', function(data) {
             var response = JSON.parse(data);
@@ -29,7 +31,7 @@ function detectIfRecaptchaIsNecessary() {
         });
         $("#recaptcha").html('<div style="width:288px;height:45px;text-align: center;vertical-align: middle"><img src="http://jimpunk.net/Loading/wp-content/uploads/loading81.gif" width="25" height="25"></div>')
     } else {
-        register(false)
+        registerAll(false)
     }
 
 }
@@ -37,43 +39,67 @@ function detectIfRecaptchaIsNecessary() {
 function saveRecaptchaAndRegister() {
     Cookies.set('recaptchaChallenge', recaptchaChallenge)
     Cookies.set('recaptchaAnswer', document.getElementById('recaptchaAnswer').value, {expires: 1800})
-    register(true);
+    registerAll(true);
 }
 
-function register(useRecaptcha) {
-    var classes = JSON.parse(Cookies.get('classes'));
+function registerAll(useRecaptcha) {
+    $("#recaptcha").hide()
+    $("#registration-submission").hide()
+    $("#header-text").html('Step 3/3 : Check that all of your classes were added')
+    $("#instruction-text").html("Check to see that all of your classes were registered. If something went wrong, click on the retry" +
+        " button.")
+    var classesHTML = ''
+    for( var i=0; i<classes.length; i++ ) {
+        var invisibleForm =
+            '<form name="registration-form-'+i+'" method="post" id="registration-form-'+i+'" target="registration-iframe-'+i+'"' +
+                'action = "https://gamma.byu.edu/ry/ae/prod/registration/cgi/regOfferings.cgi" >' +
+                '<input id="c" name="c" type="hidden">' +
+                '<input id="e" name="e" type="hidden">' +
+                '<input id="brownie" name="brownie" type="hidden">' +
+            '</form>'
+        var iframe = '<iframe width="495" height="54" id="registration-iframe-'+i+'" scrolling="no" sandbox=""></iframe>'
+        classesHTML += '<div class="center">'+classes[i].shortCode+' - '+classes[i].title+'</div>'+invisibleForm+iframe+'<br>'
+    }
+    $("#registration-result").html(classesHTML)
 
     for( var i=0; i<classes.length; i++ ) {
-        var brownie = ''
-        var klass = classes[i];
-
-        brownie += 'new_year_term='+getTerm()
-        brownie += '&curr_id='+klass.courseId
-        brownie += '&new_title_code='+klass.titleCode
-        brownie += '&page_sequence='+'1016452204'
-        brownie += '&curr_credit='+klass.credits
-        brownie += '&section_type='+klass.sectionType
-        brownie += '&section_num='+klass.sectionId
-        if( useRecaptcha ) {
-            brownie += '&captcha_challenge='+Cookies.get('recaptchaChallenge')
-            brownie += '&captcha_value='+Cookies.get('recaptchaAnswer')
-        }
-
-        document.getElementById('c').value = Cookies.get('c')
-        document.getElementById('e').value = klass.e
-        document.getElementById('brownie').value = brownie
-        console.log("c = "+document.getElementById('c').value)
-        console.log("e = "+document.getElementById('e').value)
-        console.log("brownie = "+document.getElementById('brownie').value)
-
-        document.getElementById('registration-form').submit()
+        var iframe = document.getElementById("registration-iframe-"+i)
+        register(useRecaptcha, classes[i], document.getElementById("registration-form-"+i))
     }
 
+}
+
+function register(useRecaptcha, klass, formToSubmit) {
+
+    var brownie = ''
+
+    brownie += 'new_year_term=' + getTerm()
+    brownie += '&curr_id=' + klass.courseId
+    brownie += '&new_title_code=' + klass.titleCode
+    brownie += '&page_sequence=' + '1016452204'
+    brownie += '&curr_credit=' + klass.credits
+    brownie += '&section_type=' + klass.sectionType
+    brownie += '&section_num=' + klass.sectionId
+    if (useRecaptcha) {
+        brownie += '&captcha_challenge=' + Cookies.get('recaptchaChallenge')
+        brownie += '&captcha_value=' + Cookies.get('recaptchaAnswer')
+    }
+
+    formToSubmit.c.value = Cookies.get('c')
+    formToSubmit.e.value = klass.e
+    formToSubmit.brownie.value = brownie
+//    console.log("c = " + document.getElementById('c').value)
+//    console.log("e = " + document.getElementById('e').value)
+//    console.log("brownie = " + document.getElementById('brownie').value)
+
+    formToSubmit.submit()
+}
+
+function registrationComplete() {
     //expire all cookies except the recaptcha response
     Cookies.set('classes', 'this should expire', {expires: -1})
     Cookies.set('c', 'this should expire', {expires: -1})
     Cookies.set('e', 'this shoudl expire', {expires: -1})
-    window.resizeTo(0, 0)
 }
 
 function getTerm() {
