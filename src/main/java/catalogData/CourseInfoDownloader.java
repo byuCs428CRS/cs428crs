@@ -18,7 +18,7 @@ import java.util.List;
  * Time: 8:58 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CourseRequests {
+public class CourseInfoDownloader {
 
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 
@@ -34,7 +34,7 @@ public class CourseRequests {
         for(Course c : courses){
             for(Section s : c.getSections())  {
 
-                httpRequest.getCourseData(writer, s, c);
+                httpCourseDownloader.getCourseData(writer, s, c);
 
             }
 
@@ -42,7 +42,7 @@ public class CourseRequests {
 
 
         writer.close();
-        httpRequest.removeHtml(fileName);
+        httpCourseDownloader.removeHtml(fileName);
 
 
 
