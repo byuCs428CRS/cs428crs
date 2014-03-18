@@ -1,6 +1,7 @@
 package database;
 
 import models.Course;
+import models.Department;
 import models.Section;
 import org.junit.Test;
 
@@ -23,36 +24,49 @@ public class DatabaseRegistrationStoreTest {
 
     @Test
     public void testGetAllDepartments() throws Exception {
-       // data.getAllDepartments();
+        List<Department> departments = data.getAllDepartments();
+        for (Department dept : departments) {
+            System.out.println(dept.toString());
+        }
     }
 
     @Test
     public void testGetAllCourses() throws Exception {
         List<Course> courses = data.getAllCourses();
-        for(Course c : courses){
+        for (Course c : courses) {
             System.out.println(c.toString());
             List<Section> sections = c.getSections();
-            for(Section s : sections){
-                System.out.println("\t\t"+s.toString());
+            for (Section s : sections) {
+                System.out.println("\t\t" + s.toString());
             }
         }
-
     }
 
+    @Test
     public void testAddDepartment() throws Exception {
 
     }
 
+    @Test
     public void testGetRequirementsForMajor() throws Exception {
 
     }
 
+    @Test
     public void testGetCourse() throws Exception {
-
+        String[] courseIds = {"06527", "11784"};
+        for (String id : courseIds) {
+            Course course = data.getCourse(id);
+            System.out.println(course.toString());
+        }
     }
 
+    @Test
     public void testGetCoursesForDepartment() throws Exception {
-
+        String[] deptartments = {"C S", "HIST", "MMBIO"};
+        for (String id : deptartments) {
+            System.out.println(data.getCoursesForDepartment(id));
+        }
     }
 
 
