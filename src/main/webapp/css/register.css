@@ -9,3 +9,12 @@ td {
 input {
     border: 1px solid #3c3c3c; width: 302px;
 }
+
+iframe {
+    background-color: white;
+    border: 1px solid black;
+}
+
+.center {
+    text-align: center;
+}

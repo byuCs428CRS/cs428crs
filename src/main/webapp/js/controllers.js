@@ -235,6 +235,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 plannedCourse.titleCode = course.titleCode;
                 plannedCourse.credits = course.credits;
                 plannedCourse.sectionType = section.sectionType;
+                plannedCourse.title = course.title
                 $scope.plannedCourses.push(plannedCourse);
             }
 
@@ -363,6 +364,10 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 klass.credits = $scope.plannedCourses[i].credits;
                 klass.sectionType = $scope.plannedCourses[i].sectionType;
                 klass.sectionId = $scope.plannedCourses[i].sectionId;
+                klass.attempts = 0
+                klass.status = "unattempted"
+                klass.shortCode = $scope.plannedCourses[i].dept.shortCode + ' ' + $scope.plannedCourses[i].courseId
+                klass.title = $scope.plannedCourses[i].title
                 classes.push(klass)
             }
             $cookies.classes = JSON.stringify(classes)
