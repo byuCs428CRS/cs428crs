@@ -40,6 +40,13 @@ public class PublicWebController {
 		webService = new PublicWebService();
 	}
 
+  @RequestMapping(value = "/health", method = GET)
+  @ResponseStatus(value = HttpStatus.OK)
+  public void healthCheck()
+  {
+    //do nothing. Just here for load balancer health checks.
+  }
+
 	/**
 	 * Gets all departments that exist in the systen
 	 * @param dummy a boolean stating if you want dummy data

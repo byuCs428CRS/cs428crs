@@ -71,4 +71,11 @@ public class AuthenticationWebController {
 		session.removeAttribute("pepper");
 	}
 
+  @RequestMapping(value = "/logout", method = GET)
+  @ResponseStatus(value = HttpStatus.OK)
+  public void logout(HttpSession session)
+  {
+    session.invalidate();
+  }
+
 }

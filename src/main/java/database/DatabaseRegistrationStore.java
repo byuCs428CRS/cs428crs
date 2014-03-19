@@ -19,6 +19,8 @@ public class DatabaseRegistrationStore implements RegistrationStore {
     private static RegistrationStore root = new DatabaseRegistrationStore();
     private static DB db;
     private final String COURSE_COLLECTION = "course";
+    private final String USER_COLLECTION = "user";
+    private final String SCHEDULE_COLLECTION = "schedule";
 
     public static RegistrationStore getInstance() {
         return root;
@@ -78,6 +80,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
     public void addDepartment(Department department) {
         BasicDBObject departmentObject = new BasicDBObject("title", department.getTitle())
                 .append("short_code", department.getShortCode());
+
     }
 
     //@Override
@@ -150,6 +153,8 @@ public class DatabaseRegistrationStore implements RegistrationStore {
     //@Override
     public int addUser(UserCredentials user) throws AccountAlreadyExistsException {
         int successValue = 0;
+        DBCollection userCollection = db.getCollection(USER_COLLECTION);
+       BasicDBObject userObject = buildUserCredentialObject(user);
         return successValue;
     }
 
@@ -202,24 +207,33 @@ public class DatabaseRegistrationStore implements RegistrationStore {
             //SET THE TIME_PLACE LIST
             BasicDBList timePlaces = (BasicDBList) dbSection.get("timePlaces");
             List<TimePlace> timePlaceList = new ArrayList<TimePlace>();
-
             for (Object dboTimePlace : timePlaces) {
                 BasicDBObject dbTimePlace = (BasicDBObject) dboTimePlace;
-                TimePlace tp = new TimePlace();
-                tp.setDay(dbTimePlace.get("day").toString());
-                tp.setEndTime(dbTimePlace.get("endTime").toString());
-                tp.setLocation(dbTimePlace.get("location").toString());
-                tp.setStartTime(dbTimePlace.get("startTime").toString());
-
-                timePlaceList.add(tp);
+                timePlaceList.add(buildTimePlaceObject(dbTimePlace));
             }
             s.setTimePlaces(timePlaceList);
-
             sectionList.add(s);
         }
 
         //add sections to course
         course.setSections(sectionList);
         return course;
+    }
+
+    private TimePlace buildTimePlaceObject(DBObject dbTimePlace){
+        TimePlace tp = new TimePlace();
+        tp.setDay(dbTimePlace.get("day").toString());
+        tp.setEndTime(dbTimePlace.get("endTime").toString());
+        tp.setLocation(dbTimePlace.get("location").toString());
+        tp.setStartTime(dbTimePlace.get("startTime").toString());
+        return tp;
+    }
+
+    private BasicDBObject buildUserCredentialObject(UserCredentials user){
+        BasicDBObject userObject = new BasicDBObject();
+        userObject.append("username",user.getUsername());
+        userObject.append("password",user.getPass());
+        userObject.append("salt",user.getSalt());
+        return userObject;
     }
 }
