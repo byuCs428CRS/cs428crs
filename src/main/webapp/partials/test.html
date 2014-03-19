@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" href="favicon.ico" >
+    <link rel="icon" href="animated_favicon.gif" type="image/gif" >
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Leah's Portfolio</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+    <!-- Add custom CSS here -->
+    <style>
+        .img-topspace {
+            margin-top: 20px;
+        }
+        img {
+            max-width:100%;
+        }
+        .container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .well {
+            border: none;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="container">
+
+    <div class="row well">
+        <div class="col-md-3">
+
+            <img src="http://gravatar.com/avatar/fbf70208a8c63e02f7294de0d0c2834f/?s=300">
+        </div>
+
+        <div class="col-md-9">
+            <h1>Hi, I'm Leah.</h1>
+            <h1><small>Computer science student, programmer, front-end web dev extraordinaire.</small></h1>
+            <br><br>
+            <a class="btn btn-primary" href="http://www.linkedin.com/in/leahloughran">LinkedIn &raquo;</a>
+            <a class="btn btn-primary" href="http://github.com/leleah">GitHub &raquo;</a>
+            <a class="btn btn-primary" href="http://twitter.com/leahloxy">Twitter &raquo;</a>
+            <a class="btn btn-primary" href="http://instagram.com/leahloxy">Instagram &raquo;</a>
+            <a class="btn btn-primary" href="http://palefern.tumblr.com">Photoblog &raquo;</a>
+            <br><br>
+        </div>
+
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">Projects</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <img class="img-topspace" src="img/crs.jpg">
+        </div>
+        <div class="col-md-6">
+            <h3>Course Planning Tool front-end</h3>
+            <p>A tool for BYU students to plan their courses. The BYU course catalog requires many page loads and popup windows, so we set out to create something that would help students enjoy their planning and registration experience a bit more. We created a beautiful, fast, fluid catalog with intuitive sorting and filtering to allow students to plan their courses. Then, they can register for all their planned courses at once with just a single click.</p>
+            <p>This project is still in progress & is not yet live. I built the frontend in angularjs and I am now officially sold on its magical qualities. A first-draft mockup may (or may not) be live <a href="http://andyetitcompiles.com">here</a>.</p>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <img class="img-topspace" src="img/groupjuke.jpg">
+        </div>
+        <div class="col-md-6">
+            <h3><a href="http://group-juke.herokuapp.com" target="_blank">GroupJuke</a></h3>
+            <p>A music streaming service that lets the crowd participate in the music selection.</p>
+            <p>People can text in their song choices to the given phone number, and the music player will queue the songs with the most votes. It uses <a href="http://twilio.com">Twilio</a> and <a href="http://pusher.com">Pusher</a> to do some nifty things with SMS and web sockets.</p>
+            <p>It's more of a proof of concept than anything, but it was really fun to put together my first week at Twilio.</p>
+            <p>Note: For copyright reasons, audio files (which were hosted on a public AWS S3 bucket) are not live anymore. But real-time SMS voting is still up and running! See the site in action <a href="http://group-juke.herokuapp.com" target="_blank">here</a> & view the code <a href="https://github.com/leleah/group-juke" target="_blank">here</a>.</p>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-6">
+            <img class="img-topspace" src="img/roommatch.jpg">
+        </div>
+        <div class="col-md-6">
+            <h3>RoomMatch</h3>
+            <p>A service for students in the Utah Valley area (BYU and UVU) to find housing in Provo and Orem. Built using <a href="https://github.com/cakephp/cakephp" target="_blank">CakePHP</a> MVC framework.</p>
+            <p>Students can browse listings and create a Student account to save listings and listers to their favorites.</p>
+            <p>Renters looking for tenants can create a Lister account to create and manage their listings.</p>
+            <p>This site was created for educational purposes and was never used on a large-scale, and is no longer live.</p>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-6">
+            <img class="img-topspace" src="img/homeinventorytracker.jpg">
+        </div>
+        <div class="col-md-6">
+            <h3>Home Inventory Tracker</h3>
+            <p>A desktop application written in Java to keep track of your household inventory.</p>
+            <p>Add your fridges, pantries, and cupboards to the system to organize your items and keep track of their lifecycle as they are acquired and consumed. You can even use a barcode scanner to enter your items, & product info will be instantly identified using accurate & constantly-growing online shopping APIs.</p>
+            <p>The application will also generate informative reports monitoring your consumption of different products, which items are expired, which products need to be resupplied based on your past usage, and other usage statistics throughout your history.</p>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-6">
+            <img class="img-topspace" src="img/recordindex.jpg">
+        </div>
+        <div class="col-md-6">
+            <h3>Record Indexing Server/Client</h3>
+            <p>A replica of <a href="https://familysearch.org/">FamilySearch</a>'s record indexing application (both server & client) written in Java, which allows historical documents, such as census records, to be digitized by crowdsourcing the work.</p>
+            <p>The server maintains a collection of scanned documents and useful metadata. You can use the desktop application to download a batch of these documents, type them up, and submit the digitized information back to the server.</p>
+            <p>The desktop application provides useful tools, like spelling suggestions for towns, countries, and common last names of the time period and area.</p>
+            <p>Once you finish typing and submit your batch, the server adds to its searchable records, making it easier every day for people to find information about their ancestors.</p>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<!-- JavaScript -->
+<script src="js/jquery-1.10.2.js"></script>
+<script src="js/bootstrap.js"></script>
+
+
+</body>
+
+</html>

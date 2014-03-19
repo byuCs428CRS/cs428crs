@@ -1,0 +1,112 @@
+body {
+    padding-top: 50px;
+    font-size: 12px !important;
+}
+
+.header {
+    width: 100%;
+    background: url(../img/BYU.jpg) no-repeat;
+    color: white;
+    text-shadow: #000 0 0 10px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.header .btn {
+    text-shadow: none;
+}
+
+.img-border {
+    box-shadow: #222222 0 0 20px;
+    display: none !important;
+}
+
+.nav-span {
+    line-height: 20px;
+    color: white;
+    position: relative;
+    display: block;
+    padding-top: 15px;
+    padding-bottom: 15px
+}
+
+h2 {
+    font-weight: 200 !important;
+}
+
+.alert {
+    font-size: 16px !important;
+}
+
+.plan-container {
+    width: 95% !important;
+}
+
+.main-content {
+    padding: 40px 15px;
+}
+
+.sortable-header {
+    cursor: pointer;
+    background-color: rgb(230, 230, 230);
+}
+
+.sorted-asc {
+    background-image: url('../img/icon_up_sort_arrow.png');
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+.sorted-desc {
+    background-image: url('../img/icon_down_sort_arrow.png');
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+
+.selectable-tbody:hover .selectable-td {
+    background-color: rgb(238, 238, 238);
+    cursor: pointer;
+    cursor: hand;
+}
+
+.selectable-special:hover .selectable-td {
+    background-color: #E0F3D1;
+}
+
+.selected-tbody .selectable-td {
+    background-color: rgb(238, 238, 238) !important;
+}
+
+#course-table-container {
+    height: 75vh;
+    overflow: scroll;
+}
+
+#coursesTable td {
+    white-space: nowrap;
+}
+
+#coursesTable table {
+    margin-bottom: 0;
+}
+
+.center {
+    text-align: center;
+}
+
+#courseLevelFilter {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#registration-iframe {
+    /*position: absolute;*/
+    /*margin-left: -255px;*/
+    /*top: 100px;*/
+    /*left: 50%;*/
+    /*z-index: 2147483647;*/
+    background-color: white;
+}
