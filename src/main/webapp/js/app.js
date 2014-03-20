@@ -6,7 +6,9 @@ var classregApp = angular.module('classregApp', [
   'classregControllers',
   'ngCookies',
   'ui.calendar'
-]);
+]).run(function($rootScope) {
+    $rootScope.$rootScope = $rootScope;
+});
 
 classregApp.config(['$routeProvider',
   function($routeProvider) {

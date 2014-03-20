@@ -23,6 +23,15 @@ body {
     display: none !important;
 }
 
+.nav-span {
+    line-height: 20px;
+    color: white;
+    position: relative;
+    display: block;
+    padding-top: 15px;
+    padding-bottom: 15px
+}
+
 h2 {
     font-weight: 200 !important;
 }
@@ -100,4 +109,9 @@ h2 {
     /*left: 50%;*/
     /*z-index: 2147483647;*/
     background-color: white;
+}
+
+.fc-event {
+    cursor: pointer !important;
+    cursor: hand !important;
 }

@@ -1,25 +1,4 @@
-
 <div class="container plan-container main-content">
-
-    <div class="row" style="margin-bottom:5px;">
-        <div class="col-md-12">
-            <div class="pull-right">
-
-                <button ng-show="!loggedIn" class="btn btn-xs btn-default" data-target="#loginModal" data-toggle="modal">
-                    <span class="glyphicon glyphicon-user"></span> Sign in
-                </button>
-                <span ng-show="loggedIn"><span class="glyphicon glyphicon-user"></span> Welcome, {{username}}!&nbsp;&nbsp;&nbsp;</span>
-
-                <button ng-show="loggedIn" class="btn btn-xs btn-default" ng-click="signOutUser()">
-                    Sign out
-                </button>
-                &nbsp;&nbsp;&nbsp;
-                <button class="btn btn-xs btn-default" data-target="#aboutUsModal" data-toggle="modal">
-                    <span class="glyphicon glyphicon-question-sign"></span> What's this?
-                </button>
-            </div>
-        </div>
-    </div>
 
     <div class="row">
         <div class="col-md-3">
@@ -27,8 +6,15 @@
                 <form class="form-inline" role="form">
                     <div class="col-md-4">
                         <select id="filterByDepartment" class="form-control" ng-model="filteredDept" ng-change="filterOptions.searchQuery = ''">
-                            <option value="">All</option>
-                            <option ng-repeat="dept in departments | orderBy:'shortCode'" value="{{dept.shortCode}}">{{dept.shortCode}}</option>
+                            <option value="">Filter by:</option>
+                            <option value="">Department</option>
+                            <option value="">Course name</option>
+                            <option value="">Description</option>
+                            <option value="">Search all</option>
+                            <option disabled="true" value="">Credit hours</option>
+                            <option disabled="true" value="">Instructor</option>
+                            <option disabled="true" value="">Course level</option>
+                            <!--<option ng-repeat="dept in departments | orderBy:'shortCode'" value="{{dept.shortCode}}">{{dept.shortCode}}</option>-->
                         </select>
                     </div>
                     <div class="col-md-8">
@@ -73,93 +59,100 @@
         </div>
         <div class="col-md-5">
             <div class="well">
-                <h4 ng-show="!selectedCourse">Select a course to start planning.</h4>
+                <h4 ng-show="!selectedCourse">&larr; Select a course from the left.</h4>
                 <div ng-show="selectedCourse">
-                    <h3><span class="glyphicon glyphicon-list-alt"></span>
+                    <h3 class="text-center"><span class="glyphicon glyphicon-list-alt"></span>
                         {{ selectedCourse.dept.shortCode + " " + selectedCourse.courseId}}
                     </h3>
-                    <h4>{{ selectedCourse.title }}</h4>
+                    <h5>{{ selectedCourse.title }}</h5>
                     <p>{{ selectedCourse.description }}</p>
                     <p>Credit hours: {{ selectedCourse.credits }}</p>
-                    <table class="table table-condensed">
-                        <thead>
-                        <tr>
-                            <th>Section</th>
-                            <th>Instructor</th>
-                            <th>Class Periods</th>
-                            <th>Location</th>
-                            <th>Seats</th>
-                            <th>Avail</th>
-                            <th>WL</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody ng-show="!selectedCourse.sections || !selectedCourse.sections.length">
-                        <tr>
-                            <td colspan="4">No sections offered this semester!</td>
-                        </tr>
-                        </tbody>
-                        <tbody class="selectable-special" ng-repeat="section in selectedCourse.sections" ng-mouseenter="showTempEvent(selectedCourse, section)" ng-mouseleave="hideTempEvent(selectedCourse, section)">
-                        <tr class="selectable-td">
-                            <td>{{ section.sectionId }}</td>
-                            <td>{{ section.professor }}</td>
-                            <td>
-                                {{ classPeriodsToString(section.classPeriods) }}
-                            </td>
-                            <td>{{section.room}} {{ section.buildingAbbreviation }}</td>
-                            <td>{{section.classSize}}</td>
-                            <td>{{section.classSize - section.registeredStudents.length}}</td>
-                            <td>{{section.waitlistCount}}</td>
-                            <td ng-show="!isPlanned(selectedCourse.dept.shortCode + selectedCourse.courseId + '-' + section.sectionId)">
-                                <a ng-click="addCourseToPlan(selectedCourse, section)" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></a>
-                            </td>
-                            <td ng-show="isPlanned(selectedCourse.dept.shortCode + selectedCourse.courseId + '-' + section.sectionId)">
-                                <div style="height: 22px;"><span class="glyphicon glyphicon-ok btn-xs"></span></div>
-                            <td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div>
+                        <table class="table table-condensed">
+                            <thead>
+                            <tr>
+                                <th>Sec</th>
+                                <th>Instructor</th>
+                                <th>Class Periods</th>
+                                <th>Location</th>
+                                <th>Seats Avail</th>
+                                <th>WL</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody ng-show="!selectedCourse.sections || !selectedCourse.sections.length">
+                            <tr>
+                                <td colspan="4">No sections offered this semester!</td>
+                            </tr>
+                            </tbody>
+                            <tbody class="selectable-special" ng-repeat="section in selectedCourse.sections" ng-mouseenter="showTempEvent(selectedCourse, section)" ng-mouseleave="hideTempEvent(selectedCourse, section)">
+                            <tr class="selectable-td">
+                                <td>{{ section.sectionId }}</td>
+                                <td>{{ section.professor }}</td>
+                                <td>
+                                    {{ classPeriodsToString(section.classPeriods) }}
+                                </td>
+                                <td>{{section.room}} {{ section.buildingAbbreviation }}</td>
+                                <td>{{section.classSize - section.registeredStudents.length}} / {{section.classSize}}</td>
+                                <td>{{section.waitlistCount}}</td>
+                                <td ng-show="!isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseId + '-' + section.sectionId)">
+                                    <a ng-click="addCourseToPlan(selectedCourse, section)" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></a>
+                                </td>
+                                <td ng-show="isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseId + '-' + section.sectionId)">
+                                    <div style="height: 22px;"><span class="glyphicon glyphicon-ok btn-xs"></span></div>
+                                <td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-sm-4">
             <div class="well">
-                <h3>My Planned Classes</h3>
-                <h4>{{currentSemester}}</h4>
+                <h3 class="text-center">My Planned Classes</h3>
+                <!--<h5>{{currentSemester}}</h5>-->
                 <p ng-show="!plannedCourses.length">Add some classes you want to take next semester!</p>
                 <table class="table table-condensed">
                     <thead>
                     <tr ng-show="plannedCourses.length">
-                        <th>Course</th>
-                        <th>Section</th>
-                        <th>Instructor</th>
-                        <th>Class Periods</th>
-                        <th></th>
-                    </tr>
-                    <tbody class="selectable-tbody" ng-click="updateSelectedCourse(course.dept.shortCode, course.courseId)" ng-class="course.courseId == selectedCourse.courseId && course.dept.shortCode == selectedCourse.dept.shortCode ? 'selected-tbody' : ''" ng-repeat="course in plannedCourses">
-                    <tr class="selectable-td" id="plannedCourse-{{$index}}">
-                        <td>{{ course.dept.shortCode }} {{ course.courseId }}</td>
-                        <td>{{ course.sectionId }}</td>
-                        <td>{{ course.instructor }}</td>
-                        <td>{{ classPeriodsToString(course.classPeriods) }}</td>
-                        <td><a ng-click="removeCourseFromPlan(course)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></a></td>
-                    </tr>
-                    </tbody>
-                    </thead>
-                </table>
-                <a ng-show="plannedCourses.length" ng-click="savePlan()" class="btn btn-primary" ng-class="{ disabled: saved }">
-                    <span ng-show="!saved"><span class="glyphicon glyphicon-save"></span>  Save Plan</span>
-                    <span ng-show="saved"><span class="glyphicon glyphicon-saved"></span>  Plan saved!</span>
-                </a>
-                <button ng-show="plannedCourses.length" ng-click="registerClasses()" class="btn btn-primary" ng-class="{ disabled: added }" data-toggle="modal" data-target="#registrationIframeModal">
-                    <span ng-show="!added"><span class="glyphicon glyphicon-pushpin"></span>  Register</span>
-                    <span ng-show="added"><span class="glyphicon glyphicon-thumbs-up"></span>  Courses Registered!</span>
-                </button>
-            </div>
+                            <th>Course</th>
+                            <th>Instructor</th>
+                            <th>Class Periods</th>
+                            <th>Hrs</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody class="selectable-tbody" ng-click="updateSelectedCourse(course.dept.shortCode, course.courseId)" ng-class="course.courseId == selectedCourse.courseId && course.dept.shortCode == selectedCourse.dept.shortCode ? 'selected-tbody' : ''" ng-repeat="course in plannedCourses">
+                        <tr class="selectable-td" id="plannedCourse-{{$index}}">
+                            <td>{{ course.dept.shortCode }} {{ course.courseId }}</td>
+                            <td>{{ course.instructor }}</td>
+                            <td>{{ classPeriodsToString(course.classPeriods) }}</td>
+                            <td>{{ course.credits }}</td>
+                            <td><a ng-click="removeCourseFromPlan(course)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></a></td>
+                        </tr>
+                        </tbody>
+                        <!--<tr ng-show="plannedCourses.length">-->
+                            <!--<td></td>-->
+                            <!--<td></td>-->
+                            <!--<td><span class="pull-right"><b>Total Hrs:</b></span></td>-->
+                            <!--<td><b>{{ sumPlannedCredits }}</b></td>-->
+                            <!--<td></td>-->
+                        <!--</tr>-->
+                    </table>
+                </div>
+                <div id="register-buttons" class="pull-right">
+                    <button ng-show="plannedCourses.length" ng-click="registerClasses()" class="btn btn-xs btn-primary" ng-class="{ disabled: added }" data-toggle="modal" data-target="#registrationIframeModal">
+                        <span ng-show="!added"><span class="glyphicon glyphicon-ok"></span>  Register</span>
+                        <span ng-show="added"><span class="glyphicon glyphicon-thumbs-up"></span>  Courses Registered!</span>
+                    </button>
+                    <button ng-show="plannedCourses.length" ng-click="savePlan()" class="btn btn-xs btn-primary" ng-class="{ disabled: saved }">
+                        <span ng-show="!saved"><span class="glyphicon glyphicon-save"></span>  Save Plan</span>
+                        <span ng-show="saved"><span class="glyphicon glyphicon-saved"></span>  Plan saved!</span>
+                    </button>
+                </div>
+                <br><br>
             <div class="well">
-                <h3>Week View</h3>
-                <p>Conflicting classes are shown in <span style="color: #C25151;">red</span>.</p>
-                <br>
                 <!--<button ng-click="viewWeekLayout()" class="btn btn-primary" data-toggle="modal" data-target="#weekLayoutModal">-->
                 <!--<span><span class="glyphicon glyphicon-calendar"></span>  View Details</span>-->
                 <!--</button>-->
@@ -193,14 +186,14 @@
 
 
 <div class="modal fade" id="registrationIframeModal">
-    <div class="modal-dialog" style="width:587px; height:550px;">
+    <div class="modal-dialog" style="width:550px; height:550px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">BYU Registration</h4>
             </div>
             <div class="modal-body">
-                <iframe id="registration-iframe"  width="543" height="375" style="display:none;overflow: hidden" scrolling="no" frameBorder="0"></iframe><br>
+                <iframe id="registration-iframe"  width="510" height="375" style="display:none;overflow: hidden" scrolling="no" frameBorder="0"></iframe><br>
                 <div class="well" id="registration-instructions">
                     <h3 style="margin-top:0;">Say Hello to Batch Registration</h3>
                     <div>We'll help you register for <b><i>all of your classes at once</i></b> in three simple steps:</div>
@@ -211,8 +204,6 @@
                     </ol>
                     <button class="btn btn-primary" onclick="$('#registration-iframe').show();$('#registration-instructions').hide()">Sounds Great, I'm in</button>
                 </div>
-                <button class="btn btn-xs btn-default" onclick="loadRegistrationPage()">Load Registration Page</button>
-                <button class="btn btn-xs btn-default" onclick="clearCaptchaCookies()">Clear Captcha Cookies</button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -221,29 +212,8 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div ng-controller="RootScopeCtrl" class="modal fade" id="loginModal">
 
-<div class="modal fade" id="aboutUsModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">About this page</h4>
-            </div>
-            <div class="modal-body">
-                <p>This is a tool to more easily and efficiently plan your class schedule. Use our fluid and fast interface to the class catalog, with flexible filtering, sorting, and intuitive planning.</p>
-                <p>Simply add courses to your plan until you're satisfied, then we'll save it for you.</p>
-                <p>On your registration date, return here and sign in, and you'll be able to add your entire courseload with the click of a single button. (Note: You'll need to be logged into your BYU account in a separate tab of your browser in order for registration to work.)</p>
-                <p>We hope this helps you get into all your classes without scrambling through the catalog last-minute.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="loginModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -254,10 +224,10 @@
             <div class="modal-body">
 
                 <ul class="nav nav-tabs" id="tabContent">
-                    <li ng-class="{active: signinTab}" ng-click="signinTab = true; createTab = false; signinAlerts.length = 0;">
+                    <li ng-class="{active: $rootScope.signinTab}" ng-click="$rootScope.signinTab = true; $rootScope.createTab = false; $rootScope.signinAlerts.length = 0;">
                         <a>Sign in</a>
                     </li>
-                    <li ng-class="{active: createTab}" ng-click="signinTab = false; createTab = true; signinAlerts.length = 0;">
+                    <li ng-class="{active: $rootScope.createTab}" ng-click="$rootScope.signinTab = false; $rootScope.createTab = true; $rootScope.signinAlerts.length = 0;">
                         <a>Create account</a>
                     </li>
                 </ul>
@@ -265,43 +235,43 @@
                 <div class="tab-content">
 
                     <!-- alerts for invalid form entry-->
-                    <div class="alert alert-info alert-dismissable" ng-repeat="alert in signinAlerts" type="alert.type">
-                        <button type="button" ng-click="closeAlert($index)" class="close" data-dismiss="alert" area-hidden="true">&times;</button>
+                    <div class="alert alert-info alert-dismissable" ng-repeat="alert in $rootScope.signinAlerts" type="alert.type">
+                        <button type="button" ng-click="$rootScope.closeAlert($index)" class="close" data-dismiss="alert" area-hidden="true">&times;</button>
                         {{alert.msg}}
                     </div>
 
-                    <div ng-class="{active: signinTab}" class="tab-pane" id="signin">
+                    <div ng-class="{active: $rootScope.signinTab}" class="tab-pane" id="signin">
                         <form role="form">
                             <div class="form-group">
                                 <label for="loginUsername">Username</label>
-                                <input ng-model="loginUsername" type="text" maxlength="20" class="form-control" id="loginUsername" placeholder="Enter username">
+                                <input ng-model="$rootScope.loginUsername" type="text" maxlength="20" class="form-control" id="loginUsername" placeholder="Enter username">
                             </div>
                             <div class="form-group">
                                 <label for="loginPassword">Password</label>
-                                <input ng-model="loginPassword" type="password" maxlength="35" class="form-control" id="loginPassword" placeholder="Password">
+                                <input ng-model="$rootScope.loginPassword" type="password" maxlength="35" class="form-control" id="loginPassword" placeholder="Password">
                             </div>
                             <hr>
-                            <button type="submit" ng-click="signInUser()" class="btn btn-primary">Sign in</button>
+                            <button type="submit" ng-click="$rootScope.signInUser()" class="btn btn-primary">Sign in</button>
                             <button class="btn btn-default" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>
-                    <div ng-class="{active: createTab}" class="tab-pane" id="createaccount">
+                    <div ng-class="{active: $rootScope.createTab}" class="tab-pane" id="createaccount">
 
                         <form role="form">
                             <div class="form-group">
                                 <label for="createUsername">Username</label>
-                                <input ng-model="createUsername" type="text" maxlength="20" class="form-control" id="createUsername" placeholder="Create a username">
+                                <input ng-model="$rootScope.createUsername" type="text" maxlength="20" class="form-control" id="createUsername" placeholder="Create a username">
                             </div>
                             <div class="form-group">
                                 <label for="createPassword">Password</label>
-                                <input ng-model="createPassword" type="password" maxlength="35" class="form-control" id="createPassword" placeholder="Create a password">
+                                <input ng-model="$rootScope.createPassword" type="password" maxlength="35" class="form-control" id="createPassword" placeholder="Create a password">
                             </div>
                             <div class="form-group">
                                 <label for="createPassword2">Confirm Password</label>
-                                <input ng-model="createPassword2" type="password" maxlength="35" class="form-control" id="createPassword2" placeholder="Confirm password">
+                                <input ng-model="$rootScope.createPassword2" type="password" maxlength="35" class="form-control" id="createPassword2" placeholder="Confirm password">
                             </div>
                             <hr>
-                            <button type="submit" ng-click="createUserAccount()" class="btn btn-primary">Create Account</button>
+                            <button type="submit" ng-click="$rootScope.createUserAccount()" class="btn btn-primary">Create Account</button>
                             <button class="btn btn-default" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>

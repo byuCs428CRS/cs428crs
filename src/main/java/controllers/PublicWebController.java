@@ -35,10 +35,19 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class PublicWebController {
 
 	private PublicWebService webService;
+    private Courses cachedCourses;
 
 	public PublicWebController() {
 		webService = new PublicWebService();
+        cachedCourses = null;
 	}
+
+  @RequestMapping(value = "/health", method = GET)
+  @ResponseStatus(value = HttpStatus.OK)
+  public void healthCheck()
+  {
+    //do nothing. Just here for load balancer health checks.
+  }
 
 	/**
 	 * Gets all departments that exist in the systen
@@ -81,7 +90,10 @@ public class PublicWebController {
       @RequestParam(value = "semester", required = false, defaultValue ="current") String semester)
   {
     if ("current".equals(semester)) {
-      return webService.getAllCourses();
+      if (cachedCourses == null) {
+        cachedCourses = webService.getAllCourses();
+      }
+      return cachedCourses;
     } else {
       return webService.getAllCourses(semester);
     }
