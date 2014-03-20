@@ -95,10 +95,10 @@
                                 <td>{{section.room}} {{ section.buildingAbbreviation }}</td>
                                 <td>{{section.classSize - section.registeredStudents.length}} / {{section.classSize}}</td>
                                 <td>{{section.waitlistCount}}</td>
-                                <td ng-show="!isPlanned(selectedCourse.dept.shortCode + selectedCourse.courseId + '-' + section.sectionId)">
+                                <td ng-show="!isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseId + '-' + section.sectionId)">
                                     <a ng-click="addCourseToPlan(selectedCourse, section)" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></a>
                                 </td>
-                                <td ng-show="isPlanned(selectedCourse.dept.shortCode + selectedCourse.courseId + '-' + section.sectionId)">
+                                <td ng-show="isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseId + '-' + section.sectionId)">
                                     <div style="height: 22px;"><span class="glyphicon glyphicon-ok btn-xs"></span></div>
                                 <td>
                             </tr>
