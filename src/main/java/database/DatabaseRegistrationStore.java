@@ -21,6 +21,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
     private final String COURSE_COLLECTION = "course";
     private final String USER_COLLECTION = "user";
     private final String SCHEDULE_COLLECTION = "schedule";
+    private final String DEPARTMENT_COLLECTION = "department";
 
     public static RegistrationStore getInstance() {
         return root;

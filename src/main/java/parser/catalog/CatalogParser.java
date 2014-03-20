@@ -1,4 +1,4 @@
-package parser;
+package catalog;
 import com.mongodb.*;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Map;
 import java.io.*;
 import java.net.UnknownHostException;
 
-public class Parser {
+public class CatalogParser {
 	
 	public static int index;								  // Index for the current element within the section (0-18)
 	public static final int MAX_INDEX_BEFORE_INSERTION = 19;  // 19 elements (between '#' symbols) per section
@@ -20,7 +20,7 @@ public class Parser {
     {
     	
 		index = 0;
-		String fileName = System.getProperty("user.dir") + "/parser/TestCatalog.txt";
+		String fileName = System.getProperty("user.dir") + "/TestCatalog.txt";
     	File file = new File(fileName);
     	try {
 		
@@ -44,18 +44,6 @@ public class Parser {
 			e.printStackTrace();
 		}
     	
-    	/*
-    	
-    	// Print the whole list
-    	
-    	for (int i = 0; i < sections.size(); i++) {
-    		
-    		System.out.println("\t\t PRINTING ELEMENT #" + (i+1));
-    		sections.get(i).print();
-    	}
-    	
-    	*/
-    	
     	System.out.println("Success in parsing!");
     	System.out.println("Total Sections Parsed: " + sections.size() + "\n");
     	
@@ -64,17 +52,63 @@ public class Parser {
 	    	
     		DB db = getDB();
     		
+    		// Add the departments for displaying a list
+    		addDepartments(db);
+    		
 	    	// Drop the course collection (so I can keep testing)
-	    	dropCourseCollection(db);
+	    	//dropCourseCollection(db);
 	    	
 	    	// Insert new courses into the db
-	    	insertIntoDB(db);
+	    	//insertCoursesIntoDB(db);
 	    	
 	    	// Immediately after inserting all courses, try printing them out FROM the db
-	    	printCoursesFromDB(db);
+	    	//printCoursesFromDB(db);
     	}
     	else
     		System.out.println("No Sections to insert!");
+    }
+    
+    /**
+     * Add all of the unique departments from this list into the departments list
+     * @param db
+     */
+    public static void addDepartments(DB db) {
+    	
+    	// Fill a list with all the unique departments from the new sections
+    	ArrayList<String> departmentList = new ArrayList<>();
+    	for (int i = 0; i < sections.size(); i++) {
+    		
+    		String dept = sections.get(i).department;
+    		if (!departmentList.contains(dept))
+    			departmentList.add(dept);
+    	}
+    	
+    	// Remove departments that are already in the database
+    	DBCollection departmentCollection = db.getCollection("department");
+    	for (int i = 0; i < departmentList.size(); i++) {
+    		
+            BasicDBObject query = new BasicDBObject("name", departmentList.get(i));
+    		
+            // If this department was found
+            if (departmentCollection.find(query).count() > 0) {
+            	
+            	departmentList.remove(i);
+            	i--;
+            }
+    	}
+    	
+    	// If there are new departments, add them to the DB
+    	if (departmentList.size() > 0) {
+    		
+        	// Change the array to a list to determine
+        	BasicDBObject[] departmentArray = new BasicDBObject[departmentList.size()];
+        	for (int i = 0; i < departmentList.size(); i++) {
+        		
+        		departmentArray[i] = new BasicDBObject();
+        		departmentArray[i].put("name", departmentList.get(i));
+        	}
+        	departmentCollection.insert(departmentArray);
+    	}
     }
     
     /**
@@ -82,7 +116,7 @@ public class Parser {
      * STRUCTURE: Course document holds a list of Sections, which hold a list of TimePlaces
      * @param db Database to insert the courses into
      */
-    public static void insertIntoDB(DB db) {
+    public static void insertCoursesIntoDB(DB db) {
     	
     	// Map of course IDs that point to a list of section DATABASE OBJECTS that have that course ID
     	Map<String, List<BasicDBObject>> courseMap = new HashMap<>();
