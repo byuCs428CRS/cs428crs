@@ -188,8 +188,8 @@ public class DatabaseRegistrationStore implements RegistrationStore {
 
             s.setCourseID(courseObject.get("courseID").toString());
             s.setTotalSeats(dbSection.get("totalSeats").toString());
-            s.setCourseName(dbSection.get("courseName").toString());
-            s.setCreditHours(dbSection.get("creditHours").toString());
+//            s.setCourseName(dbSection.get("courseName").toString());
+//            s.setCreditHours(dbSection.get("creditHours").toString());
             s.setProfessor(dbSection.get("professor").toString());
             s.setSeatsAvailable(dbSection.get("seatsAvailable").toString());
             s.setSectionID(dbSection.get("sectionID").toString());
