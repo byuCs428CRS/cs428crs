@@ -58,7 +58,7 @@ function registerAll(useRecaptcha) {
                 '<input id="brownie" name="brownie" type="hidden">' +
             '</form>'
         var iframe = '<iframe width="503" height="84" id="registration-iframe-'+i+'" scrolling="no"></iframe>'
-        classesHTML += '<div class="center">'+classes[i].shortCode+' - '+classes[i].title+'</div>'+invisibleForm+iframe+'<br>'
+//        classesHTML += '<div class="center">'+classes[i].shortCode+' - '+classes[i].title+'</div>'+invisibleForm+iframe+'<br>'
     }
     $("#registration-result").html(classesHTML)
 
