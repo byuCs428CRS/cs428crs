@@ -314,6 +314,14 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             }
         };
 
+        $scope.$on("eventClicked", function (event, args) {
+            var course = args.courseName;
+            course = course.split(' ');
+            var dept = course[0];
+            var id = course[1];
+            $scope.updateSelectedCourse(dept, id);
+        });
+
         $scope.abbreviateDay = function(day) {
             switch( day ) {
                 case 'MONDAY':
@@ -368,7 +376,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.added = false;
             // when the class is added, remove its temporary calendar event
             $scope.hideTempEvent(course, section);
-            var fullCourseName = course.dept.shortCode + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
             var cid = fullCourseName + "-" + section.sectionId;
             var classLocation = section.buildingAbbreviation + ' ' + section.room;
 
@@ -417,7 +425,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.showTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
             var cid = fullCourseName + "-" + section.sectionId;
             if (!$scope.isPlanned(cid)) {
                 // change color of other sections of this course to gray
@@ -428,7 +436,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.hideTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
             var cid = fullCourseName + "-" + section.sectionId;
             $scope.$broadcast("courseRemoved", {course: cid, temp: true});
             // change color of other sections of this course back to default
@@ -502,6 +510,16 @@ classregControllers.controller('CalendarCtrl', ['$scope',
                 },
                 columnFormat: {
                     week: 'ddd' // Mon
+                },
+                eventClick: function(event, jsEvent, view) {
+                    var courseInfo = event.title.split('-');
+                    var courseName = courseInfo[0];
+                    $scope.$emit("eventClicked", {courseName: courseName});
+//                    alert('Event: ' + calEvent.title);
+//                    alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+//                    alert('View: ' + view.name);
+
+
                 },
                 eventRender:function(event,element,view){
                     var courseInfo = event.title.split('-');

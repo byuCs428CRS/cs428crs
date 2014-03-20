@@ -6,8 +6,15 @@
                 <form class="form-inline" role="form">
                     <div class="col-md-4">
                         <select id="filterByDepartment" class="form-control" ng-model="filteredDept" ng-change="filterOptions.searchQuery = ''">
-                            <option value="">All</option>
-                            <option ng-repeat="dept in departments | orderBy:'shortCode'" value="{{dept.shortCode}}">{{dept.shortCode}}</option>
+                            <option value="">Filter by:</option>
+                            <option value="">Department</option>
+                            <option value="">Course name</option>
+                            <option value="">Description</option>
+                            <option value="">Search all</option>
+                            <option disabled="true" value="">Credit hours</option>
+                            <option disabled="true" value="">Instructor</option>
+                            <option disabled="true" value="">Course level</option>
+                            <!--<option ng-repeat="dept in departments | orderBy:'shortCode'" value="{{dept.shortCode}}">{{dept.shortCode}}</option>-->
                         </select>
                     </div>
                     <div class="col-md-8">
