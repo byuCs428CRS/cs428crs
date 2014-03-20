@@ -95,7 +95,7 @@ classregControllers.controller('HeaderController', ['$scope', '$rootScope', '$lo
 classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval',
     function($scope, $http, $cookies, $rootScope, $interval) {
 
-        if (window.location.href.indexOf('dummy=true') >= 0) {
+        if (window.location.href.indexOf('dummy=false') < 0) {
             $http.get('courses/courses.json').success(function (data) {
                 $scope.departments = data.departments;
 
