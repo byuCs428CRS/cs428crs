@@ -51,7 +51,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
                 $rootScope.addAlert("All fields are required.");
             } else if (!/^[a-z0-9_\-@]+$/i.test($rootScope.createUsername)) {
                 $rootScope.addAlert("Username cannot contain special characters other than -, _, and @.");
-            } else if ($scope.createPassword != $rootScope.createPassword2) {
+            } else if ($rootScope.createPassword != $rootScope.createPassword2) {
                 $rootScope.addAlert("Passwords do not match.");
             } else {
                 $rootScope.registerUser($rootScope.createUsername, $rootScope.createPassword);
@@ -64,7 +64,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
                 data['username'] = username;
                 data['pass'] = doHash(password, data['pepper']);
 
-                $http.post('http://andyetitcompiles.com/auth/register', data)
+            $http.post('http://andyetitcompiles.com/auth/register', {withCredentials: true}, data)
                     .success(function(data) {
                         console.log(data);
                         // successful
