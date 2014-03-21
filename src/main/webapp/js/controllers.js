@@ -60,11 +60,11 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
 
         $rootScope.registerUser = function(username, password) {
 
-            $http.get('http://andyetitcompiles.com/auth/login').success(function(data, status, headers) {
+            $http.get('/auth/login').success(function(data, status, headers) {
                 data['username'] = username;
                 data['pass'] = doHash(password, data['pepper']);
 
-            $http.post('http://andyetitcompiles.com/auth/register', {withCredentials: true}, data)
+            $http.post('/auth/register', data)
                     .success(function(data) {
                         console.log(data);
                         // successful
