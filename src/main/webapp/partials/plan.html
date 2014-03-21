@@ -291,9 +291,13 @@
             <br>
             <p class="lead">Add the sections you want here.</p>
             <p class="lead">Remember, you can add more than one course at a time. Plan out your whole semester!</p>
-            <br><br><br><br><br>
+            <br><br><br>
+            <div ng-show="isLoadingCourses">
+                <img src="../img/darkspinner.gif"><br>
+                <h2>Hold tight while we load the course catalog...</h2>
+            </div>
             <div ng-show="!isLoadingCourses" class="animate-show">
-                <h2>Got it?</h2>
+                <h2>Ready to go!</h2>
                 <br>
                 <button class="btn btn-lg btn-default" ng-click="dismissLoadingOverlay()">OK</button>
             </div>
