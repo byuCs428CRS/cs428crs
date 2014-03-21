@@ -1,6 +1,5 @@
 package controllers;
 
-import org.apache.catalina.connector.RequestFacade;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,7 @@ public class SimpleCORSFilter implements Filter {
 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		HttpServletResponse response = (HttpServletResponse) res;
-    String origin = ((RequestFacade) req).getHeader("Origin");
+    String origin = req.getRemoteHost();
     if (origin == null || origin.isEmpty()) {
       origin = "*";
     }
