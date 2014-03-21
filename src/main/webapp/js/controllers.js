@@ -28,21 +28,39 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
             if (!($rootScope.loginUsername && $rootScope.loginUsername.length && $rootScope.loginPassword && $rootScope.loginPassword.length)) {
                 $rootScope.addAlert("All fields are required.");
             } else {
-                $rootScope.loggedIn = true;
-                $rootScope.username = $rootScope.loginUsername;
-                $('#loginModal').modal('hide');
+                $http.get('/auth/login').success(function(data, status, headers) {
+                            data['username'] = $rootScope.loginUsername;
+                            data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
+
+                        $http.post('/auth/login', data)
+                                .success(function(data) {
+                                    console.log(data);
+                                    // successful
+                                    $rootScope.loggedIn = true;
+                                    $rootScope.username = $rootScope.loginUsername;
+                                    $('#loginModal').modal('hide');
+                                }).error(function(data) {
+                                    //console.log(data);
+                                    // username already exists?
+                                    $rootScope.addAlert("There was a problem with your username or password.");
+                                });
+                        }).error(function(data) {
+                            $rootScope.addAlert("There was an error creating your account.");
+                        });
                 //$rootScope._savePlan();
             }
         };
 
         $rootScope.signOutUser = function() {
-            $rootScope.$broadcast('userSignedOut');
-            $rootScope.loggedIn = false;
-            $rootScope.loginUsername = '';
-            $rootScope.loginPassword = '';
-            $rootScope.createUsername = '';
-            $rootScope.createPassword = '';
-            $rootScope.createPassword2 = '';
+            $http.get('/auth/logout').success(function(data, status, headers) {
+                $rootScope.$broadcast('userSignedOut');
+                $rootScope.loggedIn = false;
+                $rootScope.loginUsername = '';
+                $rootScope.loginPassword = '';
+                $rootScope.createUsername = '';
+                $rootScope.createPassword = '';
+                $rootScope.createPassword2 = '';
+            });
         };
 
         $rootScope.createUserAccount = function() {
