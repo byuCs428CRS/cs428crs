@@ -31,7 +31,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
                 $http.get('/auth/login').success(function(data, status, headers) {
                             data['username'] = $rootScope.loginUsername;
                             if (data['pepper'] < 7) {
-                                $rootScope.addAlert("There is a problem connecting to the server");
+                                $rootScope.addAlert("There is a problem connecting to the server. Please try again later.");
                                 return;
                             }
                             else {
@@ -47,11 +47,10 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
                                     $('#loginModal').modal('hide');
                                 }).error(function(data) {
                                     //console.log(data);
-                                    // username already exists?
                                     $rootScope.addAlert("There was a problem with your username or password.");
                                 });
                         }).error(function(data) {
-                            $rootScope.addAlert("There was an error creating your account.");
+                            $rootScope.addAlert("There was an error creating your account. Please try again later.");
                         });
                 //$rootScope._savePlan();
             }
@@ -91,7 +90,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
                     return;
                 }
                 else {
-                    data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
+                    data['pass'] = doHash(password, data['pepper']);
                 }
 
             $http.post('/auth/register', data)
@@ -104,7 +103,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
                     }).error(function(data) {
                         //console.log(data);
                         // username already exists?
-                        $rootScope.addAlert("There was a problem with your username or password.");
+                        $rootScope.addAlert("Sorry, this username is already taken.");
                     });
             }).error(function(data) {
                 $rootScope.addAlert("There was an error creating your account.");
@@ -251,6 +250,9 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                     $scope.isLoadingCourses = false;
                 });
             });
+            // popular courses to be shown when there are no filters applied
+            $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
+
         }
 
         var autoSave = $interval(function () {
@@ -325,7 +327,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         $scope.initStuff();
 
         $scope.allFilter = function(course) {
-            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length));
+            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.popularCourses.indexOf(course.dept.shortCode + course.courseId) > -1);
         };
 
         // Searches both course name and course description fields
@@ -534,8 +536,8 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
             var regFrame = $("#registration-iframe");
             regFrame.attr("src", url + query);
-            $scope.initPlannedCourses();
-            $scope.added = true;
+            // $scope.initPlannedCourses();
+            // $scope.added = true;
         };
     }]);
 
@@ -581,8 +583,8 @@ classregControllers.controller('CalendarCtrl', ['$scope',
                     var courseInfo = event.title.split('-');
                     var courseName = courseInfo[0];
                     var sectionNum = courseInfo[1];
-                    var eventTime = $.fullCalendar.formatDate(event.start, "h:sstt")+" - "+
-                        $.fullCalendar.formatDate(event.end, "h:sstt");
+                    var eventTime = $.fullCalendar.formatDate(event.start, "h:mm")+" - "+
+                        $.fullCalendar.formatDate(event.end, "h:mm");
 
                     element.qtip({
                         content:{

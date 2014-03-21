@@ -1,4 +1,4 @@
-<div class="container plan-container main-content">
+<div class="container plan-container main-content" ng-controller="CourseListCtrl">
 
     <div class="row">
         <div class="col-md-3">
@@ -161,24 +161,6 @@
 </div>
 
 
-<div class="modal fade" id="weekLayoutModal">
-    <div class="modal-dialog" style="width:1000px;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Weekly Schedule</h4>
-            </div>
-            <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-
 <div class="modal fade" id="registrationIframeModal">
     <div class="modal-dialog" style="width:550px; height:550px;">
         <div class="modal-content">
@@ -196,7 +178,11 @@
                         <li><h4>Prove you are not a robot</h4>BYU requires that you verify your divine nature once every thirty minutes.</li>
                         <li><h4>Let us do the rest</h4>We'll show you if each of your planned classes was registered to your BYU account.</li>
                     </ol>
-                    <button class="btn btn-primary" onclick="$('#registration-iframe').show();$('#registration-instructions').hide()">Sounds Great, I'm in</button>
+                    <div>Before you proceed, please make sure your BYU account's registration date is here. (If it's still in the future, no worries &ndash; just close this box and click "Save Plan" instead.)</div>
+                    <br>
+                    <div><input type="checkbox" ng-model="proceedRegistration"> My BYU account is good to go.</div>
+                    <br>
+                    <button class="btn btn-primary" ng-class="{disabled: !proceedRegistration}" onclick="$('#registration-iframe').show();$('#registration-instructions').hide()">Let's get started</button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -219,10 +205,10 @@
 
                 <ul class="nav nav-tabs" id="tabContent">
                     <li ng-class="{active: $rootScope.signinTab}" ng-click="$rootScope.signinTab = true; $rootScope.createTab = false; $rootScope.signinAlerts.length = 0;">
-                        <a>Sign in</a>
+                        <a class="linky">Sign in</a>
                     </li>
                     <li ng-class="{active: $rootScope.createTab}" ng-click="$rootScope.signinTab = false; $rootScope.createTab = true; $rootScope.signinAlerts.length = 0;">
-                        <a>Create account</a>
+                        <a class="linky">Create account</a>
                     </li>
                 </ul>
                 <br>
@@ -235,7 +221,7 @@
                     </div>
 
                     <div ng-class="{active: $rootScope.signinTab}" class="tab-pane" id="signin">
-                        <form role="form">
+                        <form role="form" autocomplete="off">
                             <div class="form-group">
                                 <label for="loginUsername">Username</label>
                                 <input ng-model="$rootScope.loginUsername" type="text" maxlength="20" class="form-control" id="loginUsername" placeholder="Enter username">
@@ -251,7 +237,7 @@
                     </div>
                     <div ng-class="{active: $rootScope.createTab}" class="tab-pane" id="createaccount">
 
-                        <form role="form">
+                        <form role="form" autocomplete="off">
                             <div class="form-group">
                                 <label for="createUsername">Username</label>
                                 <input ng-model="$rootScope.createUsername" type="text" maxlength="20" class="form-control" id="createUsername" placeholder="Create a username">
@@ -277,20 +263,22 @@
 
 
 <!--Overlay for when courses are loading-->
-<div id="loading-overlay" class="container">
+<div id="loading-overlay" class="container" ng-controller="CourseListCtrl">
 <!--ng-show="isLoadingCourses" -->
     <div class="row">
         <div class="col-md-3 text-center overlay-el pad-sides-sm">
             <h1 class="giant">1</h1>
             <br>
             <p class="lead">Browse courses here.</p>
-            <p class="lead">Start typing a course name in the search bar to instantly filter.</p>
+            <p class="lead">Type a course name &ndash; like 'BIO100' &ndash; in the search bar to instantly filter.</p>
+            <p>(We'll start by showing you a list of the most popular courses.)</p>
         </div>
         <div class="col-md-5 text-center overlay-el pad-sides-lg">
             <h1 class="giant">2</h1>
             <br>
             <p class="lead">Add the sections you want here.</p>
             <p class="lead">Remember, you can add more than one course at a time. Plan out your whole semester!</p>
+            <p>(Hover over a section to see how it'll fit into your weekly schedule.)</p>
             <br><br><br>
             <div ng-show="isLoadingCourses">
                 <img src="../img/darkspinner.gif"><br>
@@ -307,6 +295,7 @@
             <br>
             <p class="lead">View and save your plan here.</p>
             <p class="lead">When you're all done, you can save (or register) your plan.</p>
+            <p>(Once your plan is saved, you're ready to go for registration day.</p>
         </div>
     </div>
 </div>

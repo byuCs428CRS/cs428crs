@@ -18,8 +18,7 @@ classregApp.config(['$routeProvider',
         templateUrl: 'partials/home.html'
       }).
       when('/plan', {
-        templateUrl: 'partials/plan.html',
-        controller: 'CourseListCtrl'
+        templateUrl: 'partials/plan.html'
       }).
       when('/about', {
       	templateUrl: 'partials/about.html'

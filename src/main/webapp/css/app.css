@@ -167,3 +167,8 @@ h2 {
 .giant {
     font-size: 75px;
 }
+
+.linky {
+    cursor: pointer !important;
+    cursor: hand !important;
+}
