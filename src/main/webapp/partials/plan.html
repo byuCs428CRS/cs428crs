@@ -6,19 +6,12 @@
                 <form class="form-inline" role="form">
                     <div class="col-md-4">
                         <select id="filterByDepartment" class="form-control" ng-model="filteredDept" ng-change="filterOptions.searchQuery = ''">
-                            <option value="">Filter by:</option>
-                            <option value="">Department</option>
-                            <option value="">Course name</option>
-                            <option value="">Description</option>
-                            <option value="">Search all</option>
-                            <option disabled="true" value="">Credit hours</option>
-                            <option disabled="true" value="">Instructor</option>
-                            <option disabled="true" value="">Course level</option>
-                            <!--<option ng-repeat="dept in departments | orderBy:'shortCode'" value="{{dept.shortCode}}">{{dept.shortCode}}</option>-->
+                            <option value="">All</option>
+                            <option ng-repeat="dept in departments.sort()" value="{{dept}}">{{dept}}</option>
                         </select>
                     </div>
                     <div class="col-md-8">
-                        <input id="filterByDescriptionQuery" class="form-control" ng-model="filterOptions.searchQuery" placeholder="Search">
+                        <input id="filterByDescriptionQuery" class="form-control" ng-model="searchText" placeholder="Search">
                     </div>
                 </form>
             </div>
@@ -38,15 +31,16 @@
 
             <br>
             <div id="course-table-container">
-                <table id="coursesTable" class="table table-striped table-bordered">
+                <span ng-show="isLoadingCourses"><img src="../img/spinner.gif" width="20"> Loading course data</span>
+                <table ng-show="!isLoadingCourses" id="coursesTable" class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th class="sortable-header" ng-class="sortedClass('dept.title')" ng-click="updateSort('dept.title')">Dept</th>
+                        <th class="sortable-header" ng-class="sortedClass('dept.shortCode')" ng-click="updateSort('dept.shortCode')">Dept</th>
                         <th class="sortable-header" ng-class="sortedClass('courseId')" ng-click="updateSort('courseId')">ID</th>
                         <th class="sortable-header" ng-class="sortedClass('title')" ng-click="updateSort('title')">Name</th>
                     </tr>
                     </thead>
-                    <tbody class="selectable-tbody" ng-click="$parent.selectedCourse = course" ng-class="course == selectedCourse ? 'selected-tbody' : ''" ng-repeat="course in filtered = (courses | filter:basicFilters | filter:searchQueryFilter | filter:courseLevelFilter | filter:departmentFilter | orderBy:sortBy:desc)">
+                    <tbody class="selectable-tbody" ng-click="$parent.selectedCourse = course" ng-class="course == selectedCourse ? 'selected-tbody' : ''" ng-repeat="course in filtered = (courses | filter:allFilter | filter:searchQueryFilter | filter:courseLevelFilter | filter:departmentFilter | orderBy:sortBy:desc)">
                     <tr>
                         <td class="selectable-td">{{ course.dept.shortCode }}</td>
                         <td class="selectable-td">{{ course.courseId }}</td>
@@ -59,7 +53,7 @@
         </div>
         <div class="col-md-5">
             <div class="well">
-                <h4 ng-show="!selectedCourse">&larr; Select a course from the left.</h4>
+                <h4 ng-show="!selectedCourse">&larr; Start typing a course name or choose a department from the dropdown.</h4>
                 <div ng-show="selectedCourse">
                     <h3 class="text-center"><span class="glyphicon glyphicon-list-alt"></span>
                         {{ selectedCourse.dept.shortCode + " " + selectedCourse.courseId}}
@@ -277,6 +271,38 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Overlay for when courses are loading-->
+<div id="loading-overlay" class="container">
+<!--ng-show="isLoadingCourses" -->
+    <div class="row">
+        <div class="col-md-3 text-center overlay-el pad-sides-sm">
+            <h1 class="giant">1</h1>
+            <br>
+            <p class="lead">Browse courses here.</p>
+            <p class="lead">Start typing a course name in the search bar to instantly filter.</p>
+        </div>
+        <div class="col-md-5 text-center overlay-el pad-sides-lg">
+            <h1 class="giant">2</h1>
+            <br>
+            <p class="lead">Add the sections you want here.</p>
+            <p class="lead">Remember, you can add more than one course at a time. Plan out your whole semester!</p>
+            <br><br><br><br><br>
+            <div ng-show="!isLoadingCourses" class="animate-show">
+                <h2>Got it?</h2>
+                <br>
+                <button class="btn btn-lg btn-default" ng-click="dismissLoadingOverlay()">OK</button>
+            </div>
+        </div>
+        <div class="col-md-4 text-center overlay-el pad-sides-md">
+            <h1 class="giant">3</h1>
+            <br>
+            <p class="lead">View and save your plan here.</p>
+            <p class="lead">When you're all done, you can save (or register) your plan.</p>
         </div>
     </div>
 </div>

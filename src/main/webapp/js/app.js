@@ -5,6 +5,7 @@ var classregApp = angular.module('classregApp', [
   'ngRoute',
   'classregControllers',
   'ngCookies',
+  'ngAnimate',
   'ui.calendar'
 ]).run(function($rootScope) {
     $rootScope.$rootScope = $rootScope;

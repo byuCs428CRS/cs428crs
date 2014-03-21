@@ -115,3 +115,55 @@ h2 {
     cursor: pointer !important;
     cursor: hand !important;
 }
+
+#loading-overlay {
+    background-color: rgba(30, 30, 30, 0.60);
+    width: 100%;
+    height: 100vh;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.overlay-el {
+    margin-top: 10%;
+    color: white;
+    text-shadow: #000 0 0 10px;
+}
+
+.pad-sides-lg {
+    padding-left: 10% !important;
+    padding-right: 10% !important;
+}
+
+.pad-sides-md {
+    padding-left: 7% !important;
+    padding-right: 7% !important;
+}
+
+.pad-sides-sm {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+}
+
+.animate-show {
+    -webkit-transition:all linear 0.5s;
+    transition:all linear 0.5s;
+}
+
+.animate-show.ng-hide-add,
+.animate-show.ng-hide-remove {
+    display:block!important;
+}
+
+.animate-show.ng-hide {
+    line-height:0;
+    opacity:0;
+    padding:0 10px;
+}
+
+.giant {
+    font-size: 75px;
+}

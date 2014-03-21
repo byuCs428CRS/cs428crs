@@ -8,8 +8,8 @@ var conflictingEventColor = '#C25151';
 /* Controllers */
 var classregControllers = angular.module('classregControllers', []);
 
-classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http',
-    function($rootScope, $http) {
+classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animate',
+    function($rootScope, $http, $animate) {
         // query the server to check if the user is in an authenticated session right now
         $rootScope.signinAlerts = [];
         $rootScope.signinTab = true;
@@ -92,15 +92,16 @@ classregControllers.controller('HeaderController', ['$scope', '$rootScope', '$lo
     }
 ]);
 
-classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval',
-    function($scope, $http, $cookies, $rootScope, $interval) {
+classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval', '$timeout',
+    function($scope, $http, $cookies, $rootScope, $interval, $timeout) {
 
-        if (window.location.href.indexOf('dummy=false') < 0) {
+        if (window.location.href.indexOf('dummy=true') > 0) {
             $http.get('courses/courses.json').success(function (data) {
-                $scope.departments = data.departments;
+                $scope.departments = [];
 
                 $scope.courses = [];
-                angular.forEach($scope.departments, function (dept) {
+                angular.forEach(data.departments, function (dept) {
+                    $scope.departments.push(dept.shortCode);
                     angular.forEach(dept.courses, function (course) {
                         var newCourse = {};
                         newCourse.title = course.title;
@@ -142,6 +143,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 });
             });
         } else {
+            $scope.isLoadingCourses = true;
             $http.get('public-api/courses/all').success(function (data) {
                 $scope.departments = []
                 $scope.courses = []
@@ -216,6 +218,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                         course.sections.push(section)
                     });
                     $scope.courses.push(course)
+                    $scope.isLoadingCourses = false;
                 });
             });
         }
@@ -243,6 +246,10 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         // console.log("there was an error")
         // }
 
+        $scope.dismissLoadingOverlay = function() {
+            $('#loading-overlay').css('display', 'none');
+        };
+
         $scope.initStuff = function() {
             $scope.courseLevels = ['100', '200', '300', '400', '500', '600'];
             $scope.currentSemester = "Summer 2014" //Should do some kind of logic or API call here
@@ -251,7 +258,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.filterOptions = {
                 levels: {}
             };
-            $scope.sortBy = 'dept.title';
+            $scope.sortBy = 'dept.shortCode';
             $scope.filteredDept = '';
             $scope.selectedCourse = undefined;
 
@@ -264,6 +271,21 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.initStuff();
         });
 
+        // This is what you will bind the filter to
+        $scope.filterText = '';
+
+        // Instantiate these variables outside the watch
+        var tempFilterText = '',
+            filterTextTimeout;
+        $scope.$watch('searchText', function(val) {
+            if (filterTextTimeout) $timeout.cancel(filterTextTimeout);
+
+            tempFilterText = val;
+            filterTextTimeout = $timeout(function() {
+                $scope.filterText = tempFilterText;
+            }, 250); // delay 250 ms
+        })
+
         $scope.initPlannedCourses = function() {
             $scope.plannedCourses = [];
             $scope.sumPlannedCredits = 0.0;
@@ -272,9 +294,13 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         $scope.initStuff();
 
+        $scope.allFilter = function(course) {
+            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length));
+        };
+
         // Searches both course name and course description fields
         $scope.searchQueryFilter = function(course) {
-            var q = angular.lowercase($scope.filterOptions.searchQuery);
+            var q = angular.lowercase($scope.filterText);
             return (!angular.isDefined(q) || q == "" ||
                 (angular.lowercase(course.title).indexOf(q) >= 0 ||
                     angular.lowercase(course.description).indexOf(q) >= 0 ||
@@ -282,7 +308,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                     angular.lowercase(course.dept.title).indexOf(q) >= 0 ||
                     angular.lowercase(course.courseId).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.shortCode + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0 ||
-                    angular.lowercase(course.dept.title.replace(/\s/g,'') + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0));
+                    angular.lowercase(course.dept.shortCode.replace(/\s/g,'') + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0));
         };
 
         //Filters by department
