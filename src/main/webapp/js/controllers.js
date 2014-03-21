@@ -32,6 +32,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
                             data['username'] = $rootScope.loginUsername;
                             if (data['pepper'] < 7) {
                                 $rootScope.addAlert("There is a problem connecting to the server");
+                                return;
                             }
                             else {
                                 data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
@@ -87,6 +88,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
                 data['username'] = username;
                 if (data['pepper'] < 7) {
                     $rootScope.addAlert("There is a problem connecting to the server");
+                    return;
                 }
                 else {
                     data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
