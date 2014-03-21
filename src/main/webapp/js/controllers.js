@@ -30,7 +30,12 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
             } else {
                 $http.get('/auth/login').success(function(data, status, headers) {
                             data['username'] = $rootScope.loginUsername;
-                            data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
+                            if (data['pepper'] < 7) {
+                                $rootScope.addAlert("There is a problem connecting to the server");
+                            }
+                            else {
+                                data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
+                            }
 
                         $http.post('/auth/login', data)
                                 .success(function(data) {
@@ -80,7 +85,12 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animat
 
             $http.get('/auth/login').success(function(data, status, headers) {
                 data['username'] = username;
-                data['pass'] = doHash(password, data['pepper']);
+                if (data['pepper'] < 7) {
+                    $rootScope.addAlert("There is a problem connecting to the server");
+                }
+                else {
+                    data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
+                }
 
             $http.post('/auth/register', data)
                     .success(function(data) {
