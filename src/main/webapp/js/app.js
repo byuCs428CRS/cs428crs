@@ -5,6 +5,7 @@ var classregApp = angular.module('classregApp', [
   'ngRoute',
   'classregControllers',
   'ngCookies',
+  'ngAnimate',
   'ui.calendar'
 ]).run(function($rootScope) {
     $rootScope.$rootScope = $rootScope;
@@ -17,8 +18,7 @@ classregApp.config(['$routeProvider',
         templateUrl: 'partials/home.html'
       }).
       when('/plan', {
-        templateUrl: 'partials/plan.html',
-        controller: 'CourseListCtrl'
+        templateUrl: 'partials/plan.html'
       }).
       when('/about', {
       	templateUrl: 'partials/about.html'

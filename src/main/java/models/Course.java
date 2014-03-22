@@ -17,6 +17,16 @@ public class Course {
     private String department;
     private String registrationType;
     private String courseNumber;
+
+    public String getCreditHours() {
+        return creditHours;
+    }
+
+    public void setCreditHours(String creditHours) {
+        this.creditHours = creditHours;
+    }
+
+    private String creditHours;
     private List<Section> sections;
 
     public Course() {

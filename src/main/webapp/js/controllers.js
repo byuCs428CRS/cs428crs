@@ -8,8 +8,8 @@ var conflictingEventColor = '#C25151';
 /* Controllers */
 var classregControllers = angular.module('classregControllers', []);
 
-classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http',
-    function($rootScope, $http) {
+classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animate',
+    function($rootScope, $http, $animate) {
         // query the server to check if the user is in an authenticated session right now
         $rootScope.signinAlerts = [];
         $rootScope.signinTab = true;
@@ -28,21 +28,44 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http',
             if (!($rootScope.loginUsername && $rootScope.loginUsername.length && $rootScope.loginPassword && $rootScope.loginPassword.length)) {
                 $rootScope.addAlert("All fields are required.");
             } else {
-                $rootScope.loggedIn = true;
-                $rootScope.username = $rootScope.loginUsername;
-                $('#loginModal').modal('hide');
+                $http.get('/auth/login').success(function(data, status, headers) {
+                            data['username'] = $rootScope.loginUsername;
+                            if (data['pepper'] < 7) {
+                                $rootScope.addAlert("There is a problem connecting to the server. Please try again later.");
+                                return;
+                            }
+                            else {
+                                data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
+                            }
+
+                        $http.post('/auth/login', data)
+                                .success(function(data) {
+                                    console.log(data);
+                                    // successful
+                                    $rootScope.loggedIn = true;
+                                    $rootScope.username = $rootScope.loginUsername;
+                                    $('#loginModal').modal('hide');
+                                }).error(function(data) {
+                                    //console.log(data);
+                                    $rootScope.addAlert("There was a problem with your username or password.");
+                                });
+                        }).error(function(data) {
+                            $rootScope.addAlert("There was an error creating your account. Please try again later.");
+                        });
                 //$rootScope._savePlan();
             }
         };
 
         $rootScope.signOutUser = function() {
-            $rootScope.$broadcast('userSignedOut');
-            $rootScope.loggedIn = false;
-            $rootScope.loginUsername = '';
-            $rootScope.loginPassword = '';
-            $rootScope.createUsername = '';
-            $rootScope.createPassword = '';
-            $rootScope.createPassword2 = '';
+            $http.get('/auth/logout').success(function(data, status, headers) {
+                $rootScope.$broadcast('userSignedOut');
+                $rootScope.loggedIn = false;
+                $rootScope.loginUsername = '';
+                $rootScope.loginPassword = '';
+                $rootScope.createUsername = '';
+                $rootScope.createPassword = '';
+                $rootScope.createPassword2 = '';
+            });
         };
 
         $rootScope.createUserAccount = function() {
@@ -51,7 +74,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http',
                 $rootScope.addAlert("All fields are required.");
             } else if (!/^[a-z0-9_\-@]+$/i.test($rootScope.createUsername)) {
                 $rootScope.addAlert("Username cannot contain special characters other than -, _, and @.");
-            } else if ($scope.createPassword != $rootScope.createPassword2) {
+            } else if ($rootScope.createPassword != $rootScope.createPassword2) {
                 $rootScope.addAlert("Passwords do not match.");
             } else {
                 $rootScope.registerUser($rootScope.createUsername, $rootScope.createPassword);
@@ -60,11 +83,17 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http',
 
         $rootScope.registerUser = function(username, password) {
 
-            $http.get('http://andyetitcompiles.com/auth/login').success(function(data, status, headers) {
+            $http.get('/auth/login').success(function(data, status, headers) {
                 data['username'] = username;
-                data['pass'] = doHash(password, data['pepper']);
+                if (data['pepper'] < 7) {
+                    $rootScope.addAlert("There is a problem connecting to the server");
+                    return;
+                }
+                else {
+                    data['pass'] = doHash(password, data['pepper']);
+                }
 
-                $http.post('http://andyetitcompiles.com/auth/register', data)
+            $http.post('/auth/register', data)
                     .success(function(data) {
                         console.log(data);
                         // successful
@@ -74,7 +103,7 @@ classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http',
                     }).error(function(data) {
                         //console.log(data);
                         // username already exists?
-                        $rootScope.addAlert("There was a problem with your username or password.");
+                        $rootScope.addAlert("Sorry, this username is already taken.");
                     });
             }).error(function(data) {
                 $rootScope.addAlert("There was an error creating your account.");
@@ -92,15 +121,16 @@ classregControllers.controller('HeaderController', ['$scope', '$rootScope', '$lo
     }
 ]);
 
-classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval',
-    function($scope, $http, $cookies, $rootScope, $interval) {
+classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval', '$timeout',
+    function($scope, $http, $cookies, $rootScope, $interval, $timeout) {
 
-        if (window.location.href.indexOf('dummy=false') < 0) {
+        if (window.location.href.indexOf('dummy=true') > 0) {
             $http.get('courses/courses.json').success(function (data) {
-                $scope.departments = data.departments;
+                $scope.departments = [];
 
                 $scope.courses = [];
-                angular.forEach($scope.departments, function (dept) {
+                angular.forEach(data.departments, function (dept) {
+                    $scope.departments.push(dept.shortCode);
                     angular.forEach(dept.courses, function (course) {
                         var newCourse = {};
                         newCourse.title = course.title;
@@ -142,6 +172,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 });
             });
         } else {
+            $scope.isLoadingCourses = true;
             $http.get('public-api/courses/all').success(function (data) {
                 $scope.departments = []
                 $scope.courses = []
@@ -216,8 +247,12 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                         course.sections.push(section)
                     });
                     $scope.courses.push(course)
+                    $scope.isLoadingCourses = false;
                 });
             });
+            // popular courses to be shown when there are no filters applied
+            $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
+
         }
 
         var autoSave = $interval(function () {
@@ -243,6 +278,10 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         // console.log("there was an error")
         // }
 
+        $scope.dismissLoadingOverlay = function() {
+            $('#loading-overlay').css('display', 'none');
+        };
+
         $scope.initStuff = function() {
             $scope.courseLevels = ['100', '200', '300', '400', '500', '600'];
             $scope.currentSemester = "Summer 2014" //Should do some kind of logic or API call here
@@ -251,7 +290,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.filterOptions = {
                 levels: {}
             };
-            $scope.sortBy = 'dept.title';
+            $scope.sortBy = 'dept.shortCode';
             $scope.filteredDept = '';
             $scope.selectedCourse = undefined;
 
@@ -264,6 +303,21 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.initStuff();
         });
 
+        // This is what you will bind the filter to
+        $scope.filterText = '';
+
+        // Instantiate these variables outside the watch
+        var tempFilterText = '',
+            filterTextTimeout;
+        $scope.$watch('searchText', function(val) {
+            if (filterTextTimeout) $timeout.cancel(filterTextTimeout);
+
+            tempFilterText = val;
+            filterTextTimeout = $timeout(function() {
+                $scope.filterText = tempFilterText;
+            }, 250); // delay 250 ms
+        })
+
         $scope.initPlannedCourses = function() {
             $scope.plannedCourses = [];
             $scope.sumPlannedCredits = 0.0;
@@ -272,9 +326,13 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         $scope.initStuff();
 
+        $scope.allFilter = function(course) {
+            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.popularCourses.indexOf(course.dept.shortCode + course.courseId) > -1);
+        };
+
         // Searches both course name and course description fields
         $scope.searchQueryFilter = function(course) {
-            var q = angular.lowercase($scope.filterOptions.searchQuery);
+            var q = angular.lowercase($scope.filterText);
             return (!angular.isDefined(q) || q == "" ||
                 (angular.lowercase(course.title).indexOf(q) >= 0 ||
                     angular.lowercase(course.description).indexOf(q) >= 0 ||
@@ -282,7 +340,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                     angular.lowercase(course.dept.title).indexOf(q) >= 0 ||
                     angular.lowercase(course.courseId).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.shortCode + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0 ||
-                    angular.lowercase(course.dept.title.replace(/\s/g,'') + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0));
+                    angular.lowercase(course.dept.shortCode.replace(/\s/g,'') + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0));
         };
 
         //Filters by department
@@ -313,6 +371,14 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 $scope.selectedCourse = course[0];
             }
         };
+
+        $scope.$on("eventClicked", function (event, args) {
+            var course = args.courseName;
+            course = course.split(' ');
+            var dept = course[0];
+            var id = course[1];
+            $scope.updateSelectedCourse(dept, id);
+        });
 
         $scope.abbreviateDay = function(day) {
             switch( day ) {
@@ -368,7 +434,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.added = false;
             // when the class is added, remove its temporary calendar event
             $scope.hideTempEvent(course, section);
-            var fullCourseName = course.dept.shortCode + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
             var cid = fullCourseName + "-" + section.sectionId;
             var classLocation = section.buildingAbbreviation + ' ' + section.room;
 
@@ -417,7 +483,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.showTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
             var cid = fullCourseName + "-" + section.sectionId;
             if (!$scope.isPlanned(cid)) {
                 // change color of other sections of this course to gray
@@ -428,7 +494,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.hideTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
             var cid = fullCourseName + "-" + section.sectionId;
             $scope.$broadcast("courseRemoved", {course: cid, temp: true});
             // change color of other sections of this course back to default
@@ -470,8 +536,8 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
             var regFrame = $("#registration-iframe");
             regFrame.attr("src", url + query);
-            $scope.initPlannedCourses();
-            $scope.added = true;
+            // $scope.initPlannedCourses();
+            // $scope.added = true;
         };
     }]);
 
@@ -503,12 +569,22 @@ classregControllers.controller('CalendarCtrl', ['$scope',
                 columnFormat: {
                     week: 'ddd' // Mon
                 },
+                eventClick: function(event, jsEvent, view) {
+                    var courseInfo = event.title.split('-');
+                    var courseName = courseInfo[0];
+                    $scope.$emit("eventClicked", {courseName: courseName});
+//                    alert('Event: ' + calEvent.title);
+//                    alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+//                    alert('View: ' + view.name);
+
+
+                },
                 eventRender:function(event,element,view){
                     var courseInfo = event.title.split('-');
                     var courseName = courseInfo[0];
                     var sectionNum = courseInfo[1];
-                    var eventTime = $.fullCalendar.formatDate(event.start, "h:sstt")+" - "+
-                        $.fullCalendar.formatDate(event.end, "h:sstt");
+                    var eventTime = $.fullCalendar.formatDate(event.start, "h:mm")+" - "+
+                        $.fullCalendar.formatDate(event.end, "h:mm");
 
                     element.qtip({
                         content:{
