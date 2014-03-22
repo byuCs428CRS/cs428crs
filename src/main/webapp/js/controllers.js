@@ -458,6 +458,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 plannedCourse.titleCode = course.titleCode;
                 plannedCourse.credits = course.credits;
                 plannedCourse.sectionType = section.sectionType;
+                plannedCourse.title = course.title;
                 $scope.plannedCourses.push(plannedCourse);
             }
             $scope.sumPlannedCredits += course.credits;
@@ -526,12 +527,14 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 klass.credits = $scope.plannedCourses[i].credits;
                 klass.sectionType = $scope.plannedCourses[i].sectionType;
                 klass.sectionId = $scope.plannedCourses[i].sectionId;
+                klass.dept = $scope.plannedCourses[i].dept.shortCode
+                klass.title = $scope.plannedCourses[i].title;
                 classes.push(klass)
             }
             $cookies.classes = JSON.stringify(classes)
 
             var domain = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-            var query = '?service='+encodeURIComponent(domain+'/register.html');
+            var query = '?service='+encodeURIComponent(domain+'/byu-login-landing.html');
             var url = 'https://cas.byu.edu/cas/login';
 
             var regFrame = $("#registration-iframe");
@@ -754,10 +757,15 @@ classregControllers.controller('CalendarCtrl', ['$scope',
 
     }]);
 
+window.addEventListener("byulogincomplete", function(event) {
+    $("registration-iframe").attr("scrolling", "yes")
+    console.log("login complete")
+});
+
 //TODO remove when not necessary
 function loadRegistrationPage() {
     var domain = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-    $("#registration-iframe").attr("src", domain + '/register.html')
+    $("#registration-iframe").attr("src", domain + '/byu-login-landing.html')
 }
 
 //TODO remove when not necessary
