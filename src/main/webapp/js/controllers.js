@@ -336,7 +336,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             return (!angular.isDefined(q) || q == "" ||
                 (angular.lowercase(course.title).indexOf(q) >= 0 ||
                     angular.lowercase(course.description).indexOf(q) >= 0 ||
-                    angular.lowercase(course.dept.shortCode).indexOf(q) >= 0 ||
+                    angular.lowercase(course.dept.shortCode.replace(/ /g, '')).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.title).indexOf(q) >= 0 ||
                     angular.lowercase(course.courseId).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.shortCode + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0 ||
