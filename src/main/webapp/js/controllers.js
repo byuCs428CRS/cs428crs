@@ -757,18 +757,11 @@ classregControllers.controller('CalendarCtrl', ['$scope',
 
     }]);
 
-window.addEventListener("byulogincomplete", function(event) {
-    $("registration-iframe").attr("scrolling", "yes")
-    console.log("login complete")
-});
-
-//TODO remove when not necessary
 function loadRegistrationPage() {
     var domain = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
     $("#registration-iframe").attr("src", domain + '/byu-login-landing.html')
 }
 
-//TODO remove when not necessary
 function clearCaptchaCookies() {
     document.cookie = "recaptchaChallenge" + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.cookie = "recaptchaAnswer" + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
