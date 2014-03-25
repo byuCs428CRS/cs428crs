@@ -112,7 +112,7 @@ public class PublicWebController {
     public String registerSchedule(@RequestBody String courseDetails) {
         System.out.println(courseDetails);
         return "redirect:https://cas.byu.edu/cas/login?service=http://andyetitcompiles.com/" +
-                "register/handle?courseInfo="
+                "public-api/register/handle?courseInfo="
                 + courseDetails;
     }
 
@@ -120,10 +120,10 @@ public class PublicWebController {
     public @ResponseBody
     String handleRegistration(
             @RequestParam String courseInfo,
-            @RequestParam String token)
+            @RequestParam String ticket)
     {
 
-        return "ok " + courseInfo + " " + token;
+        return "ok " + courseInfo + " " + ticket;
     }
 
 
