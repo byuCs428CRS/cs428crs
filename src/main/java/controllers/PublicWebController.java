@@ -108,6 +108,25 @@ public class PublicWebController {
 		return new Courses();
 	}
 
+    @RequestMapping(value = "/register", method = POST)
+    public String registerSchedule(@RequestBody String courseDetails) {
+        System.out.println(courseDetails);
+        return "redirect:https://cas.byu.edu/cas/login?service=http://andyetitcompiles.com/" +
+                "register/handle?courseInfo="
+                + courseDetails;
+    }
+
+    @RequestMapping(value = "/register/handle")
+    public @ResponseBody
+    String handleRegistration(
+            @RequestParam String courseInfo,
+            @RequestParam String token)
+    {
+
+        return "ok " + courseInfo + " " + token;
+    }
+
+
   @RequestMapping(value = "/schedules/all", method = GET)
   public @ResponseBody
   Schedules getSchedulesForUser(HttpSession session)
