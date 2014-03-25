@@ -122,7 +122,7 @@ public class PublicWebController {
             @RequestParam String courseInfo,
             @RequestParam String ticket)
     {
-
+        webService.handleRegistration(courseInfo, ticket);
         return "ok " + courseInfo + " " + ticket;
     }
 
