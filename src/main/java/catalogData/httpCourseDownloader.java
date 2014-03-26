@@ -70,37 +70,38 @@ public class httpCourseDownloader {
 	 
 	 public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 
-         String fileName = "AMGData.txt";
-		 PrintWriter writer = new PrintWriter(fileName, "UTF-8");
-		 
-		 //getCourseData(writer);
-		 
-		 for(String dept : DEPTS){
-			System.out.println(dept);
-			
-			//writer.println("<br>DEPARTMENT= " + dept + "<br>"); 
-			
-			String targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/searchXML.php";
-			String urlParams = "SEMESTER=20135&CREDIT_TYPE=A&DEPT="+ dept +"&INST=&DESCRIPTION=&DAYFILTER=&BEGINTIME=&ENDTIME=&SECTION_TYPE=&CREDITS=&CREDITCOMP=&CATFILTER=&BLDG=";
-			String out = excutePost(targetURL, urlParams);
+         String outputFileName = "Fall2014Catalog.txt";
+         String semesterCode = "20145"; // TODO - Find each semester code
 
-			writer.println(out);
-
-			
-			//getCourseData(writer);
-
-		 }
-		writer.close();
-        removeHtml(fileName);
+         downloadCourses(outputFileName, semesterCode);
+         removeHtmlFromFile(outputFileName);
 	}
 
+    private static void downloadCourses(String outputFileName, String semesterCode) throws FileNotFoundException, UnsupportedEncodingException {
+        
+        PrintWriter writer = new PrintWriter(outputFileName, "UTF-8");
+        String creditType = "A"; //Figure out what this means, also "S"
+        
+        for(String dept : DEPTS){
+           System.out.println(dept);
+           
+           String targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/searchXML.php";
+           String urlParams = "SEMESTER=" + semesterCode + "&CREDIT_TYPE=" + creditType + "&DEPT="+ dept +"&INST=&DESCRIPTION=&DAYFILTER=&BEGINTIME=&ENDTIME=&SECTION_TYPE=&CREDITS=&CREDITCOMP=&CATFILTER=&BLDG=";
+           String out = excutePost(targetURL, urlParams);
 
-    public static void removeHtml(String fileName) throws FileNotFoundException {
+           writer.println(out);
+
+        }
+        writer.close();
+    }
+
+
+    public static void removeHtmlFromFile(String fileName) throws FileNotFoundException {
         String htmlString = new Scanner(new File(fileName)).useDelimiter("\\Z").next();
         htmlString=htmlString.replaceAll("<br>","\n");
         htmlString=htmlString.replaceAll("</li>","\n");
         String noHTMLString = htmlString.replaceAll("\\<.*?\\>", "");
-        PrintWriter out = new PrintWriter("New" + fileName);
+        PrintWriter out = new PrintWriter("Parseable" + fileName);
         //System.out.println(noHTMLString);
         out.println(noHTMLString);
         out.close();
@@ -136,7 +137,7 @@ public class httpCourseDownloader {
         reader2.close();
     }
 
-    public static void getCourseData(PrintWriter writer, Section s, Course c) {
+    public static void getDataForCourse(PrintWriter writer, Section s, Course c, String semesterCode) {
 		String targetURL;
 		String urlParams;
 		//Individual Course HTTP requests here
@@ -145,8 +146,8 @@ public class httpCourseDownloader {
 		String courseID = c.getCourseID(); //"02859";
 		String titleCode = c.getNewTitleCode(); //"006";
 		//Catalog, Syllabus
-		String section = s.getSectionID();//"052";
-		String yearTerm = "20135";
+		String section = s.getSectionID(); //"052";
+		String yearTerm = semesterCode; //Spring = "20135"
 		String creditType= "S";
 		//Only Syllabus
 		String department = c.getDepartment();//"A+HTG";
