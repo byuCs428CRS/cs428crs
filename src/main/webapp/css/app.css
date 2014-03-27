@@ -172,3 +172,8 @@ h2 {
     cursor: pointer !important;
     cursor: hand !important;
 }
+
+.sections-table-container {
+    height: 65vh;
+    overflow: scroll;
+}
