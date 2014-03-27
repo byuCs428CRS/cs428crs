@@ -8,110 +8,110 @@ var conflictingEventColor = '#C25151';
 /* Controllers */
 var classregControllers = angular.module('classregControllers', []);
 
-classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animate',
-    function($rootScope, $http, $animate) {
-        // query the server to check if the user is in an authenticated session right now
-        $rootScope.signinAlerts = [];
-        $rootScope.signinTab = true;
-        $rootScope.createTab = false;
-
-        $rootScope.addAlert = function(message) {
-            $rootScope.signinAlerts.push({msg: message});
-        };
-
-        $rootScope.closeAlert = function(index) {
-            $rootScope.signinAlerts.splice(index, 1);
-        };
-
-        $rootScope.signInUser = function() {
-            $rootScope.signinAlerts.length = 0;
-            if (!($rootScope.loginUsername && $rootScope.loginUsername.length && $rootScope.loginPassword && $rootScope.loginPassword.length)) {
-                $rootScope.addAlert("All fields are required.");
-            } else {
-                $http.get('/auth/login').success(function(data, status, headers) {
-                            data['username'] = $rootScope.loginUsername;
-                            if (data['pepper'] < 7) {
-                                $rootScope.addAlert("There is a problem connecting to the server. Please try again later.");
-                                return;
-                            }
-                            else {
-                                data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
-                            }
-
-                        $http.post('/auth/login', data)
-                                .success(function(data) {
-                                    console.log(data);
-                                    // successful
-                                    $rootScope.loggedIn = true;
-                                    $rootScope.username = $rootScope.loginUsername;
-                                    $('#loginModal').modal('hide');
-                                }).error(function(data) {
-                                    //console.log(data);
-                                    $rootScope.addAlert("There was a problem with your username or password.");
-                                });
-                        }).error(function(data) {
-                            $rootScope.addAlert("There was an error creating your account. Please try again later.");
-                        });
-                //$rootScope._savePlan();
-            }
-        };
-
-        $rootScope.signOutUser = function() {
-            $http.get('/auth/logout').success(function(data, status, headers) {
-                $rootScope.$broadcast('userSignedOut');
-                $rootScope.loggedIn = false;
-                $rootScope.loginUsername = '';
-                $rootScope.loginPassword = '';
-                $rootScope.createUsername = '';
-                $rootScope.createPassword = '';
-                $rootScope.createPassword2 = '';
-            });
-        };
-
-        $rootScope.createUserAccount = function() {
-            $rootScope.signinAlerts.length = 0;
-            if (!($rootScope.createUsername && $rootScope.createUsername.length && $rootScope.createPassword && $rootScope.createPassword.length && $rootScope.createPassword2 && $rootScope.createPassword2.length)) {
-                $rootScope.addAlert("All fields are required.");
-            } else if (!/^[a-z0-9_\-@]+$/i.test($rootScope.createUsername)) {
-                $rootScope.addAlert("Username cannot contain special characters other than -, _, and @.");
-            } else if ($rootScope.createPassword != $rootScope.createPassword2) {
-                $rootScope.addAlert("Passwords do not match.");
-            } else {
-                $rootScope.registerUser($rootScope.createUsername, $rootScope.createPassword);
-            }
-        };
-
-        $rootScope.registerUser = function(username, password) {
-
-            $http.get('/auth/login').success(function(data, status, headers) {
-                data['username'] = username;
-                if (data['pepper'] < 7) {
-                    $rootScope.addAlert("There is a problem connecting to the server");
-                    return;
-                }
-                else {
-                    data['pass'] = doHash(password, data['pepper']);
-                }
-
-            $http.post('/auth/register', data)
-                    .success(function(data) {
-                        console.log(data);
-                        // successful
-                        $rootScope.loggedIn = true;
-                        $rootScope.username = username;
-                        $('#loginModal').modal('hide');
-                    }).error(function(data) {
-                        //console.log(data);
-                        // username already exists?
-                        $rootScope.addAlert("Sorry, this username is already taken.");
-                    });
-            }).error(function(data) {
-                $rootScope.addAlert("There was an error creating your account.");
-            });
-
-        };
-    }
-]);
+//classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animate',
+//    function($rootScope, $http, $animate) {
+//        // query the server to check if the user is in an authenticated session right now
+//        $rootScope.signinAlerts = [];
+//        $rootScope.signinTab = true;
+//        $rootScope.createTab = false;
+//
+//        $rootScope.addAlert = function(message) {
+//            $rootScope.signinAlerts.push({msg: message});
+//        };
+//
+//        $rootScope.closeAlert = function(index) {
+//            $rootScope.signinAlerts.splice(index, 1);
+//        };
+//
+//        $rootScope.signInUser = function() {
+//            $rootScope.signinAlerts.length = 0;
+//            if (!($rootScope.loginUsername && $rootScope.loginUsername.length && $rootScope.loginPassword && $rootScope.loginPassword.length)) {
+//                $rootScope.addAlert("All fields are required.");
+//            } else {
+//                $http.get('/auth/login').success(function(data, status, headers) {
+//                            data['username'] = $rootScope.loginUsername;
+//                            if (data['pepper'] < 7) {
+//                                $rootScope.addAlert("There is a problem connecting to the server. Please try again later.");
+//                                return;
+//                            }
+//                            else {
+//                                data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
+//                            }
+//
+//                        $http.post('/auth/login', data)
+//                                .success(function(data) {
+//                                    console.log(data);
+//                                    // successful
+//                                    $rootScope.loggedIn = true;
+//                                    $rootScope.username = $rootScope.loginUsername;
+//                                    $('#loginModal').modal('hide');
+//                                }).error(function(data) {
+//                                    //console.log(data);
+//                                    $rootScope.addAlert("There was a problem with your username or password.");
+//                                });
+//                        }).error(function(data) {
+//                            $rootScope.addAlert("There was an error creating your account. Please try again later.");
+//                        });
+//                //$rootScope._savePlan();
+//            }
+//        };
+//
+//        $rootScope.signOutUser = function() {
+//            $http.get('/auth/logout').success(function(data, status, headers) {
+//                $rootScope.$broadcast('userSignedOut');
+//                $rootScope.loggedIn = false;
+//                $rootScope.loginUsername = '';
+//                $rootScope.loginPassword = '';
+//                $rootScope.createUsername = '';
+//                $rootScope.createPassword = '';
+//                $rootScope.createPassword2 = '';
+//            });
+//        };
+//
+//        $rootScope.createUserAccount = function() {
+//            $rootScope.signinAlerts.length = 0;
+//            if (!($rootScope.createUsername && $rootScope.createUsername.length && $rootScope.createPassword && $rootScope.createPassword.length && $rootScope.createPassword2 && $rootScope.createPassword2.length)) {
+//                $rootScope.addAlert("All fields are required.");
+//            } else if (!/^[a-z0-9_\-@]+$/i.test($rootScope.createUsername)) {
+//                $rootScope.addAlert("Username cannot contain special characters other than -, _, and @.");
+//            } else if ($rootScope.createPassword != $rootScope.createPassword2) {
+//                $rootScope.addAlert("Passwords do not match.");
+//            } else {
+//                $rootScope.registerUser($rootScope.createUsername, $rootScope.createPassword);
+//            }
+//        };
+//
+//        $rootScope.registerUser = function(username, password) {
+//
+//            $http.get('/auth/login').success(function(data, status, headers) {
+//                data['username'] = username;
+//                if (data['pepper'] < 7) {
+//                    $rootScope.addAlert("There is a problem connecting to the server");
+//                    return;
+//                }
+//                else {
+//                    data['pass'] = doHash(password, data['pepper']);
+//                }
+//
+//            $http.post('/auth/register', data)
+//                    .success(function(data) {
+//                        console.log(data);
+//                        // successful
+//                        $rootScope.loggedIn = true;
+//                        $rootScope.username = username;
+//                        $('#loginModal').modal('hide');
+//                    }).error(function(data) {
+//                        //console.log(data);
+//                        // username already exists?
+//                        $rootScope.addAlert("Sorry, this username is already taken.");
+//                    });
+//            }).error(function(data) {
+//                $rootScope.addAlert("There was an error creating your account.");
+//            });
+//
+//        };
+//    }
+//]);
 
 classregControllers.controller('HeaderController', ['$scope', '$rootScope', '$location',
     function($scope, $rootScope, $location) {
@@ -256,9 +256,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         }
 
         var autoSave = $interval(function () {
-            if ($rootScope.loggedIn) {
-                $scope._savePlan()
-            }
+            $scope._savePlan()
         }, 5000);
         $scope.$on('$destroy', function () { $interval.cancel(autoSave); });
 
@@ -299,9 +297,9 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             });
         };
 
-        $scope.$on("userSignedOut", function() {
-            $scope.initStuff();
-        });
+//        $scope.$on("userSignedOut", function() {
+//            $scope.initStuff();
+//        });
 
         // This is what you will bind the filter to
         $scope.filterText = '';
@@ -503,12 +501,8 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.savePlan = function() {
-            if (!$rootScope.loggedIn) {
-                $('#loginModal').modal('show');
-            } else {
-                //TODO: save the plan to the database under the current session
-                $scope._savePlan();
-            }
+            // TODO: save plan to cookies
+            $scope._savePlan();
         };
 
         $scope._savePlan = function() {
@@ -626,7 +620,7 @@ classregControllers.controller('CalendarCtrl', ['$scope',
                     }
                     var startMins = parseInt(startTime[1]);
                     var endHrs = parseInt(endTime[0]);
-                    if (endHrs >= 1 && endHrs <= 6) {
+                    if (endHrs >= 1 && endHrs <= 6 || (endHrs >= 1 && endHrs <= 10 && startHrs >= 1 && startHrs <= 6)) {
                         endHrs += 12;
                     }
                     var endMins = parseInt(endTime[1]);

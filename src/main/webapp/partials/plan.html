@@ -61,7 +61,7 @@
                     <h5>{{ selectedCourse.title }}</h5>
                     <p>{{ selectedCourse.description }}</p>
                     <p>Credit hours: {{ selectedCourse.credits }}</p>
-                    <div>
+                    <div class="sections-table-container">
                         <table class="table table-condensed">
                             <thead>
                             <tr>
@@ -104,7 +104,7 @@
         </div>
         <div class="col-md-4 col-sm-4">
             <div class="well">
-                <h3 class="text-center">My Planned Classes</h3>
+                <h3 class="text-center">My Planned Classes (Spring/Summer 2014)</h3>
                 <!--<h5>{{currentSemester}}</h5>-->
                 <p ng-show="!plannedCourses.length">Add some classes you want to take next semester!</p>
                 <table class="table table-condensed">
@@ -188,74 +188,74 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div ng-controller="RootScopeCtrl" class="modal fade" id="loginModal">
+<!--<div ng-controller="RootScopeCtrl" class="modal fade" id="loginModal">-->
 
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Sign in or create a new account to save your plan.</h3>
-            </div>
+    <!--<div class="modal-dialog">-->
+        <!--<div class="modal-content">-->
+            <!--<div class="modal-header">-->
+                <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+                <!--<h3>Sign in or create a new account to save your plan.</h3>-->
+            <!--</div>-->
 
-            <div class="modal-body">
+            <!--<div class="modal-body">-->
 
-                <ul class="nav nav-tabs" id="tabContent">
-                    <li ng-class="{active: $rootScope.signinTab}" ng-click="$rootScope.signinTab = true; $rootScope.createTab = false; $rootScope.signinAlerts.length = 0;">
-                        <a class="linky">Sign in</a>
-                    </li>
-                    <li ng-class="{active: $rootScope.createTab}" ng-click="$rootScope.signinTab = false; $rootScope.createTab = true; $rootScope.signinAlerts.length = 0;">
-                        <a class="linky">Create account</a>
-                    </li>
-                </ul>
-                <br>
-                <div class="tab-content">
+                <!--<ul class="nav nav-tabs" id="tabContent">-->
+                    <!--<li ng-class="{active: $rootScope.signinTab}" ng-click="$rootScope.signinTab = true; $rootScope.createTab = false; $rootScope.signinAlerts.length = 0;">-->
+                        <!--<a class="linky">Sign in</a>-->
+                    <!--</li>-->
+                    <!--<li ng-class="{active: $rootScope.createTab}" ng-click="$rootScope.signinTab = false; $rootScope.createTab = true; $rootScope.signinAlerts.length = 0;">-->
+                        <!--<a class="linky">Create account</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+                <!--<br>-->
+                <!--<div class="tab-content">-->
 
-                    <!-- alerts for invalid form entry-->
-                    <div class="alert alert-info alert-dismissable" ng-repeat="alert in $rootScope.signinAlerts" type="alert.type">
-                        <button type="button" ng-click="$rootScope.closeAlert($index)" class="close" data-dismiss="alert" area-hidden="true">&times;</button>
-                        {{alert.msg}}
-                    </div>
+                    <!--&lt;!&ndash; alerts for invalid form entry&ndash;&gt;-->
+                    <!--<div class="alert alert-info alert-dismissable" ng-repeat="alert in $rootScope.signinAlerts" type="alert.type">-->
+                        <!--<button type="button" ng-click="$rootScope.closeAlert($index)" class="close" data-dismiss="alert" area-hidden="true">&times;</button>-->
+                        <!--{{alert.msg}}-->
+                    <!--</div>-->
 
-                    <div ng-class="{active: $rootScope.signinTab}" class="tab-pane" id="signin">
-                        <form role="form" autocomplete="off">
-                            <div class="form-group">
-                                <label for="loginUsername">Username</label>
-                                <input ng-model="$rootScope.loginUsername" type="text" maxlength="20" class="form-control" id="loginUsername" placeholder="Enter username">
-                            </div>
-                            <div class="form-group">
-                                <label for="loginPassword">Password</label>
-                                <input ng-model="$rootScope.loginPassword" type="password" maxlength="35" class="form-control" id="loginPassword" placeholder="Password">
-                            </div>
-                            <hr>
-                            <button type="submit" ng-click="$rootScope.signInUser()" class="btn btn-primary">Sign in</button>
-                            <button class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        </form>
-                    </div>
-                    <div ng-class="{active: $rootScope.createTab}" class="tab-pane" id="createaccount">
+                    <!--<div ng-class="{active: $rootScope.signinTab}" class="tab-pane" id="signin">-->
+                        <!--<form role="form" autocomplete="off">-->
+                            <!--<div class="form-group">-->
+                                <!--<label for="loginUsername">Username</label>-->
+                                <!--<input ng-model="$rootScope.loginUsername" type="text" maxlength="20" class="form-control" id="loginUsername" placeholder="Enter username">-->
+                            <!--</div>-->
+                            <!--<div class="form-group">-->
+                                <!--<label for="loginPassword">Password</label>-->
+                                <!--<input ng-model="$rootScope.loginPassword" type="password" maxlength="35" class="form-control" id="loginPassword" placeholder="Password">-->
+                            <!--</div>-->
+                            <!--<hr>-->
+                            <!--<button type="submit" ng-click="$rootScope.signInUser()" class="btn btn-primary">Sign in</button>-->
+                            <!--<button class="btn btn-default" data-dismiss="modal">Cancel</button>-->
+                        <!--</form>-->
+                    <!--</div>-->
+                    <!--<div ng-class="{active: $rootScope.createTab}" class="tab-pane" id="createaccount">-->
 
-                        <form role="form" autocomplete="off">
-                            <div class="form-group">
-                                <label for="createUsername">Username</label>
-                                <input ng-model="$rootScope.createUsername" type="text" maxlength="20" class="form-control" id="createUsername" placeholder="Create a username">
-                            </div>
-                            <div class="form-group">
-                                <label for="createPassword">Password</label>
-                                <input ng-model="$rootScope.createPassword" type="password" maxlength="35" class="form-control" id="createPassword" placeholder="Create a password">
-                            </div>
-                            <div class="form-group">
-                                <label for="createPassword2">Confirm Password</label>
-                                <input ng-model="$rootScope.createPassword2" type="password" maxlength="35" class="form-control" id="createPassword2" placeholder="Confirm password">
-                            </div>
-                            <hr>
-                            <button type="submit" ng-click="$rootScope.createUserAccount()" class="btn btn-primary">Create Account</button>
-                            <button class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                        <!--<form role="form" autocomplete="off">-->
+                            <!--<div class="form-group">-->
+                                <!--<label for="createUsername">Username</label>-->
+                                <!--<input ng-model="$rootScope.createUsername" type="text" maxlength="20" class="form-control" id="createUsername" placeholder="Create a username">-->
+                            <!--</div>-->
+                            <!--<div class="form-group">-->
+                                <!--<label for="createPassword">Password</label>-->
+                                <!--<input ng-model="$rootScope.createPassword" type="password" maxlength="35" class="form-control" id="createPassword" placeholder="Create a password">-->
+                            <!--</div>-->
+                            <!--<div class="form-group">-->
+                                <!--<label for="createPassword2">Confirm Password</label>-->
+                                <!--<input ng-model="$rootScope.createPassword2" type="password" maxlength="35" class="form-control" id="createPassword2" placeholder="Confirm password">-->
+                            <!--</div>-->
+                            <!--<hr>-->
+                            <!--<button type="submit" ng-click="$rootScope.createUserAccount()" class="btn btn-primary">Create Account</button>-->
+                            <!--<button class="btn btn-default" data-dismiss="modal">Cancel</button>-->
+                        <!--</form>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
 
 
 <!--Overlay for when courses are loading-->
