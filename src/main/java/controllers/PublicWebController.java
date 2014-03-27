@@ -109,7 +109,8 @@ public class PublicWebController {
 	}
 
     @RequestMapping(value = "/register", method = POST)
-    public String registerSchedule(@RequestBody String courseDetails) {
+    public String registerSchedule(@RequestBody String courseDetails, HttpSession session) {
+      session.setAttribute("CourseInfo", courseDetails);
         System.out.println(courseDetails);
         return "redirect:https://cas.byu.edu/cas/login?service=http://andyetitcompiles.com/" +
                 "public-api/register/handle?courseInfo="
@@ -119,9 +120,9 @@ public class PublicWebController {
     @RequestMapping(value = "/register/handle")
     public @ResponseBody
     String handleRegistration(
-            @RequestParam String courseInfo,
-            @RequestParam String ticket)
+            @RequestParam String ticket, HttpSession session)
     {
+      String courseInfo = (String) session.getAttribute("CourseInfo");
         webService.handleRegistration(courseInfo, ticket);
         return "ok " + courseInfo + " " + ticket;
     }

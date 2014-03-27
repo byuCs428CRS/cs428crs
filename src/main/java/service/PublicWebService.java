@@ -4,14 +4,18 @@ import database.DatabaseRegistrationStore;
 import database.MemoryRegistrationStore;
 import database.RegistrationStore;
 import exceptions.ForbiddenException;
-import models.*;
+import models.Course;
+import models.Department;
+import models.Schedule;
 import models.requirements.CountType;
 import models.requirements.Requirement;
-import packages.*;
+import packages.Courses;
+import packages.Departments;
+import packages.Requirements;
+import packages.Schedules;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,9 +58,12 @@ public class PublicWebService {
             URL url = new URL("https://gamma.byu.edu/ry/ae/prod/registration/cgi/regOfferings.cgi");
             connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("BYU-Web-Session", courseInfo);
+            connection.setRequestProperty("Cookie", "BYU-Web-Session=" + courseInfo);
             int b = courseInfo.getBytes().length;
             connection.setRequestProperty("Content-Length", "" + b);
+
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
 
             DataOutputStream wr = new DataOutputStream (connection.getOutputStream());
 
@@ -73,8 +80,8 @@ public class PublicWebService {
                 response.append('\r');
             }
             rd.close();
-            //return response.toString();
-
+            //return response.toString();roperties()
+            System.out.println(response);
 
 
         } catch (MalformedURLException e) {
