@@ -162,14 +162,14 @@
 
 
 <div class="modal fade" id="registrationIframeModal">
-    <div class="modal-dialog" style="width:550px; height:550px;">
+    <div class="modal-dialog" style="width:585px; height:550px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">BYU Registration</h4>
             </div>
             <div class="modal-body">
-                <iframe id="registration-iframe"  width="510" height="375" style="display:none;overflow: hidden" scrolling="no" frameBorder="0"></iframe><br>
+                <iframe id="registration-iframe"  width="543" height="375" style="display:none;overflow: hidden" scrolling="no" frameBorder="0"></iframe><br>
                 <div class="well" id="registration-instructions">
                     <h3 style="margin-top:0;">Say Hello to Batch Registration</h3>
                     <div>We'll help you register for <b><i>all of your classes at once</i></b> in three simple steps:</div>
@@ -178,11 +178,7 @@
                         <li><h4>Prove you are not a robot</h4>BYU requires that you verify your divine nature once every thirty minutes.</li>
                         <li><h4>Let us do the rest</h4>We'll show you if each of your planned classes was registered to your BYU account.</li>
                     </ol>
-                    <div>Before you proceed, please make sure your BYU account's registration date is here. (If it's still in the future, no worries &ndash; just close this box and click "Save Plan" instead.)</div>
-                    <br>
-                    <div><input type="checkbox" ng-model="proceedRegistration"> My BYU account is good to go.</div>
-                    <br>
-                    <button class="btn btn-primary" ng-class="{disabled: !proceedRegistration}" onclick="$('#registration-iframe').show();$('#registration-instructions').hide()">Let's get started</button>
+                    <button class="btn btn-primary" onclick="$('#registration-iframe').show();$('#registration-instructions').hide()">Let's get started</button>
                 </div>
             </div>
             <div class="modal-footer">

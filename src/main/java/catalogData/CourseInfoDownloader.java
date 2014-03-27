@@ -34,7 +34,7 @@ public class CourseInfoDownloader {
         for(Course c : courses){
             for(Section s : c.getSections())  {
 
-                httpCourseDownloader.getCourseData(writer, s, c);
+                httpCourseDownloader.getDataForCourse(writer, s, c, "20135");
 
             }
 
@@ -42,7 +42,7 @@ public class CourseInfoDownloader {
 
 
         writer.close();
-        httpCourseDownloader.removeHtml(fileName);
+        httpCourseDownloader.removeHtmlFromFile(fileName);
 
 
 

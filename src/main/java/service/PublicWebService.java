@@ -4,11 +4,20 @@ import database.DatabaseRegistrationStore;
 import database.MemoryRegistrationStore;
 import database.RegistrationStore;
 import exceptions.ForbiddenException;
-import models.*;
+import models.Course;
+import models.Department;
+import models.Schedule;
 import models.requirements.CountType;
 import models.requirements.Requirement;
-import packages.*;
+import packages.Courses;
+import packages.Departments;
+import packages.Requirements;
+import packages.Schedules;
 
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +51,45 @@ public class PublicWebService {
   public String getCurrentSemester() {
     return "Spring2014"; //ToDo: change this
   }
+
+    public void handleRegistration(String courseInfo, String ticket) {
+        HttpsURLConnection connection = null;
+        try {
+            URL url = new URL("https://gamma.byu.edu/ry/ae/prod/registration/cgi/regOfferings.cgi");
+            connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Cookie", "BYU-Web-Session=" + courseInfo);
+            int b = courseInfo.getBytes().length;
+            connection.setRequestProperty("Content-Length", "" + b);
+
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            DataOutputStream wr = new DataOutputStream (connection.getOutputStream());
+
+            wr.writeBytes(courseInfo);
+            wr.flush();
+            wr.close();
+
+            InputStream is = connection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            String line;
+            StringBuffer response = new StringBuffer();
+            while((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            rd.close();
+            //return response.toString();roperties()
+            System.out.println(response);
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
   public Schedules getAllSchedulesForUser(String uid) {
     Schedules schedules = new Schedules();

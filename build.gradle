@@ -6,11 +6,6 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.BUILD-SNAPSHOT")
-        classpath("org.mongodb:mongo-java-driver:2.11.3")
-        classpath("org.seleniumhq.selenium:selenium-java:2.37.1")
-        classpath("com.google.guava:guava:16.0.1")
-        classpath('commons-codec:commons-codec:1.9')
-        classpath("commons-io:commons-io:2.4")
     }
 
 }
