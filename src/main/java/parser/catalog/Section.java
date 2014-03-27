@@ -1,4 +1,4 @@
-package catalog;
+package parser.catalog;
 
 import com.mongodb.BasicDBObject;
 

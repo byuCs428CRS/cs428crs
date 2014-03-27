@@ -48,10 +48,17 @@ public class httpCourseDownloader {
 	      BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 	      String line;
 	      StringBuffer response = new StringBuffer(); 
+	      
+	      boolean firstLine = true;
 	      while((line = rd.readLine()) != null) {
-	        response.append(line);
-	        response.append('\r');
+	       
+	    	if (firstLine)
+	    		firstLine = false;
+	    	else
+	    		response.append('\r');
+	    	response.append(line);
 	      }
+	      
 	      rd.close();
 	      return response.toString();
 
@@ -89,8 +96,7 @@ public class httpCourseDownloader {
            String urlParams = "SEMESTER=" + semesterCode + "&CREDIT_TYPE=" + creditType + "&DEPT="+ dept +"&INST=&DESCRIPTION=&DAYFILTER=&BEGINTIME=&ENDTIME=&SECTION_TYPE=&CREDITS=&CREDITCOMP=&CATFILTER=&BLDG=";
            String out = excutePost(targetURL, urlParams);
 
-           writer.println(out);
-
+           writer.print(out);
         }
         writer.close();
     }

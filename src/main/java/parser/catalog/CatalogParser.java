@@ -1,4 +1,4 @@
-package catalog;
+package parser.catalog;
 import com.mongodb.*;
 
 import java.util.ArrayList;
@@ -20,16 +20,21 @@ public class CatalogParser {
     {
     	
 		index = 0;
-		String fileName = System.getProperty("user.dir") + "/TestCatalog.txt";
+		String fileName = System.getProperty("user.dir") + "/ParseableFall2014Catalog.txt";
     	File file = new File(fileName);
     	try {
 		
     		BufferedReader reader = new BufferedReader(new FileReader(file));
+    		boolean firstLine = true;
     		String line = "";
     		String temp;
     		while ((temp = reader.readLine()) != null) { // If the line doesn't have "#" in it, append the next line
     			
-    			line += "\n" + temp;
+    			if (firstLine)
+    				firstLine = false;
+    			else
+    				line += "\n";	
+    			line += temp;
     			while (line.contains("#")) {
     			
     				insertElementIntoSection(line.substring(0, line.indexOf("#")));	
@@ -56,10 +61,10 @@ public class CatalogParser {
     		addDepartments(db);
     		
 	    	// Drop the course collection (so I can keep testing)
-	    	//dropCourseCollection(db);
+	    	dropCourseCollection(db);
 	    	
 	    	// Insert new courses into the db
-	    	//insertCoursesIntoDB(db);
+	    	insertCoursesIntoDB(db);
 	    	
 	    	// Immediately after inserting all courses, try printing them out FROM the db
 	    	//printCoursesFromDB(db);
@@ -74,6 +79,7 @@ public class CatalogParser {
      */
     public static void addDepartments(DB db) {
     	
+    	System.out.println("\nAdding the unique departments now");
     	// Fill a list with all the unique departments from the new sections
     	ArrayList<String> departmentList = new ArrayList<>();
     	for (int i = 0; i < sections.size(); i++) {
@@ -83,6 +89,7 @@ public class CatalogParser {
     			departmentList.add(dept);
     	}
     	
+    	System.out.print("There were a total of " + departmentList.size() + " departments found (");
     	// Remove departments that are already in the database
     	DBCollection departmentCollection = db.getCollection("department");
     	for (int i = 0; i < departmentList.size(); i++) {
@@ -96,10 +103,12 @@ public class CatalogParser {
             	i--;
             }
     	}
+    	System.out.println(departmentList.size() + " unique)\n");
     	
     	// If there are new departments, add them to the DB
     	if (departmentList.size() > 0) {
     		
+    		System.out.println("Inserting departments now..");
         	// Change the array to a list to determine
         	BasicDBObject[] departmentArray = new BasicDBObject[departmentList.size()];
         	for (int i = 0; i < departmentList.size(); i++) {
@@ -108,6 +117,7 @@ public class CatalogParser {
         		departmentArray[i].put("name", departmentList.get(i));
         	}
         	departmentCollection.insert(departmentArray);
+        	System.out.println("Done!\n");
     	}
     }
     
