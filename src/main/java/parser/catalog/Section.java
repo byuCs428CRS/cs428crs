@@ -72,7 +72,10 @@ public class Section {
 			case 9: courseName = element;
 					break;
 					
-			case 10: professor = element;
+			case 10: if (element.equals(""))
+						professor = "Staff";
+					 else 
+						professor = element;
 					 break;
 					
 			case 11: creditHours = element;
