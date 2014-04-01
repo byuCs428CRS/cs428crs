@@ -80,9 +80,13 @@ public class httpCourseDownloader {
          String outputFileName = "Fall2014Catalog.txt";
          String semesterCode = "20145"; // TODO - Find each semester code
 
-         downloadCourses(outputFileName, semesterCode);
-         removeHtmlFromFile(outputFileName);
+         createCourseDataFile(outputFileName, semesterCode);
 	}
+
+    public static void createCourseDataFile(String outputFileName, String semesterCode) throws FileNotFoundException, UnsupportedEncodingException {
+        downloadCourses(outputFileName, semesterCode);
+        removeHtmlFromFile(outputFileName);
+    }
 
     private static void downloadCourses(String outputFileName, String semesterCode) throws FileNotFoundException, UnsupportedEncodingException {
         
@@ -107,7 +111,7 @@ public class httpCourseDownloader {
         htmlString=htmlString.replaceAll("<br>","\n");
         htmlString=htmlString.replaceAll("</li>","\n");
         String noHTMLString = htmlString.replaceAll("\\<.*?\\>", "");
-        PrintWriter out = new PrintWriter("Parseable" + fileName);
+        PrintWriter out = new PrintWriter(fileName);
         //System.out.println(noHTMLString);
         out.println(noHTMLString);
         out.close();

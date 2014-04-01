@@ -18,61 +18,65 @@ public class CatalogParser {
 
     public static void main(String[] args) throws UnknownHostException
     {
-    	
-		index = 0;
-		String fileName = System.getProperty("user.dir") + "/ParseableFall2014Catalog.txt";
-    	File file = new File(fileName);
-    	try {
-		
-    		BufferedReader reader = new BufferedReader(new FileReader(file));
-    		boolean firstLine = true;
-    		String line = "";
-    		String temp;
-    		while ((temp = reader.readLine()) != null) { // If the line doesn't have "#" in it, append the next line
-    			
-    			if (firstLine)
-    				firstLine = false;
-    			else
-    				line += "\n";	
-    			line += temp;
-    			while (line.contains("#")) {
-    			
-    				insertElementIntoSection(line.substring(0, line.indexOf("#")));	
-    				line = line.substring(line.indexOf("#") + 1);
-    			}
-    		}
-    		reader.close();
-		} 
-    	catch (IOException e) {
 
-			System.out.println("Error: FILE WAS NOT FOUND");
-			e.printStackTrace();
-		}
-    	
-    	System.out.println("Success in parsing!");
-    	System.out.println("Total Sections Parsed: " + sections.size() + "\n");
-    	
-    	// Insert the courses into the database
-    	if (sections.size() > 0) {
-	    	
-    		DB db = getDB();
-    		
-    		// Add the departments for displaying a list
-    		addDepartments(db);
-    		
-	    	// Drop the course collection (so I can keep testing)
-	    	dropCourseCollection(db);
-	    	
-	    	// Insert new courses into the db
-	    	insertCoursesIntoDB(db);
-	    	
-	    	// Immediately after inserting all courses, try printing them out FROM the db
-	    	//printCoursesFromDB(db);
-    	}
-    	else
-    		System.out.println("No Sections to insert!");
+        String fileName = System.getProperty("user.dir") + "/ParseableFall2014Catalog.txt";
+        parseAndUpdateDatabase(fileName);
     }
-    
+
+    public static void parseAndUpdateDatabase(String fileName) {
+        index = 0;
+        File file = new File(fileName);
+        try {
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            boolean firstLine = true;
+            String line = "";
+            String temp;
+            while ((temp = reader.readLine()) != null) { // If the line doesn't have "#" in it, append the next line
+
+                if (firstLine)
+                    firstLine = false;
+                else
+                    line += "\n";
+                line += temp;
+                while (line.contains("#")) {
+
+                    insertElementIntoSection(line.substring(0, line.indexOf("#")));
+                    line = line.substring(line.indexOf("#") + 1);
+                }
+            }
+            reader.close();
+        }
+        catch (IOException e) {
+
+            System.out.println("Error: FILE WAS NOT FOUND");
+            e.printStackTrace();
+        }
+
+        System.out.println("Success in parsing!");
+        System.out.println("Total Sections Parsed: " + sections.size() + "\n");
+
+        // Insert the courses into the database
+        if (sections.size() > 0) {
+
+            DB db = getDB();
+
+            // Add the departments for displaying a list
+            addDepartments(db);
+
+            // Drop the course collection (so I can keep testing)
+            dropCourseCollection(db);
+
+            // Insert new courses into the db
+            insertCoursesIntoDB(db);
+
+            // Immediately after inserting all courses, try printing them out FROM the db
+            //printCoursesFromDB(db);
+        }
+        else
+            System.out.println("No Sections to insert!");
+    }
+
     /**
      * Add all of the unique departments from this list into the departments list
      * @param db
