@@ -35,6 +35,7 @@ dependencies {
     compile("org.mongodb:mongo-java-driver:2.11.3")
     compile("org.seleniumhq.selenium:selenium-java:2.37.1")
     compile("com.google.guava:guava:16.0.1")
+    compile('com.google.code.gson:gson:2.2.4')
     testCompile("junit:junit:4.11")
 }
 
