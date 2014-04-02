@@ -201,4 +201,8 @@ public class httpCourseDownloader {
         return outcomes;
     }
 
+    public static String[] getDepartments() {
+    	
+    	return DEPTS;
+    }
 }

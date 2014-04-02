@@ -86,13 +86,10 @@ public class CatalogParser {
     	
     	System.out.println("\nAdding the unique departments now");
     	// Fill a list with all the unique departments from the new sections
-    	ArrayList<String> departmentList = new ArrayList<>();
-    	for (int i = 0; i < sections.size(); i++) {
-    		
-    		String dept = sections.get(i).department;
-    		if (!departmentList.contains(dept))
-    			departmentList.add(dept);
-    	}
+    	List<String> departmentList = new ArrayList<>();
+    	String[] deptArray = httpCourseDownloader.getDepartments();
+    	for (int i = 0; i < deptArray.length; i++)
+    		departmentList.add(deptArray[i].replaceAll("+", " "));
     	
     	System.out.print("There were a total of " + departmentList.size() + " departments found (");
     	// Remove departments that are already in the database
