@@ -35,11 +35,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class PublicWebController {
 
 	private PublicWebService webService;
-    private Courses cachedCourses;
 
 	public PublicWebController() {
 		webService = new PublicWebService();
-        cachedCourses = null;
 	}
 
   @RequestMapping(value = "/health", method = GET)
@@ -90,10 +88,7 @@ public class PublicWebController {
       @RequestParam(value = "semester", required = false, defaultValue ="current") String semester)
   {
     if ("current".equals(semester)) {
-      if (cachedCourses == null) {
-        cachedCourses = webService.getAllCourses();
-      }
-      return cachedCourses;
+      return webService.getAllCourses();
     } else {
       return webService.getAllCourses(semester);
     }

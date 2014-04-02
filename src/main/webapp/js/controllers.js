@@ -26,7 +26,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             angular.forEach(data.courses, function (apiCourse) {
                 var course = {}
                 course.title = apiCourse.courseName
-                course.courseId = apiCourse.courseNumber
+                course.courseNumber = apiCourse.courseNumber
                 course.description = '' //TODO add when the api has this for us
                 if (course.sections !== null && course.sections !== undefined && course.sections.length > 0)
                     course.credits = course.sections[0].creditHours
@@ -150,7 +150,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         $scope.initStuff();
 
         $scope.allFilter = function(course) {
-            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.popularCourses.indexOf(course.dept.shortCode + course.courseId) > -1);
+            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.popularCourses.indexOf(course.dept.shortCode + course.courseNumber) > -1);
         };
 
         // Searches both course name and course description fields
@@ -161,9 +161,9 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                     angular.lowercase(course.description).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.shortCode.replace(/\s/g, '')).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.title).indexOf(q) >= 0 ||
-                    angular.lowercase(course.courseId).indexOf(q) >= 0 ||
-                    angular.lowercase(course.dept.shortCode + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0 ||
-                    angular.lowercase(course.dept.shortCode.replace(/\s/g,'') + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0));
+                    angular.lowercase(course.courseNumber).indexOf(q) >= 0 ||
+                    angular.lowercase(course.dept.shortCode + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0 ||
+                    angular.lowercase(course.dept.shortCode.replace(/\s/g,'') + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0));
         };
 
         //Filters by department
@@ -173,7 +173,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         // Filters by course level
         $scope.courseLevelFilter = function(course) {
-            var targetLevel = course.courseId[0] + '00';
+            var targetLevel = course.courseNumber[0] + '00';
             return ($scope.filterOptions.levels[targetLevel]) ? true : false;
         };
 
@@ -189,7 +189,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.updateSelectedCourse = function(dept, id) {
-            var course = $.grep($scope.courses, function(c){ return c.dept.shortCode == dept && c.courseId == id; });
+            var course = $.grep($scope.courses, function(c){ return c.dept.shortCode == dept && c.courseNumber == id; });
             if (course) {
                 $scope.selectedCourse = course[0];
             }
@@ -245,7 +245,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         // gets the planned section of a course. if no planned section, returns null.
         $scope.getPlannedCourse = function(dept, num) {
             for (var i = 0; i < $scope.plannedCourses.length; i++) {
-                if ($scope.plannedCourses[i].dept.shortCode == dept && $scope.plannedCourses[i].courseId == num) {
+                if ($scope.plannedCourses[i].dept.shortCode == dept && $scope.plannedCourses[i].courseNumber == num) {
                     return $scope.plannedCourses[i];
                 }
             }
@@ -257,13 +257,13 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.added = false;
             // when the class is added, remove its temporary calendar event
             $scope.hideTempEvent(course, section);
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
             var cid = fullCourseName + "-" + section.sectionId;
             var classLocation = section.buildingAbbreviation + ' ' + section.room;
 
             $scope.$broadcast("courseAdded", {course: cid, classPeriods: section.classPeriods, classLocation: classLocation, color: eventColor });
 
-            var theCourse = $scope.getPlannedCourse(course.dept.shortCode, course.courseId);
+            var theCourse = $scope.getPlannedCourse(course.dept.shortCode, course.courseNumber);
             if (theCourse) {
                 // if there's already another section of the same course, just replace it
                 $scope.removeCourseFromPlan(theCourse);
@@ -273,7 +273,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 var plannedCourse = new Object();
                 plannedCourse.cid = cid;
                 plannedCourse.dept = course.dept;
-                plannedCourse.courseId = course.courseId;
+                plannedCourse.courseNumber = course.courseNumber;
                 plannedCourse.sectionId = section.sectionId;
                 plannedCourse.instructor = section.professor;
                 plannedCourse.classPeriods = section.classPeriods;
@@ -307,7 +307,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.showTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
             var cid = fullCourseName + "-" + section.sectionId;
             if (!$scope.isPlanned(cid)) {
                 // change color of other sections of this course to gray
@@ -318,7 +318,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.hideTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
             var cid = fullCourseName + "-" + section.sectionId;
             $scope.$broadcast("courseRemoved", {course: cid, temp: true});
             // change color of other sections of this course back to default
@@ -341,7 +341,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             for( var i=0; i<$scope.plannedCourses.length; i++ ) {
                 var klass = {}
                 klass.e = '@AddClass';
-                klass.courseId = $scope.plannedCourses[i].byuId;
+                klass.courseNumber = $scope.plannedCourses[i].byuId;
                 klass.titleCode = $scope.plannedCourses[i].titleCode;
                 klass.credits = $scope.plannedCourses[i].credits;
                 klass.sectionType = $scope.plannedCourses[i].sectionType;

@@ -77,7 +77,7 @@ function register(useRecaptcha, klass, formToSubmit) {
     var brownie = ''
 
     brownie += 'new_year_term=' + getTerm()
-    brownie += '&curr_id=' + klass.courseId
+    brownie += '&curr_id=' + klass.courseNumber
     brownie += '&new_title_code=' + klass.titleCode
     brownie += '&page_sequence=' + '1016452204'
     brownie += '&curr_credit=' + klass.credits
