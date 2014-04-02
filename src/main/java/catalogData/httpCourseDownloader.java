@@ -162,13 +162,11 @@ public class httpCourseDownloader {
 		//Only Syllabus
 		String department = c.getDepartment();//"A+HTG";
 		String CAT = "100";
-		
-		//Outcomes
-		targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/getOutcomes.php";
-		urlParams ="CUR_ID="+ courseID + "&TITLE_CODE=" + titleCode;
-        System.out.println("\n\nURL:\n"+ targetURL +"?"+ urlParams);
-		String outcomes = excutePost(targetURL, urlParams);
-		
+
+        //Outcomes
+        String outcomes = getCourseOutcomes(courseID, titleCode);
+
+        urlParams ="CUR_ID="+ courseID + "&TITLE_CODE=" + titleCode;
 		writer.println("<br>OUTCOMES= " + urlParams + "<br>");
 		writer.println(outcomes);
         System.out.println("OUTCOMES:\n" + outcomes);
@@ -193,5 +191,14 @@ public class httpCourseDownloader {
 		writer.println(syllabus);
         System.out.println("SYLLABUS:\n" + syllabus);
 	}
+
+    public static String getCourseOutcomes(String courseID, String titleCode){
+        //Outcomes
+        String targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/getOutcomes.php";
+        String urlParams ="CUR_ID="+ courseID + "&TITLE_CODE=" + titleCode;
+        System.out.println("\n\nURL:\n"+ targetURL +"?"+ urlParams);
+        String outcomes = excutePost(targetURL, urlParams);
+        return outcomes;
+    }
 
 }

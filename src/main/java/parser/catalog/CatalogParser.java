@@ -1,13 +1,14 @@
 package parser.catalog;
+
+import catalogData.httpCourseDownloader;
 import com.mongodb.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.*;
 
 public class CatalogParser {
 	
@@ -144,10 +145,13 @@ public class CatalogParser {
     		if (courseMap.containsKey(sections.get(i).courseID))
     			courseMap.get(sections.get(i).courseID).add(sections.get(i).getDBObject());
     		else {
-    		
-    			Section s = sections.get(i);
+
+
+                Section s = sections.get(i);
+                String outcomes = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
+
     			courseMap.put(s.courseID, new ArrayList<BasicDBObject>(Arrays.asList(s.getDBObject())));
-    			courseInfoMap.put(s.courseID, new Course(s.courseID, s.courseName, s.newTitleCode, s.department, s.registrationType, s.courseNumber));
+    			courseInfoMap.put(s.courseID, new Course(s.courseID, s.courseName, outcomes, s.newTitleCode, s.department, s.registrationType, s.courseNumber));
     		}
     	}
     	
@@ -160,6 +164,7 @@ public class CatalogParser {
     		
     		newCourse.put("courseID", curCourse.getKey());
     		newCourse.put("courseName", c.courseName);
+            newCourse.put("outcomes", c.outcomes);
     		newCourse.put("newTitleCode", c.newTitleCode);
     		newCourse.put("department", c.department);
     		newCourse.put("registrationType", c.registrationType);
