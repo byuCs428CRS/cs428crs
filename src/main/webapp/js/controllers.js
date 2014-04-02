@@ -17,138 +17,88 @@ classregControllers.controller('HeaderController', ['$scope', '$rootScope', '$lo
 ]);
 
 classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval', '$timeout',
-    function($scope, $http, $cookies, $rootScope, $interval, $timeout) {
+    function ($scope, $http, $cookies, $rootScope, $interval, $timeout) {
 
-        if (window.location.href.indexOf('dummy=true') > 0) {
-            $http.get('courses/courses.json').success(function (data) {
-                $scope.departments = [];
-
-                $scope.courses = [];
-                angular.forEach(data.departments, function (dept) {
-                    $scope.departments.push(dept.shortCode);
-                    angular.forEach(dept.courses, function (course) {
-                        var newCourse = {};
-                        newCourse.title = course.title;
-                        newCourse.owningDepartment = course.owningDepartment;
-                        newCourse.courseId = course.courseId;
-                        newCourse.description = course.description;
-                        newCourse.credits = course.credits;
-                        newCourse.fulfillments = course.fulfillments;
-                        newCourse.prereqs = course.prereqs;
-                        newCourse.dept = {};
-                        newCourse.dept.title = dept.title;
-                        newCourse.dept.shortCode = dept.shortCode;
-                        newCourse.titleCode = course.titleCode;
-                        newCourse.byuId = course.byuId
-                        newCourse.sections = [];
-                        angular.forEach(course.sections, function (oldSection) {
-                            var newSection = {}
-                            newSection.sectionId = oldSection.sectionId;
-                            newSection.professor = oldSection.professor;
-                            newSection.room = oldSection.room;
-                            newSection.buildingAbbreviation = oldSection.buildingAbbreviation;
-                            newSection.classPeriods = [];
-                            newSection.classSize = oldSection.classSize;
-                            newSection.waitlistCount = oldSection.waitlistCount;
-                            newSection.registeredStudents = oldSection.registeredStudents;
-                            newSection.sectionType = oldSection.sectionType
-                            angular.forEach(oldSection.times, function (time) {
-                                var timeOfDay = time.startTime + '-' + time.endTime;
-                                if (timeOfDay in newSection.classPeriods)
-                                    newSection.classPeriods[timeOfDay] += ", " + $scope.abbreviateDay(time.day)
-                                else
-                                    newSection.classPeriods[timeOfDay] = $scope.abbreviateDay(time.day)
-                            });
-                            newCourse.sections.push(newSection)
-                        });
-                        // console.log(newCourse)
-                        $scope.courses.push(newCourse)
+        $scope.isLoadingCourses = true;
+        $http.get('public-api/courses/all').success(function (data) {
+            $scope.departments = []
+            $scope.courses = []
+            angular.forEach(data.courses, function (apiCourse) {
+                var course = {}
+                course.title = apiCourse.courseName
+                course.courseId = apiCourse.courseNumber
+                course.description = '' //TODO add when the api has this for us
+                if (course.sections !== null && course.sections !== undefined && course.sections.length > 0)
+                    course.credits = course.sections[0].creditHours
+                course.dept = {}
+                course.dept.title = '' //TODO add when the api has this for us
+                course.dept.shortCode = apiCourse.department
+                if ($scope.departments.indexOf(apiCourse.department) < 0)
+                    $scope.departments.push(apiCourse.department)
+                course.titleCode = apiCourse.newTitleCode
+                course.byuId = apiCourse.courseID
+                course.sections = []
+                angular.forEach(apiCourse.sections, function (apiSection) {
+                    var section = {}
+                    section.sectionId = apiSection.sectionID
+                    section.professor = apiSection.professor;
+                    section.room = '' //TODO refactor
+                    section.buildingAbbreviation = '' //TODO refactor
+                    var roomPrefix = '' //TODO refactor
+                    var buildingAbbreviationPrefix = '' //TODO refactor
+                    section.classPeriods = [];
+                    section.classSize = apiSection.totalSeats;
+                    section.waitlistCount = apiSection.waitList;
+                    section.registeredStudents = parseInt(apiSection.totalSeats, 10) - parseInt(apiSection.seatsAvailable, 10)
+                    section.sectionType = apiSection.sectionType === undefined || apiSection.sectionType === null ? "DAY" : apiSection.sectionType;
+                    angular.forEach(apiSection.timePlaces, function (timePlace) {
+                        var timeOfDay = timePlace.startTime.substring(0, timePlace.startTime.length - 2) + '-' + timePlace.endTime.substring(0, timePlace.endTime.length - 2);
+                        var prefix
+                        if (!(timeOfDay in section.classPeriods)) {
+                            section.classPeriods[timeOfDay] = ''
+                            prefix = ''
+                        } else {
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('M') >= 0 && section.classPeriods[timeOfDay].indexOf('M') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'M'
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('T') >= 0 && section.classPeriods[timeOfDay].indexOf('Tu') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'Tu'
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('W') >= 0 && section.classPeriods[timeOfDay].indexOf('W') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'W'
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('Th') >= 0 && section.classPeriods[timeOfDay].indexOf('Th') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'Th'
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('F') >= 0 && section.classPeriods[timeOfDay].indexOf('F') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'F'
+                        }
+                        var location = timePlace.location.trim()
+                        if (location === 'TBA') {
+                            section.room = 'TBA'
+                            section.buildingAbbreviation = 'TBA'
+                        } else {
+                            var splitLocation = location.split(' ')
+                            section.room += roomPrefix + splitLocation[1]
+                            section.buildingAbbreviation += buildingAbbreviationPrefix + splitLocation[0]
+                            roomPrefix = ', '
+                            buildingAbbreviationPrefix = ', '
+                        }
                     });
+                    course.sections.push(section)
                 });
+                $scope.courses.push(course)
+                $scope.isLoadingCourses = false;
             });
-        } else {
-            $scope.isLoadingCourses = true;
-            $http.get('public-api/courses/all').success(function (data) {
-                $scope.departments = []
-                $scope.courses = []
-                angular.forEach(data.courses, function(apiCourse) {
-                    var course = {}
-                    course.title = apiCourse.courseName
-                    course.courseId = apiCourse.courseNumber
-                    course.description = '' //TODO add when the api has this for us
-                    if( course.sections !== null && course.sections !== undefined && course.sections.length > 0 )
-                        course.credits = course.sections[0].creditHours
-                    course.dept = {}
-                    course.dept.title = '' //TODO add when the api has this for us
-                    course.dept.shortCode = apiCourse.department
-                    if( $scope.departments.indexOf(apiCourse.department) < 0 )
-                        $scope.departments.push(apiCourse.department)
-                    course.titleCode = apiCourse.newTitleCode
-                    course.byuId = apiCourse.courseID
-                    course.sections = []
-                    angular.forEach(apiCourse.sections, function(apiSection) {
-                        var section = {}
-                        section.sectionId = apiSection.sectionID
-                        section.professor = apiSection.professor;
-                        section.room = '' //TODO refactor
-                        section.buildingAbbreviation = '' //TODO refactor
-                        var roomPrefix = '' //TODO refactor
-                        var buildingAbbreviationPrefix = '' //TODO refactor
-                        section.classPeriods = [];
-                        section.classSize = apiSection.totalSeats;
-                        section.waitlistCount = apiSection.waitList;
-                        section.registeredStudents = parseInt(apiSection.totalSeats, 10) - parseInt(apiSection.seatsAvailable, 10)
-                        section.sectionType = apiSection.sectionType === undefined || apiSection.sectionType === null ? "DAY" : apiSection.sectionType;
-                        angular.forEach(apiSection.timePlaces, function (timePlace) {
-                            var timeOfDay = timePlace.startTime.substring(0, timePlace.startTime.length-2) + '-' + timePlace.endTime.substring(0, timePlace.endTime.length-2);
-                            var prefix
-                            if ( !(timeOfDay in section.classPeriods) ) {
-                                section.classPeriods[timeOfDay] = ''
-                                prefix = ''
-                            } else {
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('M') >= 0 && section.classPeriods[timeOfDay].indexOf('M') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'M'
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('T') >= 0 && section.classPeriods[timeOfDay].indexOf('Tu') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'Tu'
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('W') >= 0 && section.classPeriods[timeOfDay].indexOf('W') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'W'
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('Th') >= 0 && section.classPeriods[timeOfDay].indexOf('Th') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'Th'
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('F') >= 0 && section.classPeriods[timeOfDay].indexOf('F') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'F'
-                            }
-                            var location = timePlace.location.trim()
-                            if( location === 'TBA' ) {
-                                section.room = 'TBA'
-                                section.buildingAbbreviation = 'TBA'
-                            } else {
-                                var splitLocation = location.split(' ')
-                                section.room += roomPrefix + splitLocation[1]
-                                section.buildingAbbreviation += buildingAbbreviationPrefix + splitLocation[0]
-                                roomPrefix = ', '
-                                buildingAbbreviationPrefix = ', '
-                            }
-                        });
-                        course.sections.push(section)
-                    });
-                    $scope.courses.push(course)
-                    $scope.isLoadingCourses = false;
-                });
-            });
-            // popular courses to be shown when there are no filters applied
-            $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
-
-        }
+        });
+        // popular courses to be shown when there are no filters applied
+        $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
 
         var autoSave = $interval(function () {
             $scope._savePlan()
@@ -175,10 +125,6 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 $scope.filterOptions.levels[level] = true;
             });
         };
-
-//        $scope.$on("userSignedOut", function() {
-//            $scope.initStuff();
-//        });
 
         // This is what you will bind the filter to
         $scope.filterText = '';
