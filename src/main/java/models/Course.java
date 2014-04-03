@@ -12,6 +12,16 @@ import java.util.List;
 
 public class Course {
     private String courseID;
+
+    public String getOutcomes() {
+        return outcomes;
+    }
+
+    public void setOutcomes(String outcomes) {
+        this.outcomes = outcomes;
+    }
+
+    private String outcomes;
     private String courseName;
     private String newTitleCode;
     private String department;
@@ -35,10 +45,9 @@ public class Course {
 
     public String toString(){
 
-        String output =  "Course: " + courseID + " \t " + courseName + " \t " + newTitleCode + " \t " + department + " \t " + registrationType + " \t " + courseNumber;
-        for(Section s : sections){
-            output += "\n\t" + sections.toString();
-        }
+        String output =  "Course: " + courseID + " \t " + courseName + " \t " + newTitleCode + " \t " + department + " \t " + registrationType + " \t " + courseNumber + " \t " + outcomes;
+        output += "\n\t" + sections.toString();
+
         return output;
 
     }

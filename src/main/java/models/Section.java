@@ -15,6 +15,25 @@ public class Section {
     private String sectionID;
     private String sectionType;
     private String professor;
+    private String pid;
+
+    public String getCredits() {
+        return credits;
+    }
+
+    public void setCredits(String credits) {
+        this.credits = credits;
+    }
+
+    private String credits;
+
+    public String getPid() {
+        return pid;
+    }
+
+    public void setPid(String pid) {
+        this.pid = pid;
+    }
 
     private List<TimePlace> timePlaces;
 

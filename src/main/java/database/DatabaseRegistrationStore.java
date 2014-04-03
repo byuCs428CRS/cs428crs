@@ -178,6 +178,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
         course.setDepartment(courseObject.get("department").toString());
         course.setNewTitleCode(courseObject.get("newTitleCode").toString());
         course.setRegistrationType(courseObject.get("registrationType").toString());
+        course.setOutcomes(courseObject.get("outcomes").toString());
 
         //SET THE SECTIONS LIST
         BasicDBList sections = (BasicDBList) courseObject.get("sections");
@@ -190,8 +191,9 @@ public class DatabaseRegistrationStore implements RegistrationStore {
             s.setCourseID(courseObject.get("courseID").toString());
             s.setTotalSeats(dbSection.get("totalSeats").toString());
 //            s.setCourseName(dbSection.get("courseName").toString());
-//            s.setCreditHours(dbSection.get("creditHours").toString());
+            s.setCredits(dbSection.get("creditHours").toString());
             s.setProfessor(dbSection.get("professor").toString());
+            s.setPid(dbSection.get("pid").toString());
             s.setSeatsAvailable(dbSection.get("seatsAvailable").toString());
             s.setSectionID(dbSection.get("sectionID").toString());
             s.setWaitList(dbSection.get("waitList").toString());
