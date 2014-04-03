@@ -16,7 +16,7 @@ public class httpCourseDownloader {
 	private static String[] DEPTS = {"A+HTG", "ACC", "AEROS", "AFRIK", "AM+ST", "ANES", "ANTHR", "ARAB", "ARTHC", "ASIAN", "ASL", "BIO", "BULGN", "BUS+M", "C+S", "CANT", "CE+EN", "CH+EN", "CHEM", "CHIN", "CL+CV", "CLSCS", "CM", "CMLIT", "CMPST", "COMD", "COMMS", "CPSE", "CSANM", "CZECH", "DANCE", "DIGHT", "DUTCH", "EC+EN", "ECE", "ECON", "EDLF", "EIME", "EL+ED", "ELANG", "EMBA", "ENG+T", "ENGL", "ESL", "EUROP", "EXSC", "FIN", "FINN", "FLANG", "FNART", "FPM", "FREN", "GEOG", "GEOL", "GERM", "GREEK", "HCOLL", "HEB", "HIST", "HLTH", "HONRS", "IAS", "ICLND", "IHUM", "INDES", "IP&T", "IR", "IS", "IT", "ITAL", "JAPAN", "KOREA", "LATIN", "LAW", "LFSCI", "LING", "LINGC", "LT+AM", "M+B+A", "M+COM", "MATH", "ME+EN", "MESA", "MFG", "MFHD", "MFT", "MIL+S", "MMBIO", "MTHED", "MUSIC", "NDFS", "NE+LG", "NES", "NEURO", "NORWE", "NURS", "ORG+B", "P+MGT", "P+POL", "PDBIO", "PETE", "PHIL", "PHSCS", "PHY+S", "PL+SC", "POLSH", "PORT", "PSYCH", "PWS", "RECM", "REL+A", "REL+C", "REL+E", "ROM", "RUSS", "SC+ED", "SCAND", "SFL", "SLAT", "SOC", "SOC+W", "SPAN", "STAC", "STAT", "STDEV", "SWED", "T+ED", "TECH", "TEE", "TELL", "TMA", "UNIV", "VA", "VAANM", "VADES", "VAEDU", "VAGD", "VAILL", "VAPHO", "VASTU", "WELSH", "WRTG", "WS"};
 	//TODO - These DEPTS need to be updated instead of hardcoded
 
-    public static String excutePost(String targetURL, String urlParameters)
+    public static String executePost(String targetURL, String urlParameters)
 	  {
 	    URL url;
 	    HttpURLConnection connection = null;  
@@ -98,7 +98,7 @@ public class httpCourseDownloader {
            
            String targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/searchXML.php";
            String urlParams = "SEMESTER=" + semesterCode + "&CREDIT_TYPE=" + creditType + "&DEPT="+ dept +"&INST=&DESCRIPTION=&DAYFILTER=&BEGINTIME=&ENDTIME=&SECTION_TYPE=&CREDITS=&CREDITCOMP=&CATFILTER=&BLDG=";
-           String out = excutePost(targetURL, urlParams);
+           String out = executePost(targetURL, urlParams);
 
            writer.print(out);
         }
@@ -175,7 +175,7 @@ public class httpCourseDownloader {
 		targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/getCatalogInfo.php";
 		urlParams = "CUR_ID=" + courseID +"&TITLE_CODE=" + titleCode + "&SECTION_NUM=" + section + "&YEAR_TERM=" + yearTerm + "&CREDIT_TYPE=" + creditType;
         System.out.println(targetURL +"?"+ urlParams);
-        String catalogInfo = excutePost(targetURL, urlParams);
+        String catalogInfo = executePost(targetURL, urlParams);
 		
 		writer.println("<br>CAT_INFO= " + urlParams + "<br>");
 		writer.println(catalogInfo);
@@ -185,7 +185,7 @@ public class httpCourseDownloader {
 		targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/getSyllabus.php";
 		urlParams = "CUR_ID=" + courseID + "&TITLE_CODE=" + titleCode + "&YEAR_TERM=" + yearTerm + "&SECTION=" + section + "&DEPT=" + department + "&CAT=" + CAT;
         System.out.println(targetURL +"?"+ urlParams);
-        String syllabus = excutePost(targetURL, urlParams);
+        String syllabus = executePost(targetURL, urlParams);
 		
 		writer.println("<br>SYLLABUS= " + urlParams + "<br>");
 		writer.println(syllabus);
@@ -196,8 +196,8 @@ public class httpCourseDownloader {
         //Outcomes
         String targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/getOutcomes.php";
         String urlParams ="CUR_ID="+ courseID + "&TITLE_CODE=" + titleCode;
-        System.out.println("\n\nURL:\n"+ targetURL +"?"+ urlParams);
-        String outcomes = excutePost(targetURL, urlParams);
+        String outcomes = executePost(targetURL, urlParams);
+        System.out.println("\n\nURL:\n"+ targetURL +"?"+ urlParams + "\n" + outcomes);
         return outcomes;
     }
 

@@ -2,6 +2,7 @@ package parser.catalog;
 
 import catalogData.httpCourseDownloader;
 import com.mongodb.*;
+import parser.instructor.InstructorParser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,6 +28,7 @@ public class CatalogParser {
     public static void parseAndUpdateDatabase(String fileName) {
         index = 0;
         File file = new File(fileName);
+        Map professorMap = InstructorParser.getInstructorMap();
         try {
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -53,6 +55,20 @@ public class CatalogParser {
             System.out.println("Error: FILE WAS NOT FOUND");
             e.printStackTrace();
         }
+
+        Map<String, String> professorCodes = InstructorParser.getInstructorMap();
+        for (Section s: sections) {
+
+             if (professorCodes.containsKey(s.professor)){
+                s.rateMyProfId = professorCodes.get(s.professor);
+                System.out.println(s.professor + " MATCH " + s.rateMyProfId);
+             }
+             else{
+                 s.rateMyProfId = "";
+             }
+
+        }
+
 
         System.out.println("Success in parsing!");
         System.out.println("Total Sections Parsed: " + sections.size() + "\n");
@@ -84,12 +100,12 @@ public class CatalogParser {
      */
     public static void addDepartments(DB db) {
     	
-    	System.out.println("\nAdding the unique departments now");
+/*    	System.out.println("\nAdding the unique departments now");
     	// Fill a list with all the unique departments from the new sections
     	List<String> departmentList = new ArrayList<>();
     	String[] deptArray = httpCourseDownloader.getDepartments();
     	for (int i = 0; i < deptArray.length; i++)
-    		departmentList.add(deptArray[i].replaceAll("+", " "));
+    		departmentList.add(deptArray[i].replaceAll("[+]", " "));
     	
     	System.out.print("There were a total of " + departmentList.size() + " departments found (");
     	// Remove departments that are already in the database
@@ -121,6 +137,7 @@ public class CatalogParser {
         	departmentCollection.insert(departmentArray);
         	System.out.println("Done!\n");
     	}
+*/
     }
     
     /**

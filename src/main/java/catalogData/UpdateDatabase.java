@@ -25,7 +25,7 @@ public class UpdateDatabase {
         //CreditTypes - A = All, S = Semester Block, 1 = Term 1, 2 = Term 2
 
         //A - All offering
-     //   httpCourseDownloader.createCourseDataFile(fileName, semesterCode);
+       // httpCourseDownloader.createCourseDataFile(fileName, semesterCode);
         System.out.println("<<<<<<<<<<<<<<<< DOWNLOAD COMPLETE >>>>>>>>>>>>>>>>");
         CatalogParser.parseAndUpdateDatabase(fileName);
         System.out.println("<<<<<<<<<<<<<<<< DATABASE UPDATED >>>>>>>>>>>>>>>>");

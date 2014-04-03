@@ -14,47 +14,52 @@ import java.util.Map;
 public class InstructorParser {
 
     public static void main(String[] args) {
-    	
-    	String jsonString = "";
-    	
-    	//Read in the JSON file
-		String file = System.getProperty("user.dir") + "/professors.json";
-		BufferedReader reader;
-		try {
-			reader = new BufferedReader(new FileReader(file));
-			String line;
-			while ((line = reader.readLine()) != null) {
 
-				jsonString += line;
-			}
+        getInstructorMap();
+    }
 
-		} catch (IOException e) {
+    public static Map<String, String> getInstructorMap() {
+        String jsonString = "";
 
-			e.printStackTrace();
-		}
+        //Read in the JSON file
+        String file = System.getProperty("user.dir") + "/parser/professors.json";
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null) {
 
-		// Use gson to parse the json String into a list of Instructor objects
-    	Gson gson = new Gson();
-    	Type stringStringMap = new TypeToken<List<Instructor>>(){}.getType();
-    	List<Instructor> listInstructors = gson.fromJson(jsonString, stringStringMap);
+                jsonString += line;
+            }
 
-    	// Take the contents of the list and insert it into a map (for faster searching by instructor name)
-    	Map<String, String> mapInstructors = new HashMap<>();
-    	for (int i = 0; i < listInstructors.size(); i++) {
+        } catch (IOException e) {
 
-    		if (mapInstructors.containsKey(listInstructors.get(i)))
-    			System.out.println("DUPLICATE PROFESSOR: " + listInstructors.get(i));
-    		else
-    			mapInstructors.put(listInstructors.get(i).teacherName, listInstructors.get(i).teacherID);
-    	}
+            e.printStackTrace();
+        }
 
-    	// Print map contents
-    	for (String key : mapInstructors.keySet()) {
+        // Use gson to parse the json String into a list of Instructor objects
+        Gson gson = new Gson();
+        Type stringStringMap = new TypeToken<List<Instructor>>(){}.getType();
+        List<Instructor> listInstructors = gson.fromJson(jsonString, stringStringMap);
 
-    		System.out.println("Key:\t" + key + "\tValue:\t" + mapInstructors.get(key));
-    	}
+        // Take the contents of the list and insert it into a map (for faster searching by instructor name)
+        Map<String, String> mapInstructors = new HashMap<>();
+        for (int i = 0; i < listInstructors.size(); i++) {
 
-    	// TODO Iterate through db, find every instructor for every class, and assign a corresponding Instructor ID
+            if (mapInstructors.containsKey(listInstructors.get(i)))
+                System.out.println("DUPLICATE PROFESSOR: " + listInstructors.get(i));
+            else
+                mapInstructors.put(listInstructors.get(i).teacherName, listInstructors.get(i).teacherID);
+        }
+
+        // Print map contents
+        for (String key : mapInstructors.keySet()) {
+
+            System.out.println("Key:\t" + key + "\tValue:\t" + mapInstructors.get(key));
+        }
+
+        return mapInstructors;
+        // TODO Iterate through db, find every instructor for every class, and assign a corresponding Instructor ID
     }
 
     public class Instructor {

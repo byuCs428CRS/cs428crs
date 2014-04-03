@@ -17,6 +17,7 @@ public class Section {
 	public String sectionType;
 	public String courseName;
 	public String professor;
+    public String rateMyProfId;
 	public String creditHours;
 	
 	public List<String> days;
@@ -74,7 +75,7 @@ public class Section {
 					
 			case 10: if (element.equals(""))
 						professor = "Staff";
-					 else 
+					 else
 						professor = element;
 					 break;
 					
@@ -126,6 +127,8 @@ public class Section {
 			maxSize = endTimes.size();
 		if (locations.size() > maxSize)
 			maxSize = locations.size();
+        if(rateMyProfId == null)
+            rateMyProfId = "";
 		
 		while (days.size() < maxSize)
 			days.add("TBA");
@@ -152,7 +155,7 @@ public class Section {
 				tempList.add(textStr[i]);
 		return tempList;
 	}
-	
+
 	/**
 	 * Prints all of this Section's variables
 	 */
@@ -195,6 +198,7 @@ public class Section {
 		sectionObject.put("type", sectionType);
 		sectionObject.put("courseName", courseName);
 		sectionObject.put("professor", professor);
+        sectionObject.put("pid", rateMyProfId);
 		sectionObject.put("creditHours", creditHours);
 		sectionObject.put("seatsAvailable", seatsAvailable);
 		sectionObject.put("totalSeats", totalSeats);
