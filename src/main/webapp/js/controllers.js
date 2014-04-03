@@ -8,111 +8,6 @@ var conflictingEventColor = '#C25151';
 /* Controllers */
 var classregControllers = angular.module('classregControllers', []);
 
-classregControllers.controller('RootScopeCtrl', ['$rootScope', '$http', '$animate',
-    function($rootScope, $http, $animate) {
-        // query the server to check if the user is in an authenticated session right now
-        $rootScope.signinAlerts = [];
-        $rootScope.signinTab = true;
-        $rootScope.createTab = false;
-
-        $rootScope.addAlert = function(message) {
-            $rootScope.signinAlerts.push({msg: message});
-        };
-
-        $rootScope.closeAlert = function(index) {
-            $rootScope.signinAlerts.splice(index, 1);
-        };
-
-        $rootScope.signInUser = function() {
-            $rootScope.signinAlerts.length = 0;
-            if (!($rootScope.loginUsername && $rootScope.loginUsername.length && $rootScope.loginPassword && $rootScope.loginPassword.length)) {
-                $rootScope.addAlert("All fields are required.");
-            } else {
-                $http.get('/auth/login').success(function(data, status, headers) {
-                            data['username'] = $rootScope.loginUsername;
-                            if (data['pepper'] < 7) {
-                                $rootScope.addAlert("There is a problem connecting to the server. Please try again later.");
-                                return;
-                            }
-                            else {
-                                data['pass'] = doHash($rootScope.loginPassword, data['pepper']);
-                            }
-
-                        $http.post('/auth/login', data)
-                                .success(function(data) {
-                                    console.log(data);
-                                    // successful
-                                    $rootScope.loggedIn = true;
-                                    $rootScope.username = $rootScope.loginUsername;
-                                    $('#loginModal').modal('hide');
-                                }).error(function(data) {
-                                    //console.log(data);
-                                    $rootScope.addAlert("There was a problem with your username or password.");
-                                });
-                        }).error(function(data) {
-                            $rootScope.addAlert("There was an error creating your account. Please try again later.");
-                        });
-                //$rootScope._savePlan();
-            }
-        };
-
-        $rootScope.signOutUser = function() {
-            $http.get('/auth/logout').success(function(data, status, headers) {
-                $rootScope.$broadcast('userSignedOut');
-                $rootScope.loggedIn = false;
-                $rootScope.loginUsername = '';
-                $rootScope.loginPassword = '';
-                $rootScope.createUsername = '';
-                $rootScope.createPassword = '';
-                $rootScope.createPassword2 = '';
-            });
-        };
-
-        $rootScope.createUserAccount = function() {
-            $rootScope.signinAlerts.length = 0;
-            if (!($rootScope.createUsername && $rootScope.createUsername.length && $rootScope.createPassword && $rootScope.createPassword.length && $rootScope.createPassword2 && $rootScope.createPassword2.length)) {
-                $rootScope.addAlert("All fields are required.");
-            } else if (!/^[a-z0-9_\-@]+$/i.test($rootScope.createUsername)) {
-                $rootScope.addAlert("Username cannot contain special characters other than -, _, and @.");
-            } else if ($rootScope.createPassword != $rootScope.createPassword2) {
-                $rootScope.addAlert("Passwords do not match.");
-            } else {
-                $rootScope.registerUser($rootScope.createUsername, $rootScope.createPassword);
-            }
-        };
-
-        $rootScope.registerUser = function(username, password) {
-
-            $http.get('/auth/login').success(function(data, status, headers) {
-                data['username'] = username;
-                if (data['pepper'] < 7) {
-                    $rootScope.addAlert("There is a problem connecting to the server");
-                    return;
-                }
-                else {
-                    data['pass'] = doHash(password, data['pepper']);
-                }
-
-            $http.post('/auth/register', data)
-                    .success(function(data) {
-                        console.log(data);
-                        // successful
-                        $rootScope.loggedIn = true;
-                        $rootScope.username = username;
-                        $('#loginModal').modal('hide');
-                    }).error(function(data) {
-                        //console.log(data);
-                        // username already exists?
-                        $rootScope.addAlert("Sorry, this username is already taken.");
-                    });
-            }).error(function(data) {
-                $rootScope.addAlert("There was an error creating your account.");
-            });
-
-        };
-    }
-]);
-
 classregControllers.controller('HeaderController', ['$scope', '$rootScope', '$location',
     function($scope, $rootScope, $location) {
         $scope.isActive = function(viewLocation) {
@@ -122,161 +17,93 @@ classregControllers.controller('HeaderController', ['$scope', '$rootScope', '$lo
 ]);
 
 classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval', '$timeout',
-    function($scope, $http, $cookies, $rootScope, $interval, $timeout) {
+    function ($scope, $http, $cookies, $rootScope, $interval, $timeout) {
 
-        if (window.location.href.indexOf('dummy=true') > 0) {
-            $http.get('courses/courses.json').success(function (data) {
-                $scope.departments = [];
-
-                $scope.courses = [];
-                angular.forEach(data.departments, function (dept) {
-                    $scope.departments.push(dept.shortCode);
-                    angular.forEach(dept.courses, function (course) {
-                        var newCourse = {};
-                        newCourse.title = course.title;
-                        newCourse.owningDepartment = course.owningDepartment;
-                        newCourse.courseId = course.courseId;
-                        newCourse.description = course.description;
-                        newCourse.credits = course.credits;
-                        newCourse.fulfillments = course.fulfillments;
-                        newCourse.prereqs = course.prereqs;
-                        newCourse.dept = {};
-                        newCourse.dept.title = dept.title;
-                        newCourse.dept.shortCode = dept.shortCode;
-                        newCourse.titleCode = course.titleCode;
-                        newCourse.byuId = course.byuId
-                        newCourse.sections = [];
-                        angular.forEach(course.sections, function (oldSection) {
-                            var newSection = {}
-                            newSection.sectionId = oldSection.sectionId;
-                            newSection.professor = oldSection.professor;
-                            newSection.room = oldSection.room;
-                            newSection.buildingAbbreviation = oldSection.buildingAbbreviation;
-                            newSection.classPeriods = [];
-                            newSection.classSize = oldSection.classSize;
-                            newSection.waitlistCount = oldSection.waitlistCount;
-                            newSection.registeredStudents = oldSection.registeredStudents;
-                            newSection.sectionType = oldSection.sectionType
-                            angular.forEach(oldSection.times, function (time) {
-                                var timeOfDay = time.startTime + '-' + time.endTime;
-                                if (timeOfDay in newSection.classPeriods)
-                                    newSection.classPeriods[timeOfDay] += ", " + $scope.abbreviateDay(time.day)
-                                else
-                                    newSection.classPeriods[timeOfDay] = $scope.abbreviateDay(time.day)
-                            });
-                            newCourse.sections.push(newSection)
-                        });
-                        // console.log(newCourse)
-                        $scope.courses.push(newCourse)
+        $scope.isLoadingCourses = true;
+        $http.get('public-api/courses/all').success(function (data) {
+            $scope.departments = []
+            $scope.courses = []
+            angular.forEach(data.courses, function (apiCourse) {
+                var course = {}
+                course.title = apiCourse.courseName
+                course.courseNumber = apiCourse.courseNumber
+                course.description = '' //TODO add when the api has this for us
+                if (course.sections !== null && course.sections !== undefined && course.sections.length > 0)
+                    course.credits = course.sections[0].creditHours
+                course.dept = {}
+                course.dept.title = '' //TODO add when the api has this for us
+                course.dept.shortCode = apiCourse.department
+                if ($scope.departments.indexOf(apiCourse.department) < 0)
+                    $scope.departments.push(apiCourse.department)
+                course.titleCode = apiCourse.newTitleCode
+                course.byuId = apiCourse.courseID
+                course.sections = []
+                angular.forEach(apiCourse.sections, function (apiSection) {
+                    var section = {}
+                    section.sectionId = apiSection.sectionID
+                    section.professor = apiSection.professor;
+                    section.room = '' //TODO refactor
+                    section.buildingAbbreviation = '' //TODO refactor
+                    var roomPrefix = '' //TODO refactor
+                    var buildingAbbreviationPrefix = '' //TODO refactor
+                    section.classPeriods = [];
+                    section.classSize = apiSection.totalSeats;
+                    section.waitlistCount = apiSection.waitList;
+                    section.registeredStudents = parseInt(apiSection.totalSeats, 10) - parseInt(apiSection.seatsAvailable, 10)
+                    section.sectionType = apiSection.sectionType === undefined || apiSection.sectionType === null ? "DAY" : apiSection.sectionType;
+                    angular.forEach(apiSection.timePlaces, function (timePlace) {
+                        var timeOfDay = timePlace.startTime.substring(0, timePlace.startTime.length - 2) + '-' + timePlace.endTime.substring(0, timePlace.endTime.length - 2);
+                        var prefix
+                        if (!(timeOfDay in section.classPeriods)) {
+                            section.classPeriods[timeOfDay] = ''
+                            prefix = ''
+                        } else {
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('M') >= 0 && section.classPeriods[timeOfDay].indexOf('M') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'M'
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('T') >= 0 && section.classPeriods[timeOfDay].indexOf('Tu') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'Tu'
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('W') >= 0 && section.classPeriods[timeOfDay].indexOf('W') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'W'
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('Th') >= 0 && section.classPeriods[timeOfDay].indexOf('Th') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'Th'
+                            prefix = ', '
+                        }
+                        if (timePlace.day.indexOf('F') >= 0 && section.classPeriods[timeOfDay].indexOf('F') < 0) {
+                            section.classPeriods[timeOfDay] += prefix + 'F'
+                        }
+                        var location = timePlace.location.trim()
+                        if (location === 'TBA') {
+                            section.room = 'TBA'
+                            section.buildingAbbreviation = 'TBA'
+                        } else {
+                            var splitLocation = location.split(' ')
+                            section.room += roomPrefix + splitLocation[1]
+                            section.buildingAbbreviation += buildingAbbreviationPrefix + splitLocation[0]
+                            roomPrefix = ', '
+                            buildingAbbreviationPrefix = ', '
+                        }
                     });
+                    course.sections.push(section)
                 });
+                $scope.courses.push(course)
+                $scope.isLoadingCourses = false;
             });
-        } else {
-            $scope.isLoadingCourses = true;
-            $http.get('public-api/courses/all').success(function (data) {
-                $scope.departments = []
-                $scope.courses = []
-                angular.forEach(data.courses, function(apiCourse) {
-                    var course = {}
-                    course.title = apiCourse.courseName
-                    course.courseId = apiCourse.courseNumber
-                    course.description = '' //TODO add when the api has this for us
-                    if( course.sections !== null && course.sections !== undefined && course.sections.length > 0 )
-                        course.credits = course.sections[0].creditHours
-                    course.dept = {}
-                    course.dept.title = '' //TODO add when the api has this for us
-                    course.dept.shortCode = apiCourse.department
-                    if( $scope.departments.indexOf(apiCourse.department) < 0 )
-                        $scope.departments.push(apiCourse.department)
-                    course.titleCode = apiCourse.newTitleCode
-                    course.byuId = apiCourse.courseID
-                    course.sections = []
-                    angular.forEach(apiCourse.sections, function(apiSection) {
-                        var section = {}
-                        section.sectionId = apiSection.sectionID
-                        section.professor = apiSection.professor;
-                        section.room = '' //TODO refactor
-                        section.buildingAbbreviation = '' //TODO refactor
-                        var roomPrefix = '' //TODO refactor
-                        var buildingAbbreviationPrefix = '' //TODO refactor
-                        section.classPeriods = [];
-                        section.classSize = apiSection.totalSeats;
-                        section.waitlistCount = apiSection.waitList;
-                        section.registeredStudents = parseInt(apiSection.totalSeats, 10) - parseInt(apiSection.seatsAvailable, 10)
-                        section.sectionType = apiSection.sectionType === undefined || apiSection.sectionType === null ? "DAY" : apiSection.sectionType;
-                        angular.forEach(apiSection.timePlaces, function (timePlace) {
-                            var timeOfDay = timePlace.startTime.substring(0, timePlace.startTime.length-2) + '-' + timePlace.endTime.substring(0, timePlace.endTime.length-2);
-                            var prefix
-                            if ( !(timeOfDay in section.classPeriods) ) {
-                                section.classPeriods[timeOfDay] = ''
-                                prefix = ''
-                            } else {
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('M') >= 0 && section.classPeriods[timeOfDay].indexOf('M') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'M'
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('T') >= 0 && section.classPeriods[timeOfDay].indexOf('Tu') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'Tu'
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('W') >= 0 && section.classPeriods[timeOfDay].indexOf('W') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'W'
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('Th') >= 0 && section.classPeriods[timeOfDay].indexOf('Th') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'Th'
-                                prefix = ', '
-                            }
-                            if (timePlace.day.indexOf('F') >= 0 && section.classPeriods[timeOfDay].indexOf('F') < 0) {
-                                section.classPeriods[timeOfDay] += prefix + 'F'
-                            }
-                            var location = timePlace.location.trim()
-                            if( location === 'TBA' ) {
-                                section.room = 'TBA'
-                                section.buildingAbbreviation = 'TBA'
-                            } else {
-                                var splitLocation = location.split(' ')
-                                section.room += roomPrefix + splitLocation[1]
-                                section.buildingAbbreviation += buildingAbbreviationPrefix + splitLocation[0]
-                                roomPrefix = ', '
-                                buildingAbbreviationPrefix = ', '
-                            }
-                        });
-                        course.sections.push(section)
-                    });
-                    $scope.courses.push(course)
-                    $scope.isLoadingCourses = false;
-                });
-            });
-            // popular courses to be shown when there are no filters applied
-            $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
-
-        }
+        });
+        // popular courses to be shown when there are no filters applied
+        $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
 
         var autoSave = $interval(function () {
-            if ($rootScope.loggedIn) {
-                $scope._savePlan()
-            }
+            $scope._savePlan()
         }, 5000);
         $scope.$on('$destroy', function () { $interval.cancel(autoSave); });
-
-        // $http.get('courses/courses.json').success(function(data) {
-        // 	$scope.courses = data;
-        // });
-        // $http.get('courses/departments.json').success(function(data) {
-        // 	$scope.departments = data;
-        // });
-
-        // var crossSiteRequest = createCORSRequest('GET', 'http://localhost:8000/app/courses/backend-response.json')
-        // crossSiteRequest.send()
-        // crossSiteRequest.onload = function() {
-        // $scope.departments = jQuery.parseJSON(crossSiteRequest.responseText).departments
-        // }
-        // crossSiteRequest.onerror = function() {
-        // console.log("there was an error")
-        // }
 
         $scope.dismissLoadingOverlay = function() {
             $('#loading-overlay').css('display', 'none');
@@ -298,10 +125,6 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 $scope.filterOptions.levels[level] = true;
             });
         };
-
-        $scope.$on("userSignedOut", function() {
-            $scope.initStuff();
-        });
 
         // This is what you will bind the filter to
         $scope.filterText = '';
@@ -327,7 +150,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         $scope.initStuff();
 
         $scope.allFilter = function(course) {
-            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.popularCourses.indexOf(course.dept.shortCode + course.courseId) > -1);
+            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.popularCourses.indexOf(course.dept.shortCode + course.courseNumber) > -1);
         };
 
         // Searches both course name and course description fields
@@ -338,9 +161,9 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                     angular.lowercase(course.description).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.shortCode.replace(/\s/g, '')).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.title).indexOf(q) >= 0 ||
-                    angular.lowercase(course.courseId).indexOf(q) >= 0 ||
-                    angular.lowercase(course.dept.shortCode + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0 ||
-                    angular.lowercase(course.dept.shortCode.replace(/\s/g,'') + course.courseId).indexOf(q.replace(/\s/g,'')) >= 0));
+                    angular.lowercase(course.courseNumber).indexOf(q) >= 0 ||
+                    angular.lowercase(course.dept.shortCode + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0 ||
+                    angular.lowercase(course.dept.shortCode.replace(/\s/g,'') + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0));
         };
 
         //Filters by department
@@ -350,7 +173,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         // Filters by course level
         $scope.courseLevelFilter = function(course) {
-            var targetLevel = course.courseId[0] + '00';
+            var targetLevel = course.courseNumber[0] + '00';
             return ($scope.filterOptions.levels[targetLevel]) ? true : false;
         };
 
@@ -366,7 +189,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.updateSelectedCourse = function(dept, id) {
-            var course = $.grep($scope.courses, function(c){ return c.dept.shortCode == dept && c.courseId == id; });
+            var course = $.grep($scope.courses, function(c){ return c.dept.shortCode == dept && c.courseNumber == id; });
             if (course) {
                 $scope.selectedCourse = course[0];
             }
@@ -422,7 +245,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         // gets the planned section of a course. if no planned section, returns null.
         $scope.getPlannedCourse = function(dept, num) {
             for (var i = 0; i < $scope.plannedCourses.length; i++) {
-                if ($scope.plannedCourses[i].dept.shortCode == dept && $scope.plannedCourses[i].courseId == num) {
+                if ($scope.plannedCourses[i].dept.shortCode == dept && $scope.plannedCourses[i].courseNumber == num) {
                     return $scope.plannedCourses[i];
                 }
             }
@@ -434,13 +257,13 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.added = false;
             // when the class is added, remove its temporary calendar event
             $scope.hideTempEvent(course, section);
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
             var cid = fullCourseName + "-" + section.sectionId;
             var classLocation = section.buildingAbbreviation + ' ' + section.room;
 
             $scope.$broadcast("courseAdded", {course: cid, classPeriods: section.classPeriods, classLocation: classLocation, color: eventColor });
 
-            var theCourse = $scope.getPlannedCourse(course.dept.shortCode, course.courseId);
+            var theCourse = $scope.getPlannedCourse(course.dept.shortCode, course.courseNumber);
             if (theCourse) {
                 // if there's already another section of the same course, just replace it
                 $scope.removeCourseFromPlan(theCourse);
@@ -450,7 +273,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 var plannedCourse = new Object();
                 plannedCourse.cid = cid;
                 plannedCourse.dept = course.dept;
-                plannedCourse.courseId = course.courseId;
+                plannedCourse.courseNumber = course.courseNumber;
                 plannedCourse.sectionId = section.sectionId;
                 plannedCourse.instructor = section.professor;
                 plannedCourse.classPeriods = section.classPeriods;
@@ -484,7 +307,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.showTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
             var cid = fullCourseName + "-" + section.sectionId;
             if (!$scope.isPlanned(cid)) {
                 // change color of other sections of this course to gray
@@ -495,7 +318,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.hideTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseId;
+            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
             var cid = fullCourseName + "-" + section.sectionId;
             $scope.$broadcast("courseRemoved", {course: cid, temp: true});
             // change color of other sections of this course back to default
@@ -503,12 +326,8 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.savePlan = function() {
-            if (!$rootScope.loggedIn) {
-                $('#loginModal').modal('show');
-            } else {
-                //TODO: save the plan to the database under the current session
-                $scope._savePlan();
-            }
+            // TODO: save plan to cookies
+            $scope._savePlan();
         };
 
         $scope._savePlan = function() {
@@ -522,7 +341,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             for( var i=0; i<$scope.plannedCourses.length; i++ ) {
                 var klass = {}
                 klass.e = '@AddClass';
-                klass.courseId = $scope.plannedCourses[i].byuId;
+                klass.courseNumber = $scope.plannedCourses[i].byuId;
                 klass.titleCode = $scope.plannedCourses[i].titleCode;
                 klass.credits = $scope.plannedCourses[i].credits;
                 klass.sectionType = $scope.plannedCourses[i].sectionType;
@@ -626,7 +445,7 @@ classregControllers.controller('CalendarCtrl', ['$scope',
                     }
                     var startMins = parseInt(startTime[1]);
                     var endHrs = parseInt(endTime[0]);
-                    if (endHrs >= 1 && endHrs <= 6) {
+                    if (endHrs >= 1 && endHrs <= 6 || (endHrs >= 1 && endHrs <= 10 && startHrs >= 1 && startHrs <= 6)) {
                         endHrs += 12;
                     }
                     var endMins = parseInt(endTime[1]);

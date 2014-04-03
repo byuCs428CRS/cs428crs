@@ -1,4 +1,4 @@
-package courseInfo;
+package parser.courseInfo;
 
 public class CourseInfoParser {
 

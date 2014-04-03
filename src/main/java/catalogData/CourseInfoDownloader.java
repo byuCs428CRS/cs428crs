@@ -23,6 +23,15 @@ public class CourseInfoDownloader {
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 
         String fileName = "CourseData.txt";
+        downloadInfoForAllCourses(fileName);
+
+
+
+
+
+    }
+
+    public static void downloadInfoForAllCourses(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
         PrintWriter writer = new PrintWriter(fileName, "UTF-8");
 
 
@@ -43,10 +52,5 @@ public class CourseInfoDownloader {
 
         writer.close();
         httpCourseDownloader.removeHtmlFromFile(fileName);
-
-
-
-
-
     }
 }

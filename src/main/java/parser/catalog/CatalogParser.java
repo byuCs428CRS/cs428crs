@@ -1,13 +1,14 @@
-package catalog;
+package parser.catalog;
+
+import catalogData.httpCourseDownloader;
 import com.mongodb.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.*;
 
 public class CatalogParser {
 	
@@ -18,71 +19,79 @@ public class CatalogParser {
 
     public static void main(String[] args) throws UnknownHostException
     {
-    	
-		index = 0;
-		String fileName = System.getProperty("user.dir") + "/TestCatalog.txt";
-    	File file = new File(fileName);
-    	try {
-		
-    		BufferedReader reader = new BufferedReader(new FileReader(file));
-    		String line = "";
-    		String temp;
-    		while ((temp = reader.readLine()) != null) { // If the line doesn't have "#" in it, append the next line
-    			
-    			line += "\n" + temp;
-    			while (line.contains("#")) {
-    			
-    				insertElementIntoSection(line.substring(0, line.indexOf("#")));	
-    				line = line.substring(line.indexOf("#") + 1);
-    			}
-    		}
-    		reader.close();
-		} 
-    	catch (IOException e) {
 
-			System.out.println("Error: FILE WAS NOT FOUND");
-			e.printStackTrace();
-		}
-    	
-    	System.out.println("Success in parsing!");
-    	System.out.println("Total Sections Parsed: " + sections.size() + "\n");
-    	
-    	// Insert the courses into the database
-    	if (sections.size() > 0) {
-	    	
-    		DB db = getDB();
-    		
-    		// Add the departments for displaying a list
-    		addDepartments(db);
-    		
-	    	// Drop the course collection (so I can keep testing)
-	    	//dropCourseCollection(db);
-	    	
-	    	// Insert new courses into the db
-	    	//insertCoursesIntoDB(db);
-	    	
-	    	// Immediately after inserting all courses, try printing them out FROM the db
-	    	//printCoursesFromDB(db);
-    	}
-    	else
-    		System.out.println("No Sections to insert!");
+        String fileName = System.getProperty("user.dir") + "/ParseableFall2014Catalog.txt";
+        parseAndUpdateDatabase(fileName);
     }
-    
+
+    public static void parseAndUpdateDatabase(String fileName) {
+        index = 0;
+        File file = new File(fileName);
+        try {
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            boolean firstLine = true;
+            String line = "";
+            String temp;
+            while ((temp = reader.readLine()) != null) { // If the line doesn't have "#" in it, append the next line
+
+                if (firstLine)
+                    firstLine = false;
+                else
+                    line += "\n";
+                line += temp;
+                while (line.contains("#")) {
+
+                    insertElementIntoSection(line.substring(0, line.indexOf("#")));
+                    line = line.substring(line.indexOf("#") + 1);
+                }
+            }
+            reader.close();
+        }
+        catch (IOException e) {
+
+            System.out.println("Error: FILE WAS NOT FOUND");
+            e.printStackTrace();
+        }
+
+        System.out.println("Success in parsing!");
+        System.out.println("Total Sections Parsed: " + sections.size() + "\n");
+
+        // Insert the courses into the database
+        if (sections.size() > 0) {
+
+            DB db = getDB();
+
+            // Add the departments for displaying a list
+            addDepartments(db);
+
+            // Drop the course collection (so I can keep testing)
+            dropCourseCollection(db);
+
+            // Insert new courses into the db
+            insertCoursesIntoDB(db);
+
+            // Immediately after inserting all courses, try printing them out FROM the db
+            //printCoursesFromDB(db);
+        }
+        else
+            System.out.println("No Sections to insert!");
+    }
+
     /**
      * Add all of the unique departments from this list into the departments list
      * @param db
      */
     public static void addDepartments(DB db) {
     	
+    	System.out.println("\nAdding the unique departments now");
     	// Fill a list with all the unique departments from the new sections
-    	ArrayList<String> departmentList = new ArrayList<>();
-    	for (int i = 0; i < sections.size(); i++) {
-    		
-    		String dept = sections.get(i).department;
-    		if (!departmentList.contains(dept))
-    			departmentList.add(dept);
-    	}
+    	List<String> departmentList = new ArrayList<>();
+    	String[] deptArray = httpCourseDownloader.getDepartments();
+    	for (int i = 0; i < deptArray.length; i++)
+    		departmentList.add(deptArray[i].replaceAll("+", " "));
     	
+    	System.out.print("There were a total of " + departmentList.size() + " departments found (");
     	// Remove departments that are already in the database
     	DBCollection departmentCollection = db.getCollection("department");
     	for (int i = 0; i < departmentList.size(); i++) {
@@ -96,10 +105,12 @@ public class CatalogParser {
             	i--;
             }
     	}
+    	System.out.println(departmentList.size() + " unique)\n");
     	
     	// If there are new departments, add them to the DB
     	if (departmentList.size() > 0) {
     		
+    		System.out.println("Inserting departments now..");
         	// Change the array to a list to determine
         	BasicDBObject[] departmentArray = new BasicDBObject[departmentList.size()];
         	for (int i = 0; i < departmentList.size(); i++) {
@@ -108,6 +119,7 @@ public class CatalogParser {
         		departmentArray[i].put("name", departmentList.get(i));
         	}
         	departmentCollection.insert(departmentArray);
+        	System.out.println("Done!\n");
     	}
     }
     
@@ -130,10 +142,13 @@ public class CatalogParser {
     		if (courseMap.containsKey(sections.get(i).courseID))
     			courseMap.get(sections.get(i).courseID).add(sections.get(i).getDBObject());
     		else {
-    		
-    			Section s = sections.get(i);
+
+
+                Section s = sections.get(i);
+                String outcomes = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
+
     			courseMap.put(s.courseID, new ArrayList<BasicDBObject>(Arrays.asList(s.getDBObject())));
-    			courseInfoMap.put(s.courseID, new Course(s.courseID, s.courseName, s.newTitleCode, s.department, s.registrationType, s.courseNumber));
+    			courseInfoMap.put(s.courseID, new Course(s.courseID, s.courseName, outcomes, s.newTitleCode, s.department, s.registrationType, s.courseNumber));
     		}
     	}
     	
@@ -146,6 +161,7 @@ public class CatalogParser {
     		
     		newCourse.put("courseID", curCourse.getKey());
     		newCourse.put("courseName", c.courseName);
+            newCourse.put("outcomes", c.outcomes);
     		newCourse.put("newTitleCode", c.newTitleCode);
     		newCourse.put("department", c.department);
     		newCourse.put("registrationType", c.registrationType);

@@ -48,10 +48,17 @@ public class httpCourseDownloader {
 	      BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 	      String line;
 	      StringBuffer response = new StringBuffer(); 
+	      
+	      boolean firstLine = true;
 	      while((line = rd.readLine()) != null) {
-	        response.append(line);
-	        response.append('\r');
+	       
+	    	if (firstLine)
+	    		firstLine = false;
+	    	else
+	    		response.append('\r');
+	    	response.append(line);
 	      }
+	      
 	      rd.close();
 	      return response.toString();
 
@@ -73,9 +80,13 @@ public class httpCourseDownloader {
          String outputFileName = "Fall2014Catalog.txt";
          String semesterCode = "20145"; // TODO - Find each semester code
 
-         downloadCourses(outputFileName, semesterCode);
-         removeHtmlFromFile(outputFileName);
+         createCourseDataFile(outputFileName, semesterCode);
 	}
+
+    public static void createCourseDataFile(String outputFileName, String semesterCode) throws FileNotFoundException, UnsupportedEncodingException {
+        downloadCourses(outputFileName, semesterCode);
+        removeHtmlFromFile(outputFileName);
+    }
 
     private static void downloadCourses(String outputFileName, String semesterCode) throws FileNotFoundException, UnsupportedEncodingException {
         
@@ -89,8 +100,7 @@ public class httpCourseDownloader {
            String urlParams = "SEMESTER=" + semesterCode + "&CREDIT_TYPE=" + creditType + "&DEPT="+ dept +"&INST=&DESCRIPTION=&DAYFILTER=&BEGINTIME=&ENDTIME=&SECTION_TYPE=&CREDITS=&CREDITCOMP=&CATFILTER=&BLDG=";
            String out = excutePost(targetURL, urlParams);
 
-           writer.println(out);
-
+           writer.print(out);
         }
         writer.close();
     }
@@ -101,7 +111,7 @@ public class httpCourseDownloader {
         htmlString=htmlString.replaceAll("<br>","\n");
         htmlString=htmlString.replaceAll("</li>","\n");
         String noHTMLString = htmlString.replaceAll("\\<.*?\\>", "");
-        PrintWriter out = new PrintWriter("Parseable" + fileName);
+        PrintWriter out = new PrintWriter(fileName);
         //System.out.println(noHTMLString);
         out.println(noHTMLString);
         out.close();
@@ -152,13 +162,11 @@ public class httpCourseDownloader {
 		//Only Syllabus
 		String department = c.getDepartment();//"A+HTG";
 		String CAT = "100";
-		
-		//Outcomes
-		targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/getOutcomes.php";
-		urlParams ="CUR_ID="+ courseID + "&TITLE_CODE=" + titleCode;
-        System.out.println("\n\nURL:\n"+ targetURL +"?"+ urlParams);
-		String outcomes = excutePost(targetURL, urlParams);
-		
+
+        //Outcomes
+        String outcomes = getCourseOutcomes(courseID, titleCode);
+
+        urlParams ="CUR_ID="+ courseID + "&TITLE_CODE=" + titleCode;
 		writer.println("<br>OUTCOMES= " + urlParams + "<br>");
 		writer.println(outcomes);
         System.out.println("OUTCOMES:\n" + outcomes);
@@ -184,4 +192,17 @@ public class httpCourseDownloader {
         System.out.println("SYLLABUS:\n" + syllabus);
 	}
 
+    public static String getCourseOutcomes(String courseID, String titleCode){
+        //Outcomes
+        String targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/getOutcomes.php";
+        String urlParams ="CUR_ID="+ courseID + "&TITLE_CODE=" + titleCode;
+        System.out.println("\n\nURL:\n"+ targetURL +"?"+ urlParams);
+        String outcomes = excutePost(targetURL, urlParams);
+        return outcomes;
+    }
+
+    public static String[] getDepartments() {
+    	
+    	return DEPTS;
+    }
 }
