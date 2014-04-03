@@ -4,7 +4,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -22,7 +21,7 @@ public class SimpleCORSFilter implements Filter {
 		response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
 		response.setHeader("Access-Control-Max-Age", "3600");
 		response.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type, Accepts");
-    ((HttpServletResponse) res).addCookie(new Cookie("wdw", "kk"));
+   // ((HttpServletResponse) res).addCookie(new Cookie("wdw", "kk"));
 		chain.doFilter(req, res);
 	}
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import service.AuthenticationService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -73,9 +74,21 @@ public class AuthenticationWebController {
 
   @RequestMapping(value = "/logout", method = GET)
   @ResponseStatus(value = HttpStatus.OK)
-  public void logout(HttpSession session)
+  public void logout(HttpServletRequest request)
   {
-    session.invalidate();
+    HttpSession session = request.getSession(false);
+    if (session != null) {
+      session.invalidate();
+    }
+  }
+
+  @RequestMapping(value = "/test", method = GET)
+  @ResponseStatus(value = HttpStatus.OK)
+  public void testSession(HttpServletRequest request) {
+    HttpSession session = request.getSession(false);
+    if (session == null) {
+      throw new NotAuthorizedException();
+    }
   }
 
 }

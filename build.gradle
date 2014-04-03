@@ -23,6 +23,10 @@ jar {
     version =  '0.1.0'
 }
 
+jar.into('static') {
+    from('src/main/webapp')
+}
+
 repositories {
     mavenCentral()
     mavenLocal()
