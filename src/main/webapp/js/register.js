@@ -91,9 +91,6 @@ function register(useRecaptcha, klass, formToSubmit) {
     formToSubmit.c.value = Cookies.get('c')
     formToSubmit.e.value = klass.e
     formToSubmit.brownie.value = brownie
-//    console.log("c = " + document.getElementById('c').value)
-//    console.log("e = " + document.getElementById('e').value)
-//    console.log("brownie = " + document.getElementById('brownie').value)
 
     formToSubmit.submit()
 }
