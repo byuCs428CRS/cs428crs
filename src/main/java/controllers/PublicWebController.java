@@ -1,6 +1,8 @@
 package controllers;
 
 import exceptions.NotAuthorizedException;
+import exceptions.ResourceNotFoundException;
+import exceptions.ServerException;
 import models.Schedule;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -15,6 +17,7 @@ import packages.Requirements;
 import packages.Schedules;
 import service.PublicWebService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,17 +36,37 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @EnableAutoConfiguration
 @RequestMapping("/public-api")
 public class PublicWebController {
+  private boolean shuttingDown;
+  private int countdown;
 
 	private PublicWebService webService;
 
 	public PublicWebController() {
+    countdown = 12;
+    shuttingDown = false;
 		webService = new PublicWebService();
 	}
+
+  @RequestMapping(value = "/shutdown", method = POST)
+  @ResponseStatus(value = HttpStatus.OK)
+  public void shutdown(HttpServletRequest req)
+  {
+    if (!req.getRemoteAddr().matches("172[.]31[.]\\d{1,3}[.]\\d{1,3}|localhost|127[.]0[.]0[.]1")) {
+      throw new ResourceNotFoundException();
+    }
+    shuttingDown = true;
+  }
 
   @RequestMapping(value = "/health", method = GET)
   @ResponseStatus(value = HttpStatus.OK)
   public void healthCheck()
   {
+    if (shuttingDown) {
+      if (countdown-- <= 0) {
+        System.exit(0);
+      }
+      throw new ServerException("Server Shutting Down");
+    }
     //do nothing. Just here for load balancer health checks.
   }
 

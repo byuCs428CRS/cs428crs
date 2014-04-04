@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author: Nick Humrich
  * @date: 3/5/14
  */
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 
   public ResourceNotFoundException() {

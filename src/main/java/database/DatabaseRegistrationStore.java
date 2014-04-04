@@ -38,7 +38,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
 
 		// Connect to our database
 		MongoClientURI uri = new MongoClientURI("mongodb://" + dbUser + ":" + dbPassword +
-				"@mongo.andyetitcopmiles.com:27017/classreg");
+				"@mongo.andyetitcompiles.com:27017/classreg");
 		MongoClient client;
 		try {
 			client = new MongoClient(uri);
