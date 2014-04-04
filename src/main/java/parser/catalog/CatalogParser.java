@@ -82,11 +82,14 @@ public class CatalogParser {
             // Add the departments for displaying a list
             addDepartments(db);
 
-            // Drop the course collection (so I can keep testing)
+            // Create Objects to store
+            BasicDBObject[] courseObjects = buildCourseObjects();
+
+            // Drop the course collection
             dropCourseCollection(db);
 
-            // Insert new courses into the db
-            insertCoursesIntoDB(db);
+            // Insert new course objects into the db
+            insertIntoDatabase(db, courseObjects);
 
             // Immediately after inserting all courses, try printing them out FROM the db
             //printCoursesFromDB(db);
@@ -144,10 +147,10 @@ public class CatalogParser {
     /**
      * Insert all of the sections into given courses in the course collection of the database
      * STRUCTURE: Course document holds a list of Sections, which hold a list of TimePlaces
-     * @param db Database to insert the courses into
      */
-    public static void insertCoursesIntoDB(DB db) {
-    	
+    public static BasicDBObject[] buildCourseObjects() {
+        System.out.println("Start Creating Course Objects");
+        long startTime = System.currentTimeMillis();
     	// Map of course IDs that point to a list of section DATABASE OBJECTS that have that course ID
     	Map<String, List<BasicDBObject>> courseMap = new HashMap<>();
     	
@@ -168,7 +171,7 @@ public class CatalogParser {
                     String outcomes_str = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
                     JSONArray jsonArray = new JSONArray(outcomes_str);
                     for(int j = 0; j < jsonArray.length(); j++){
-                        System.out.println(" JOSN--" + jsonArray.get(j).toString());
+                        System.out.println(" OBJECTIVE-- " + jsonArray.get(j).toString());
                          outcomes.add(jsonArray.get(j).toString());
                     }
                 }  catch (JSONException ex) {
@@ -203,19 +206,27 @@ public class CatalogParser {
     	BasicDBObject[] courseArray = new BasicDBObject[courseObjects.size()];
     	for (int i = 0; i < courseObjects.size(); i++)
     		courseArray[i] = courseObjects.get(i);
-    		
-    	// Insert into the "course" collection in our DB
-    	
-		DBCollection courseCollection = db.getCollection("course");
-		System.out.println("Start inserting into DB");
-		
-		long startTime = System.currentTimeMillis();
-		courseCollection.insert(courseArray);
-		long endTime = System.currentTimeMillis();
-		
-		System.out.println("Done inserting, took " + ((endTime - startTime)/1000.0) + " seconds\n");
+
+
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("Done Creating Course Objects, took " + ((endTime - startTime)/1000.0) + " seconds\n");
+        return courseArray;
     }
-    
+
+    private static void insertIntoDatabase(DB db, BasicDBObject[] courseArray) {
+
+        // Insert into the "course" collection in our DB
+        DBCollection courseCollection = db.getCollection("course");
+        System.out.println("Start inserting into DB");
+
+        long startTime = System.currentTimeMillis();
+        courseCollection.insert(courseArray);
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("Done inserting, took " + ((endTime - startTime)/1000.0) + " seconds\n");
+    }
+
     /**
      *  Print all of the documents in the "course" collection (from the DB database parameter)
      *  They're printed in order of courseID
