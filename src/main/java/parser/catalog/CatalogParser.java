@@ -85,11 +85,8 @@ public class CatalogParser {
             // Create Objects to store
             BasicDBObject[] courseObjects = buildCourseObjects();
 
-            // Drop the course collection
-            dropCourseCollection(db);
-
             // Insert new course objects into the db
-            insertIntoDatabase(db, courseObjects);
+            replaceAllCourseData(db, courseObjects);
 
             // Immediately after inserting all courses, try printing them out FROM the db
             //printCoursesFromDB(db);
@@ -214,7 +211,10 @@ public class CatalogParser {
         return courseArray;
     }
 
-    private static void insertIntoDatabase(DB db, BasicDBObject[] courseArray) {
+    private static void replaceAllCourseData(DB db, BasicDBObject[] courseArray) {
+
+        // Drop the course collection right before inserting
+        dropCourseCollection(db);
 
         // Insert into the "course" collection in our DB
         DBCollection courseCollection = db.getCollection("course");
