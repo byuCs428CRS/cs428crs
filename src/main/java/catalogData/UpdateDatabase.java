@@ -1,5 +1,6 @@
 package catalogData;
 
+import org.json.JSONException;
 import parser.catalog.CatalogParser;
 
 import java.io.FileNotFoundException;
@@ -13,7 +14,7 @@ import java.io.UnsupportedEncodingException;
  * To change this template use File | Settings | File Templates.
  */
 public class UpdateDatabase {
-    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, JSONException {
 
         String fileName = "UPDATE_DATABASE.txt";
         String semesterCode = "20145"; // TODO - Find each semester code
