@@ -27,7 +27,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 var course = {}
                 course.title = apiCourse.courseName
                 course.courseNumber = apiCourse.courseNumber
-                course.description = '' //TODO add when the api has this for us
+                course.outcomes = apiCourse.outcomes
                 if (course.sections !== null && course.sections !== undefined && course.sections.length > 0)
                     course.credits = course.sections[0].creditHours
                 course.dept = {}
@@ -41,7 +41,12 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 angular.forEach(apiCourse.sections, function (apiSection) {
                     var section = {}
                     section.sectionId = apiSection.sectionID
-                    section.professor = apiSection.professor;
+                    section.professor = apiSection.professor
+                    if( apiSection.pid === "undefined" || apiSection.pid === undefined || apiSection.pid === null || apiSection.pid === "" ) {
+                        section.rateMyProfessorQuery = "SelectTeacher.jsp?searchName="+section.professor.split(",")[0]+"&search_submit1=Search&sid=135"
+                    } else
+                        section.rateMyProfessorQuery = "ShowRatings.jsp?tid="+apiSection.pid
+
                     section.room = '' //TODO refactor
                     section.buildingAbbreviation = '' //TODO refactor
                     var roomPrefix = '' //TODO refactor

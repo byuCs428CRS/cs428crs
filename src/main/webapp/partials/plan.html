@@ -36,14 +36,14 @@
                     <thead>
                     <tr>
                         <th class="sortable-header" ng-class="sortedClass('dept.shortCode')" ng-click="updateSort('dept.shortCode')">Dept</th>
-                        <th class="sortable-header" ng-class="sortedClass('courseId')" ng-click="updateSort('courseId')">ID</th>
+                        <th class="sortable-header" ng-class="sortedClass('courseNumber')" ng-click="updateSort('courseNumber')">ID</th>
                         <th class="sortable-header" ng-class="sortedClass('title')" ng-click="updateSort('title')">Name</th>
                     </tr>
                     </thead>
                     <tbody class="selectable-tbody" ng-click="$parent.selectedCourse = course" ng-class="course == selectedCourse ? 'selected-tbody' : ''" ng-repeat="course in filtered = (courses | filter:allFilter | filter:searchQueryFilter | filter:courseLevelFilter | filter:departmentFilter | orderBy:sortBy:desc)">
                     <tr>
                         <td class="selectable-td">{{ course.dept.shortCode }}</td>
-                        <td class="selectable-td">{{ course.courseId }}</td>
+                        <td class="selectable-td">{{ course.courseNumber }}</td>
                         <td class="selectable-td">{{ course.title }}</td>
                     </tr>
                     </tbody>
@@ -56,10 +56,13 @@
                 <h4 ng-show="!selectedCourse">&larr; Start typing a course name or choose a department from the dropdown.</h4>
                 <div ng-show="selectedCourse">
                     <h3 class="text-center"><span class="glyphicon glyphicon-list-alt"></span>
-                        {{ selectedCourse.dept.shortCode + " " + selectedCourse.courseId}}
+                        {{ selectedCourse.dept.shortCode + " " + selectedCourse.courseNumber}}
                     </h3>
                     <h5>{{ selectedCourse.title }}</h5>
-                    <p>{{ selectedCourse.description }}</p>
+                    <span ng-show="selectedCourse.outcomes.length > 0">
+                        <p>Learning Outcomes:</p>
+                        <div ng-repeat="outcome in selectedCourse.outcomes">{{ outcome }}</div>
+                    </span>
                     <p>Credit hours: {{ selectedCourse.credits }}</p>
                     <div class="sections-table-container">
                         <table class="table table-condensed">
@@ -82,17 +85,17 @@
                             <tbody class="selectable-special" ng-repeat="section in selectedCourse.sections" ng-mouseenter="showTempEvent(selectedCourse, section)" ng-mouseleave="hideTempEvent(selectedCourse, section)">
                             <tr class="selectable-td">
                                 <td>{{ section.sectionId }}</td>
-                                <td>{{ section.professor }}</td>
+                                <td><a target="_blank" href="http://www.ratemyprofessors.com/{{section.rateMyProfessorQuery}}">{{ section.professor }}</a></td>
                                 <td>
                                     {{ classPeriodsToString(section.classPeriods) }}
                                 </td>
                                 <td>{{section.room}} {{ section.buildingAbbreviation }}</td>
                                 <td>{{section.classSize - section.registeredStudents.length}} / {{section.classSize}}</td>
                                 <td>{{section.waitlistCount}}</td>
-                                <td ng-show="!isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseId + '-' + section.sectionId)">
+                                <td ng-show="!isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseNumber + '-' + section.sectionId)">
                                     <a ng-click="addCourseToPlan(selectedCourse, section)" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></a>
                                 </td>
-                                <td ng-show="isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseId + '-' + section.sectionId)">
+                                <td ng-show="isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseNumber + '-' + section.sectionId)">
                                     <div style="height: 22px;"><span class="glyphicon glyphicon-ok btn-xs"></span></div>
                                 <td>
                             </tr>
@@ -117,9 +120,9 @@
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody class="selectable-tbody" ng-click="updateSelectedCourse(course.dept.shortCode, course.courseId)" ng-class="course.courseId == selectedCourse.courseId && course.dept.shortCode == selectedCourse.dept.shortCode ? 'selected-tbody' : ''" ng-repeat="course in plannedCourses">
+                        <tbody class="selectable-tbody" ng-click="updateSelectedCourse(course.dept.shortCode, course.courseNumber)" ng-class="course.courseNumber == selectedCourse.courseNumber && course.dept.shortCode == selectedCourse.dept.shortCode ? 'selected-tbody' : ''" ng-repeat="course in plannedCourses">
                         <tr class="selectable-td" id="plannedCourse-{{$index}}">
-                            <td>{{ course.dept.shortCode }} {{ course.courseId }}</td>
+                            <td>{{ course.dept.shortCode }} {{ course.courseNumber }}</td>
                             <td>{{ course.instructor }}</td>
                             <td>{{ classPeriodsToString(course.classPeriods) }}</td>
                             <td>{{ course.credits }}</td>
@@ -205,7 +208,6 @@
             <p class="lead">Add the sections you want here.</p>
             <p class="lead">Remember, you can add more than one course at a time. Plan out your whole semester!</p>
             <p>(Hover over a section to see how it'll fit into your weekly schedule.)</p>
-            <br><br><br>
             <div ng-show="isLoadingCourses">
                 <img src="../img/darkspinner.gif"><br>
                 <h2>Hold tight while we load the course catalog...</h2>
