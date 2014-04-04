@@ -42,7 +42,7 @@ public class PublicWebController {
 	private PublicWebService webService;
 
 	public PublicWebController() {
-    countdown = 12;
+    countdown = 15;
     shuttingDown = false;
 		webService = new PublicWebService();
 	}
@@ -51,6 +51,9 @@ public class PublicWebController {
   @ResponseStatus(value = HttpStatus.OK)
   public void shutdown(HttpServletRequest req)
   {
+    //for temparary testing
+    System.out.println(req.getRemoteAddr());
+
     if (!req.getRemoteAddr().matches("172[.]31[.]\\d{1,3}[.]\\d{1,3}|localhost|127[.]0[.]0[.]1")) {
       throw new ResourceNotFoundException();
     }
@@ -59,15 +62,20 @@ public class PublicWebController {
 
   @RequestMapping(value = "/health", method = GET)
   @ResponseStatus(value = HttpStatus.OK)
-  public void healthCheck()
+  public void healthCheck(HttpServletRequest req)
   {
+    //for temparary testing
+    System.out.println(req.getRemoteAddr());
+
+    if (!req.getRemoteAddr().matches("172[.]31[.]\\d{1,3}[.]\\d{1,3}|localhost|127[.]0[.]0[.]1")) {
+      throw new ResourceNotFoundException();
+    }
     if (shuttingDown) {
       if (countdown-- <= 0) {
         System.exit(0);
       }
       throw new ServerException("Server Shutting Down");
     }
-    //do nothing. Just here for load balancer health checks.
   }
 
 	/**
