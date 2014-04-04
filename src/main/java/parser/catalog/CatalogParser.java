@@ -2,6 +2,8 @@ package parser.catalog;
 
 import catalogData.httpCourseDownloader;
 import com.mongodb.*;
+import org.json.JSONArray;
+import org.json.JSONException;
 import parser.instructor.InstructorParser;
 
 import java.io.BufferedReader;
@@ -18,14 +20,13 @@ public class CatalogParser {
 	public static List<Section> sections = new ArrayList<>(); // A list of sections (one per full section parsed)
 	public static Section curSection = new Section();         // The current section to insert into (added to sections list when done)
 
-    public static void main(String[] args) throws UnknownHostException
-    {
+    public static void main(String[] args) throws UnknownHostException, JSONException {
 
         String fileName = System.getProperty("user.dir") + "/ParseableFall2014Catalog.txt";
         parseAndUpdateDatabase(fileName);
     }
 
-    public static void parseAndUpdateDatabase(String fileName) {
+    public static void parseAndUpdateDatabase(String fileName) throws JSONException {
         index = 0;
         File file = new File(fileName);
         Map professorMap = InstructorParser.getInstructorMap();
@@ -145,7 +146,7 @@ public class CatalogParser {
      * STRUCTURE: Course document holds a list of Sections, which hold a list of TimePlaces
      * @param db Database to insert the courses into
      */
-    public static void insertCoursesIntoDB(DB db) {
+    public static void insertCoursesIntoDB(DB db) throws JSONException {
     	
     	// Map of course IDs that point to a list of section DATABASE OBJECTS that have that course ID
     	Map<String, List<BasicDBObject>> courseMap = new HashMap<>();
@@ -162,7 +163,14 @@ public class CatalogParser {
 
 
                 Section s = sections.get(i);
-                String outcomes = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
+                String outcomes_str = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
+                List<String> outcomes = new ArrayList<String>();
+
+                JSONArray jsonArray = new JSONArray(outcomes_str);
+                for(int j = 0; j < jsonArray.length(); j++){
+                    System.out.println(" JOSN--" + jsonArray.get(j).toString());
+                     outcomes.add(jsonArray.get(j).toString());
+                }
 
     			courseMap.put(s.courseID, new ArrayList<BasicDBObject>(Arrays.asList(s.getDBObject())));
     			courseInfoMap.put(s.courseID, new Course(s.courseID, s.courseName, outcomes, s.newTitleCode, s.department, s.registrationType, s.courseNumber));
@@ -199,7 +207,7 @@ public class CatalogParser {
 		System.out.println("Start inserting into DB");
 		
 		long startTime = System.currentTimeMillis();
-		courseCollection.insert(courseArray);
+//		courseCollection.insert(courseArray);       //TODO UNCOMMENT TO UPDATE DATABASE
 		long endTime = System.currentTimeMillis();
 		
 		System.out.println("Done inserting, took " + ((endTime - startTime)/1000.0) + " seconds\n");

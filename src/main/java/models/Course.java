@@ -12,31 +12,12 @@ import java.util.List;
 
 public class Course {
     private String courseID;
-
-    public String getOutcomes() {
-        return outcomes;
-    }
-
-    public void setOutcomes(String outcomes) {
-        this.outcomes = outcomes;
-    }
-
-    private String outcomes;
     private String courseName;
     private String newTitleCode;
     private String department;
     private String registrationType;
     private String courseNumber;
-
-    public String getCreditHours() {
-        return creditHours;
-    }
-
-    public void setCreditHours(String creditHours) {
-        this.creditHours = creditHours;
-    }
-
-    private String creditHours;
+    private List<String> outcomes;
     private List<Section> sections;
 
     public Course() {
@@ -50,6 +31,14 @@ public class Course {
 
         return output;
 
+    }
+
+    public List<String> getOutcomes() {
+        return outcomes;
+    }
+
+    public void setOutcomes(List<String> outcomes) {
+        this.outcomes = outcomes;
     }
     public void setCourseID(String courseID) {
         this.courseID = courseID;
