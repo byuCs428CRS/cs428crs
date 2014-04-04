@@ -31,26 +31,26 @@ public class DatabaseRegistrationStore implements RegistrationStore {
         db = getDB();
     }
 
-    private static DB getDB() {
+	public static DB getDB() {
 
-        String dbUser = "classreg428";
-        String dbPassword = "ad428min";
+		String dbUser = "admin";
+		String dbPassword = "ad428min";
 
-        // Connect to our database
-        MongoClientURI uri = new MongoClientURI("mongodb://" + dbUser + ":" + dbPassword +
-                "@ds063297.mongolab.com:63297/classreg");
-        MongoClient client;
-        try {
-            client = new MongoClient(uri);
-            DB db = client.getDB(uri.getDatabase());
-            return db;
-        } catch (UnknownHostException e) {
+		// Connect to our database
+		MongoClientURI uri = new MongoClientURI("mongodb://" + dbUser + ":" + dbPassword +
+				"@mongo.andyetitcopmiles.com:27017/classreg");
+		MongoClient client;
+		try {
+			client = new MongoClient(uri);
+			DB db = client.getDB(uri.getDatabase());
+			return db;
+		} catch (UnknownHostException e) {
 
-            System.out.println("COULDN\'T GET THE DB");
-            e.printStackTrace();
-        }
-        return null;
-    }
+			System.out.println("COULDN\'T GET THE DB");
+			e.printStackTrace();
+		}
+		return null;
+	}
 
     //@Override
     public List<Course> getAllCourses() {

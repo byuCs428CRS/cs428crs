@@ -276,19 +276,15 @@ public class CatalogParser {
     	if (index > MAX_INDEX_BEFORE_INSERTION)
     		System.out.println("Error: Index shouldn't be > " + MAX_INDEX_BEFORE_INSERTION + " (it is currently " + index + ")");
     }
-    
-    /**
-     * Get a reference to the cloud database (TODO: Change to Nick's database on port 27017)
-     * @return DB a reference to the database
-     */
+
     public static DB getDB() {
     	
-        String dbUser = "classreg428";
+        String dbUser = "admin";
         String dbPassword = "ad428min";
 
         // Connect to our database
         MongoClientURI uri = new MongoClientURI("mongodb://" + dbUser + ":" + dbPassword +
-                "@ds063297.mongolab.com:63297/classreg");
+                "@mongo.andyetitcopmiles.com:27017/classreg");
         MongoClient client;
 		try {
 			client = new MongoClient(uri);
