@@ -65,7 +65,8 @@ public class httpCourseDownloader {
 	    } catch (Exception e) {
 
 	      e.printStackTrace();
-	      return null;
+          System.out.println("Continuing :)");
+	      return "";
 
 	    } finally {
 
@@ -99,6 +100,7 @@ public class httpCourseDownloader {
            String targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/searchXML.php";
            String urlParams = "SEMESTER=" + semesterCode + "&CREDIT_TYPE=" + creditType + "&DEPT="+ dept +"&INST=&DESCRIPTION=&DAYFILTER=&BEGINTIME=&ENDTIME=&SECTION_TYPE=&CREDITS=&CREDITCOMP=&CATFILTER=&BLDG=";
            String out = executePost(targetURL, urlParams);
+
 
            writer.print(out);
         }
@@ -197,6 +199,8 @@ public class httpCourseDownloader {
         String targetURL = "http://saasta.byu.edu/noauth/classSchedule/ajax/getOutcomes.php";
         String urlParams ="CUR_ID="+ courseID + "&TITLE_CODE=" + titleCode;
         String outcomes = executePost(targetURL, urlParams);
+
+
         System.out.println("\n\nURL:\n"+ targetURL +"?"+ urlParams + "\n" + outcomes);
         return outcomes;
     }

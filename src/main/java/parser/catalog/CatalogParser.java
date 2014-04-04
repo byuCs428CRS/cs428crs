@@ -146,7 +146,7 @@ public class CatalogParser {
      * STRUCTURE: Course document holds a list of Sections, which hold a list of TimePlaces
      * @param db Database to insert the courses into
      */
-    public static void insertCoursesIntoDB(DB db) throws JSONException {
+    public static void insertCoursesIntoDB(DB db) {
     	
     	// Map of course IDs that point to a list of section DATABASE OBJECTS that have that course ID
     	Map<String, List<BasicDBObject>> courseMap = new HashMap<>();
@@ -156,20 +156,23 @@ public class CatalogParser {
     	
     	// Fill these two maps by iterating through the list of sections
     	for (int i = 0; i < sections.size(); i++) {
-    		
+
     		if (courseMap.containsKey(sections.get(i).courseID))
     			courseMap.get(sections.get(i).courseID).add(sections.get(i).getDBObject());
     		else {
 
 
                 Section s = sections.get(i);
-                String outcomes_str = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
                 List<String> outcomes = new ArrayList<String>();
-
-                JSONArray jsonArray = new JSONArray(outcomes_str);
-                for(int j = 0; j < jsonArray.length(); j++){
-                    System.out.println(" JOSN--" + jsonArray.get(j).toString());
-                     outcomes.add(jsonArray.get(j).toString());
+                try{
+                    String outcomes_str = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
+                    JSONArray jsonArray = new JSONArray(outcomes_str);
+                    for(int j = 0; j < jsonArray.length(); j++){
+                        System.out.println(" JOSN--" + jsonArray.get(j).toString());
+                         outcomes.add(jsonArray.get(j).toString());
+                    }
+                }  catch (JSONException ex) {
+                   System.out.println(ex.toString());
                 }
 
     			courseMap.put(s.courseID, new ArrayList<BasicDBObject>(Arrays.asList(s.getDBObject())));
@@ -207,7 +210,7 @@ public class CatalogParser {
 		System.out.println("Start inserting into DB");
 		
 		long startTime = System.currentTimeMillis();
-//		courseCollection.insert(courseArray);       //TODO UNCOMMENT TO UPDATE DATABASE
+		courseCollection.insert(courseArray);
 		long endTime = System.currentTimeMillis();
 		
 		System.out.println("Done inserting, took " + ((endTime - startTime)/1000.0) + " seconds\n");
