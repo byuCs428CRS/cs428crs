@@ -64,7 +64,7 @@ public class PublicWebController {
   @ResponseStatus(value = HttpStatus.OK)
   public void healthCheck(HttpServletRequest req)
   {
-    //for temparary testing
+    //for temporary testing
     System.out.println(req.getRemoteAddr());
 
     if (!req.getRemoteAddr().matches("172[.]31[.]\\d{1,3}[.]\\d{1,3}|localhost|127[.]0[.]0[.]1")) {
@@ -74,6 +74,7 @@ public class PublicWebController {
       if (countdown-- <= 0) {
         System.exit(0);
       }
+      //ToDo: should probably be changed to a 503 instead of a 500
       throw new ServerException("Server Shutting Down");
     }
   }
