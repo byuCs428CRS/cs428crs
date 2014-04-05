@@ -52,11 +52,13 @@ public class InstructorParser {
                 mapInstructors.put(listInstructors.get(i).teacherName, listInstructors.get(i).teacherID);
         }
 
-        // Print map contents
-        for (String key : mapInstructors.keySet()) {
+        System.out.println("Teachers in RateMyProf Map: " + mapInstructors.size());
 
-            System.out.println("Key:\t" + key + "\tValue:\t" + mapInstructors.get(key));
-        }
+        // Print map contents
+        //for (String key : mapInstructors.keySet()) {
+
+          //  System.out.println("Key:\t" + key + "\tValue:\t" + mapInstructors.get(key));
+        //}
 
         return mapInstructors;
         // TODO Iterate through db, find every instructor for every class, and assign a corresponding Instructor ID

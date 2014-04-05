@@ -1,8 +1,7 @@
 package parser.catalog;
 
-import catalogData.httpCourseDownloader;
+import catalogData.DepartmentDownloader;
 import com.mongodb.*;
-import org.json.JSONArray;
 import org.json.JSONException;
 import parser.instructor.InstructorParser;
 
@@ -58,21 +57,32 @@ public class CatalogParser {
         }
 
         Map<String, String> professorCodes = InstructorParser.getInstructorMap();
+        int profMatchCount = 0;
+        int staffSections = 0;
         for (Section s: sections) {
-
              if (professorCodes.containsKey(s.professor)){
                 s.rateMyProfId = professorCodes.get(s.professor);
-                System.out.println(s.professor + " MATCH " + s.rateMyProfId);
+                profMatchCount++;
              }
              else{
+                 if(s.professor.equals("") || s.professor.equalsIgnoreCase("staff"))
+                     staffSections++;
+                 else {
+                    System.out.println(s.professor);
+                 }
                  s.rateMyProfId = "";
              }
-
         }
 
+        System.out.println("Teachers Matched: " + profMatchCount);
+        System.out.println("Staff Sections: " + staffSections);
+        int unmatchedTeachers = sections.size() - (profMatchCount + staffSections);
+        System.out.println("Unmatched Sections: " + unmatchedTeachers);
+
+        System.out.println("Total Sections: " + sections.size());
 
         System.out.println("Success in parsing!");
-        System.out.println("Total Sections Parsed: " + sections.size() + "\n");
+
 
         // Insert the courses into the database
         if (sections.size() > 0) {
@@ -100,45 +110,40 @@ public class CatalogParser {
      * @param db
      */
     public static void addDepartments(DB db) {
+        //TODO MAKE CALLS TO THE NEW METHOD BELOW
+        //List<String> deptList = httpCourseDownloader.getDepartments();
     	
-/*    	System.out.println("\nAdding the unique departments now");
+    /*	System.out.println("\nAdding the unique departments now");
     	// Fill a list with all the unique departments from the new sections
-    	List<String> departmentList = new ArrayList<>();
-    	String[] deptArray = httpCourseDownloader.getDepartments();
-    	for (int i = 0; i < deptArray.length; i++)
-    		departmentList.add(deptArray[i].replaceAll("[+]", " "));
-    	
-    	System.out.print("There were a total of " + departmentList.size() + " departments found (");
-    	// Remove departments that are already in the database
+    	List<String> deptList = httpCourseDownloader.getDepartments();
+
     	DBCollection departmentCollection = db.getCollection("department");
-    	for (int i = 0; i < departmentList.size(); i++) {
-    		
-            BasicDBObject query = new BasicDBObject("name", departmentList.get(i));
+    	for (int i = 0; i < deptList.size(); i++) {
+            BasicDBObject query = new BasicDBObject("name", deptList.get(i));
     		
             // If this department was found
             if (departmentCollection.find(query).count() > 0) {
-            	
-            	departmentList.remove(i);
+
+            	deptList.remove(i);
             	i--;
             }
     	}
-    	System.out.println(departmentList.size() + " unique)\n");
     	
     	// If there are new departments, add them to the DB
-    	if (departmentList.size() > 0) {
+    	if (deptList.size() > 0) {
     		
     		System.out.println("Inserting departments now..");
         	// Change the array to a list to determine
-        	BasicDBObject[] departmentArray = new BasicDBObject[departmentList.size()];
-        	for (int i = 0; i < departmentList.size(); i++) {
+        	BasicDBObject[] departmentArray = new BasicDBObject[deptList.size()];
+        	for (int i = 0; i < deptList.size(); i++) {
         		
         		departmentArray[i] = new BasicDBObject();
-        		departmentArray[i].put("name", departmentList.get(i));
+        		departmentArray[i].put("name", deptList.get(i));
         	}
         	departmentCollection.insert(departmentArray);
         	System.out.println("Done!\n");
     	}
-*/
+    */
     }
     
     /**
@@ -148,6 +153,9 @@ public class CatalogParser {
     public static BasicDBObject[] buildCourseObjects() {
         System.out.println("Start Creating Course Objects");
         long startTime = System.currentTimeMillis();
+
+        Map<String, String> depNames = DepartmentDownloader.getDepartmentMap();
+
     	// Map of course IDs that point to a list of section DATABASE OBJECTS that have that course ID
     	Map<String, List<BasicDBObject>> courseMap = new HashMap<>();
     	
@@ -164,7 +172,7 @@ public class CatalogParser {
 
                 Section s = sections.get(i);
                 List<String> outcomes = new ArrayList<String>();
-                try{
+               /* try{
                     String outcomes_str = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
                     JSONArray jsonArray = new JSONArray(outcomes_str);
                     for(int j = 0; j < jsonArray.length(); j++){
@@ -174,9 +182,10 @@ public class CatalogParser {
                 }  catch (JSONException ex) {
                    System.out.println(ex.toString());
                 }
-
+                */
+                String deptName = depNames.get(s.department);
     			courseMap.put(s.courseID, new ArrayList<BasicDBObject>(Arrays.asList(s.getDBObject())));
-    			courseInfoMap.put(s.courseID, new Course(s.courseID, s.courseName, outcomes, s.newTitleCode, s.department, s.registrationType, s.courseNumber));
+    			courseInfoMap.put(s.courseID, new Course(s.courseID, s.courseName, outcomes, s.newTitleCode, s.department, deptName , s.registrationType, s.courseNumber));
     		}
     	}
     	
@@ -192,6 +201,7 @@ public class CatalogParser {
             newCourse.put("outcomes", c.outcomes);
     		newCourse.put("newTitleCode", c.newTitleCode);
     		newCourse.put("department", c.department);
+            newCourse.put("departmentCode", c.departmentCode);
     		newCourse.put("registrationType", c.registrationType);
     		newCourse.put("courseNumber", c.courseNumber);
     		newCourse.put("sections", curCourse.getValue());
