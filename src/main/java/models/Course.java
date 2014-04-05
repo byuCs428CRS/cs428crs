@@ -15,6 +15,7 @@ public class Course {
     private String courseName;
     private String newTitleCode;
     private String department;
+    private String departmentCode;
     private String registrationType;
     private String courseNumber;
     private List<String> outcomes;
@@ -26,7 +27,7 @@ public class Course {
 
     public String toString(){
 
-        String output =  "Course: " + courseID + " \t " + courseName + " \t " + newTitleCode + " \t " + department + " \t " + registrationType + " \t " + courseNumber + " \t " + outcomes;
+        String output =  "Course: " + courseID + " \t " + courseName + " \t " + newTitleCode + " \t " + department + " \t " + registrationType + " \t " + courseNumber + " \t " + outcomes.toString();
         output += "\n\t" + sections.toString();
 
         return output;
@@ -95,5 +96,13 @@ public class Course {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public String getDepartmentCode() {
+        return departmentCode;
+    }
+
+    public void setDepartmentCode(String departmentCode) {
+        this.departmentCode = departmentCode;
     }
 }

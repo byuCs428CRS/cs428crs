@@ -176,6 +176,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
         course.setCourseName(courseObject.get("courseName").toString());
         course.setCourseNumber(courseObject.get("courseNumber").toString());
         course.setDepartment(courseObject.get("department").toString());
+        course.setDepartmentCode(courseObject.get("departmentCode").toString());
         course.setNewTitleCode(courseObject.get("newTitleCode").toString());
         course.setRegistrationType(courseObject.get("registrationType").toString());
 
