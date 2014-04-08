@@ -31,10 +31,10 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 if (course.sections !== null && course.sections !== undefined && course.sections.length > 0)
                     course.credits = course.sections[0].creditHours
                 course.dept = {}
-                course.dept.title = '' //TODO add when the api has this for us
-                course.dept.shortCode = apiCourse.department
-                if ($scope.departments.indexOf(apiCourse.department) < 0)
-                    $scope.departments.push(apiCourse.department)
+                course.dept.title = apiCourse.department == null ? '' : apiCourse.department
+                course.dept.shortCode = apiCourse.departmentCode
+                if ($scope.departments.indexOf(apiCourse.departmentCode) < 0)
+                    $scope.departments.push(apiCourse.departmentCode)
                 course.titleCode = apiCourse.newTitleCode
                 course.byuId = apiCourse.courseID
                 course.sections = []
@@ -54,7 +54,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                     section.classPeriods = [];
                     section.classSize = apiSection.totalSeats;
                     section.waitlistCount = apiSection.waitList;
-                    section.registeredStudents = parseInt(apiSection.totalSeats, 10) - parseInt(apiSection.seatsAvailable, 10)
+                    section.seatsAvailable = parseInt(apiSection.seatsAvailable, 10)
                     section.sectionType = apiSection.sectionType === undefined || apiSection.sectionType === null ? "DAY" : apiSection.sectionType;
                     angular.forEach(apiSection.timePlaces, function (timePlace) {
                         var timeOfDay = timePlace.startTime.substring(0, timePlace.startTime.length - 2) + '-' + timePlace.endTime.substring(0, timePlace.endTime.length - 2);
@@ -161,9 +161,16 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         // Searches both course name and course description fields
         $scope.searchQueryFilter = function(course) {
             var q = angular.lowercase($scope.filterText);
+            var outcomesMatch = false
+            for( var i=0; i<course.outcomes.length; i++ ) {
+                if( course.outcomes[i].indexOf(q) >= 0 ) {
+                    outcomesMatch = true
+                    break;
+                }
+            }
             return (!angular.isDefined(q) || q == "" ||
                 (angular.lowercase(course.title).indexOf(q) >= 0 ||
-                    angular.lowercase(course.description).indexOf(q) >= 0 ||
+                    outcomesMatch ||
                     angular.lowercase(course.dept.shortCode.replace(/\s/g, '')).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.title).indexOf(q) >= 0 ||
                     angular.lowercase(course.courseNumber).indexOf(q) >= 0 ||
@@ -342,7 +349,6 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         $scope.registerClasses = function() {
             $cookies.c = "regOfferings";
             var classes = []
-            console.log($scope.plannedCourses);
             for( var i=0; i<$scope.plannedCourses.length; i++ ) {
                 var klass = {}
                 klass.e = '@AddClass';

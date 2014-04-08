@@ -175,11 +175,12 @@ public class DatabaseRegistrationStore implements RegistrationStore {
         course.setCourseID(courseObject.get("courseID").toString());
         course.setCourseName(courseObject.get("courseName").toString());
         course.setCourseNumber(courseObject.get("courseNumber").toString());
-        course.setDepartment(courseObject.get("department").toString());
+	    Object dept = courseObject.get("department");
+	    if( dept != null )
+	        course.setDepartment(dept.toString());
         course.setDepartmentCode(courseObject.get("departmentCode").toString());
         course.setNewTitleCode(courseObject.get("newTitleCode").toString());
         course.setRegistrationType(courseObject.get("registrationType").toString());
-
 
         //SET THE OUTCOMES LIST
         BasicDBList outcomes = (BasicDBList) courseObject.get("outcomes");

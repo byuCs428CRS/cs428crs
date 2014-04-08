@@ -90,7 +90,7 @@
                                     {{ classPeriodsToString(section.classPeriods) }}
                                 </td>
                                 <td>{{section.room}} {{ section.buildingAbbreviation }}</td>
-                                <td>{{section.classSize - section.registeredStudents.length}} / {{section.classSize}}</td>
+                                <td>{{section.seatsAvailable}} / {{section.classSize}}</td>
                                 <td>{{section.waitlistCount}}</td>
                                 <td ng-show="!isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseNumber + '-' + section.sectionId)">
                                     <a ng-click="addCourseToPlan(selectedCourse, section)" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></a>
@@ -107,7 +107,7 @@
         </div>
         <div class="col-md-4 col-sm-4">
             <div class="well">
-                <h3 class="text-center">My Planned Classes (Spring/Summer 2014)</h3>
+                <h3 class="text-center">My Planned Classes (Fall 2014)</h3>
                 <!--<h5>{{currentSemester}}</h5>-->
                 <p ng-show="!plannedCourses.length">Add some classes you want to take next semester!</p>
                 <table class="table table-condensed">
