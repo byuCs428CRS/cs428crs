@@ -17,7 +17,7 @@ public class Course {
 
     public List<Section> sections;
 
-    public Course(String courseID, String courseName, List<String> outcomes, String newTitleCode, String department, String departmentCode, String registrationType, String courseNumber) {
+    public Course(String courseID, String courseName, List<String> outcomes, String newTitleCode, String departmentCode, String department, String registrationType, String courseNumber) {
 
         this.courseID = courseID;
         this.courseName = courseName;

@@ -176,13 +176,14 @@ public class CatalogParser {
                     String outcomes_str = httpCourseDownloader.getCourseOutcomes(s.courseID, s.newTitleCode);
                     JSONArray jsonArray = new JSONArray(outcomes_str);
                     for(int j = 0; j < jsonArray.length(); j++){
-                        System.out.println(" OBJECTIVE-- " + jsonArray.get(j).toString());
+                       // System.out.println(" OBJECTIVE-- " + jsonArray.get(j).toString());
                          outcomes.add(jsonArray.get(j).toString());
                     }
                 }  catch (JSONException ex) {
                    System.out.println(ex.toString());
                 }
                 */
+
                 String deptName = depNames.get(s.department);
     			courseMap.put(s.courseID, new ArrayList<BasicDBObject>(Arrays.asList(s.getDBObject())));
     			courseInfoMap.put(s.courseID, new Course(s.courseID, s.courseName, outcomes, s.newTitleCode, s.department, deptName , s.registrationType, s.courseNumber));
@@ -308,7 +309,7 @@ public class CatalogParser {
 
         // Connect to our database
         MongoClientURI uri = new MongoClientURI("mongodb://" + dbUser + ":" + dbPassword +
-                "@mongo.andyetitcopmiles.com:27017/classreg");
+                "@mongo.andyetitcompiles.com/classreg");
         MongoClient client;
 		try {
 			client = new MongoClient(uri);
