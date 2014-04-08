@@ -2,13 +2,14 @@ package parser.catalog;
 
 import catalogData.DepartmentDownloader;
 import com.mongodb.*;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import parser.instructor.InstructorParser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.*;
 
@@ -103,6 +104,19 @@ public class CatalogParser {
         }
         else
             System.out.println("No Sections to insert!");
+
+	    String[] urls = {"http://registerbyu.com/public-api/dbupdated", "http://andyetitcompiles.com/public-api/dbupdated"};
+	    for (String urlString : urls) {
+		    try {
+			    URL url = new URL(urlString);
+			    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			    conn.setRequestMethod("GET");
+			    InputStream is = conn.getInputStream();
+			    is.close();
+		    } catch (IOException e) {
+
+		    }
+	    }
     }
 
     /**

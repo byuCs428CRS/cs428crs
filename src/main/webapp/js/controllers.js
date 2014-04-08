@@ -103,7 +103,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             });
         });
         // popular courses to be shown when there are no filters applied
-        $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
+        $scope.popularCourses = [];
 
         var autoSave = $interval(function () {
             $scope._savePlan()

@@ -40,6 +40,7 @@ public class PublicWebController {
   private int countdown;
 
 	private PublicWebService webService;
+	private Courses cachedCourses;
 
 	public PublicWebController() {
     countdown = 15;
@@ -120,7 +121,9 @@ public class PublicWebController {
       @RequestParam(value = "semester", required = false, defaultValue ="current") String semester)
   {
     if ("current".equals(semester)) {
-      return webService.getAllCourses();
+	  if( cachedCourses == null )
+	      cachedCourses = webService.getAllCourses();
+	  return cachedCourses;
     } else {
       return webService.getAllCourses(semester);
     }
@@ -254,6 +257,12 @@ public class PublicWebController {
 		String result = new String(Base64.encodeBase64(IOUtils.toByteArray(is)), "UTF-8");
 		is.close();
 		return result;
+	}
+
+	@RequestMapping(value="dbupdated", method=GET)
+	public @ResponseBody String dbUpdated() {
+		cachedCourses = null;
+		return "success";
 	}
 
 }
