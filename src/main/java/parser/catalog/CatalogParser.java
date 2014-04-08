@@ -2,8 +2,6 @@ package parser.catalog;
 
 import catalogData.DepartmentDownloader;
 import com.mongodb.*;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import parser.instructor.InstructorParser;
 

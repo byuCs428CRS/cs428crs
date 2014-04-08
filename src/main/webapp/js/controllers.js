@@ -28,8 +28,21 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 course.title = apiCourse.courseName
                 course.courseNumber = apiCourse.courseNumber
                 course.outcomes = apiCourse.outcomes
-                if (course.sections !== null && course.sections !== undefined && course.sections.length > 0)
-                    course.credits = course.sections[0].creditHours
+                if (apiCourse.sections !== null && apiCourse.sections !== undefined && apiCourse.sections.length > 0) {
+                    var minCredits = 1000, maxCredits = -1;
+                    for( var i=0; i<course.sections.length; i++ ) {
+                        var sectionCredits = parseInt(course.sections[i].credits, 10)
+                        if( sectionCredits < minCredits )
+                            minCredits = sectionCredits
+                        if( sectionCredits > maxCredits )
+                            maxCredits = sectionCredits
+                    }
+                    if( minCredits == maxCredits )
+                        course.credits = minCredits
+                    else
+                        course.credits = minCredits+' - '+maxCredits
+                    console.log("course.credits = "+course.credits)
+                }
                 course.dept = {}
                 course.dept.title = apiCourse.department == null ? '' : apiCourse.department
                 course.dept.shortCode = apiCourse.departmentCode
@@ -161,16 +174,8 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         // Searches both course name and course description fields
         $scope.searchQueryFilter = function(course) {
             var q = angular.lowercase($scope.filterText);
-            var outcomesMatch = false
-            for( var i=0; i<course.outcomes.length; i++ ) {
-                if( course.outcomes[i].indexOf(q) >= 0 ) {
-                    outcomesMatch = true
-                    break;
-                }
-            }
             return (!angular.isDefined(q) || q == "" ||
                 (angular.lowercase(course.title).indexOf(q) >= 0 ||
-                    outcomesMatch ||
                     angular.lowercase(course.dept.shortCode.replace(/\s/g, '')).indexOf(q) >= 0 ||
                     angular.lowercase(course.dept.title).indexOf(q) >= 0 ||
                     angular.lowercase(course.courseNumber).indexOf(q) >= 0 ||

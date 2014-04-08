@@ -61,7 +61,9 @@
                     <h5>{{ selectedCourse.title }}</h5>
                     <span ng-show="selectedCourse.outcomes.length > 0">
                         <p>Learning Outcomes:</p>
-                        <div ng-repeat="outcome in selectedCourse.outcomes">{{ outcome }}</div>
+                        <ul>
+                            <div ng-repeat="outcome in selectedCourse.outcomes"><li>{{ outcome }}</li></div>
+                        </ul>
                     </span>
                     <p>Credit hours: {{ selectedCourse.credits }}</p>
                     <div class="sections-table-container">
