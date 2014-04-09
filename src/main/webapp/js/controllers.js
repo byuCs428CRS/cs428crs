@@ -220,31 +220,10 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.updateSelectedCourse(dept, id);
         });
 
-        $scope.abbreviateDay = function(day) {
-            switch( day ) {
-                case 'MONDAY':
-                    return 'M';
-                case 'TUESDAY':
-                    return 'Tu';
-                case 'WEDNESDAY':
-                    return 'W';
-                case 'THURSDAY':
-                    return 'Th';
-                case 'FRIDAY':
-                    return 'F';
-                case 'SATURDAY':
-                    return 'Sa';
-                case 'SUNDAY':
-                    return 'Su'
-            }
-        };
-
         $scope.classPeriodsToString = function(classPeriods) {
-            var prefix = '';
-            var result = '';
+            var result = ''
             for(var key in classPeriods) {
-                result += prefix + classPeriods[key] + ' ' + key;
-                prefix = "\n"; //\n probably doesn't work, but angular doesn't allow </br>
+                result += '<div>' + classPeriods[key] + ' ' + key + '</div>'
             }
             return result
         };
