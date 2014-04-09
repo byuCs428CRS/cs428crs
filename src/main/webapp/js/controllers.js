@@ -30,8 +30,8 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 course.outcomes = apiCourse.outcomes
                 if (apiCourse.sections !== null && apiCourse.sections !== undefined && apiCourse.sections.length > 0) {
                     var minCredits = 1000, maxCredits = -1;
-                    for( var i=0; i<course.sections.length; i++ ) {
-                        var sectionCredits = parseInt(course.sections[i].credits, 10)
+                    for( var i=0; i<apiCourse.sections.length; i++ ) {
+                        var sectionCredits = parseInt(apiCourse.sections[i].credits, 10)
                         if( sectionCredits < minCredits )
                             minCredits = sectionCredits
                         if( sectionCredits > maxCredits )
@@ -41,7 +41,6 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                         course.credits = minCredits
                     else
                         course.credits = minCredits+' - '+maxCredits
-                    console.log("course.credits = "+course.credits)
                 }
                 course.dept = {}
                 course.dept.title = apiCourse.department == null ? '' : apiCourse.department
@@ -222,8 +221,10 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         $scope.classPeriodsToString = function(classPeriods) {
             var result = ''
+            var prefix = ''
             for(var key in classPeriods) {
-                result += '<div>' + classPeriods[key] + ' ' + key + '</div>'
+                result += prefix + classPeriods[key] + ' ' + key
+                prefix = ', '
             }
             return result
         };
