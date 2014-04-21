@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -208,29 +210,48 @@ public class PublicWebController {
   {
 	  URL url;
 	  HttpURLConnection conn;
-	  BufferedReader rd;
+	  BufferedReader br;
 	  String line;
 	  StringBuilder result = new StringBuilder();
 	  try {
 		  url = new URL("https://www.google.com/recaptcha/api/challenge?k=6LfoisoSAAAAAFBP_LvBQ4YlpPTBOf12MnGsjk4z");
 		  conn = (HttpURLConnection) url.openConnection();
 		  conn.setRequestMethod("GET");
-		  rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		  int i=0;
-		  String challenge = null;
-		  while ((line = rd.readLine()) != null) {
-			  result.append(line);
-			  if( i++ == 4 ) {
-				  challenge = line.substring(line.indexOf("'")+1, line.length()-2);
-				  break;
+		  InputStreamReader reader = new InputStreamReader(conn.getInputStream());
+		  String response = IOUtils.toString(reader);
+		  reader.close();
+		  List<Integer> braceIndexes = new ArrayList<>(2);
+		  boolean inQuotes = false, jsonObjectFound=false;
+		  char closingQuotesChar = '\0';
+		  for( int i=0; i<response.length() && !jsonObjectFound; i++ )
+		  {
+			  if( !inQuotes ) {
+				  switch (response.charAt(i)) {
+					  case '"':
+					  case '\'':
+						  inQuotes = true;
+						  closingQuotesChar = response.charAt(i);
+						  break;
+					  case '{':
+					  case '}':
+						  braceIndexes.add(i);
+						  if( braceIndexes.size() == 2 )
+							  jsonObjectFound = true;
+						  break;
+
+				  }
+			  } else if( closingQuotesChar == response.charAt(i) ) {
+				  inQuotes = false;
 			  }
 		  }
-		  rd.close();
-		  JSONObject jsonObject = new JSONObject();
-		  jsonObject.put("challenge", challenge);
-		  jsonObject.put("image", getRecaptchaImage(challenge));
+		  if( braceIndexes.size() != 2 )
+			  throw new RuntimeException("Google returned invalid JSON: "+response);
+		  JSONObject googleJSON = new JSONObject(response.substring(braceIndexes.get(0), braceIndexes.get(1)+1));
+		  JSONObject ourJSON = new JSONObject();
+		  ourJSON.put("challenge", googleJSON.get("challenge"));
+		  ourJSON.put("image", getRecaptchaImage(googleJSON.get("challenge").toString()));
 
-		  return jsonObject.toString();
+		  return ourJSON.toString();
 	  } catch (IOException e) {
 		  e.printStackTrace();
 		  return e.getMessage();

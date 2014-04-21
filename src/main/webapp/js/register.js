@@ -36,6 +36,17 @@ function detectIfRecaptchaIsNecessary() {
 
 }
 
+function redoRecaptcha() {
+    Cookies.set('recaptchaChallenge', 'this should expire', {expires: -1})
+    Cookies.set('recaptchaAnswer', 'this should expire', {expires: -1})
+    $("#header-text").html('Step 2/3 : Prove you are not a robot')
+    $("#instruction-text").html('Why do they make those letters and numbers were so hard to read? Let\'s try again!')
+    $("#registration-result").hide()
+    detectIfRecaptchaIsNecessary()
+    $("#recaptcha").show()
+    $("#registration-submission").show()
+}
+
 function saveRecaptchaAndRegister() {
     Cookies.set('recaptchaChallenge', recaptchaChallenge)
     Cookies.set('recaptchaAnswer', document.getElementById('recaptchaAnswer').value, {expires: 1800})
@@ -48,7 +59,7 @@ function registerAll(useRecaptcha) {
     $("#header-text").html('Step 3/3 : Check that all of your classes were added')
     $("#instruction-text").html("Check to see that all of your classes were registered. If something went wrong, click on the retry" +
         " button.")
-    var classesHTML = ''
+    var classesHTML = '<div><button class="btn btn-default" onclick="redoRecaptcha()">Retry</button></div>'
     for( var i=0; i<classes.length; i++ ) {
         var invisibleForm =
             '<form name="registration-form-'+i+'" method="post" id="registration-form-'+i+'" target="registration-iframe-'+i+'"' +
@@ -60,7 +71,7 @@ function registerAll(useRecaptcha) {
         var iframe = '<iframe width="503" height="84" id="registration-iframe-'+i+'" scrolling="no"></iframe>'
         classesHTML += '<div class="center">'+classes[i].dept+' - '+classes[i].title+'</div>'+invisibleForm+iframe+'<br>'
     }
-    $("#registration-result").html(classesHTML)
+    $("#registration-result").html(classesHTML).show()
 
     for( var i=0; i<classes.length; i++ ) {
 //        var iframe = document.getElementById("registration-iframe-"+i)

@@ -21,6 +21,15 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         $scope.isLoadingCourses = true;
         $http.get('public-api/courses/all').success(function (data) {
+            var previouslySavedPlan = {}
+            if( $cookies.classes !== undefined && $cookies.classes !== "undefined" && $cookies.classes !== null )
+            {
+                try {
+                    var classes = JSON.parse($cookies.classes)
+                    for (var i = 0; i < classes.length; i++)
+                        previouslySavedPlan[classes[i].courseNumber] = classes[i].sectionId
+                } catch( exception ) { /* don't die */}
+            }
             $scope.departments = []
             $scope.courses = []
             angular.forEach(data.courses, function (apiCourse) {
@@ -109,10 +118,13 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                         }
                     });
                     course.sections.push(section)
+                    if( previouslySavedPlan[course.byuId] === section.sectionId ) {
+                        $scope.addCourseToPlan(course, section)
+                    }
                 });
                 $scope.courses.push(course)
-                $scope.isLoadingCourses = false;
             });
+            $scope.isLoadingCourses = false;
         });
         // popular courses to be shown when there are no filters applied
         $scope.popularCourses = [];
@@ -337,6 +349,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             for( var i=0; i<$scope.plannedCourses.length; i++ ) {
                 var klass = {}
                 klass.e = '@AddClass';
+//                klass.e = '@ConfirmWaitlist'
                 klass.courseNumber = $scope.plannedCourses[i].byuId;
                 klass.titleCode = $scope.plannedCourses[i].titleCode;
                 klass.credits = $scope.plannedCourses[i].credits;
