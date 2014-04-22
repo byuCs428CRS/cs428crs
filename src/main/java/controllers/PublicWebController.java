@@ -45,7 +45,7 @@ public class PublicWebController {
 	private Courses cachedCourses;
 
 	public PublicWebController() {
-    countdown = 15;
+    countdown = 5;
     shuttingDown = false;
 		webService = new PublicWebService();
 	}
