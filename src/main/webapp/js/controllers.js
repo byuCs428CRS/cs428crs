@@ -293,6 +293,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 plannedCourse.title = course.title;
                 $scope.plannedCourses.push(plannedCourse);
             }
+            $scope.savePlan()
             $scope.sumPlannedCredits += course.credits;
 
             var elId = '#plannedCourse-' + ($scope.plannedCourses.length - 1).toString();
@@ -312,6 +313,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             if (i > -1)
                 $scope.plannedCourses.splice(i, 1);
 
+            $scope.savePlan()
             $scope.sumPlannedCredits -= course.credits;
         };
 
@@ -335,16 +337,6 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.savePlan = function() {
-            // TODO: save plan to cookies
-            $scope._savePlan();
-        };
-
-        $scope._savePlan = function() {
-            $scope.saved = true;
-        };
-
-        $scope.registerClasses = function() {
-            $cookies.c = "regOfferings";
             var classes = []
             for( var i=0; i<$scope.plannedCourses.length; i++ ) {
                 var klass = {}
@@ -360,6 +352,15 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 classes.push(klass)
             }
             $cookies.classes = JSON.stringify(classes)
+        };
+
+        $scope._savePlan = function() {
+            $scope.saved = true;
+        };
+
+        $scope.registerClasses = function() {
+            $cookies.c = "regOfferings";
+            $scope.savePlan()
 
             var domain = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
             var query = '?service='+encodeURIComponent(domain+'/byu-login-landing.html');

@@ -59,7 +59,7 @@ function registerAll(useRecaptcha) {
     $("#header-text").html('Step 3/3 : Check that all of your classes were added')
     $("#instruction-text").html("Check to see that all of your classes were registered. If something went wrong, click on the retry" +
         " button.")
-    var classesHTML = '<div><button class="btn btn-default" onclick="redoRecaptcha()">Retry</button></div>'
+    var classesHTML = ''
     for( var i=0; i<classes.length; i++ ) {
         var invisibleForm =
             '<form name="registration-form-'+i+'" method="post" id="registration-form-'+i+'" target="registration-iframe-'+i+'"' +
@@ -71,6 +71,7 @@ function registerAll(useRecaptcha) {
         var iframe = '<iframe width="503" height="84" id="registration-iframe-'+i+'" scrolling="no"></iframe>'
         classesHTML += '<div class="center">'+classes[i].dept+' - '+classes[i].title+'</div>'+invisibleForm+iframe+'<br>'
     }
+    classesHTML += '<div><button class="btn btn-default" onclick="redoRecaptcha()">Retry</button></div>'
     $("#registration-result").html(classesHTML).show()
 
     for( var i=0; i<classes.length; i++ ) {
