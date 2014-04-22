@@ -55,7 +55,7 @@ public class PublicWebController {
   public void shutdown(HttpServletRequest req)
   {
     //for temparary testing
-    System.out.println(req.getRemoteAddr());
+    //System.out.println(req.getRemoteAddr());
 
     if (!req.getRemoteAddr().matches("172[.]31[.]\\d{1,3}[.]\\d{1,3}|localhost|127[.]0[.]0[.]1")) {
       throw new ResourceNotFoundException();
@@ -68,7 +68,7 @@ public class PublicWebController {
   public void healthCheck(HttpServletRequest req)
   {
     //for temporary testing
-    System.out.println(req.getRemoteAddr());
+    //System.out.println(req.getRemoteAddr());
 
     if (!req.getRemoteAddr().matches("172[.]31[.]\\d{1,3}[.]\\d{1,3}|localhost|127[.]0[.]0[.]1")) {
       throw new ResourceNotFoundException();
