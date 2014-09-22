@@ -17,7 +17,7 @@ public class UpdateDatabase {
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, JSONException {
 
         String fileName = "UPDATE_DATABASE.txt";
-        String semesterCode = "20145"; // TODO - Find each semester code
+        String semesterCode = "20151"; // TODO - Find each semester code
         //yearTerm= 20141 & CreditType = A -> Winter
         //yearTerm= 20143 & CreditType = 1 -> Spring
         //yearTerm= 20143 & CreditType = 2 -> Summer

@@ -99,7 +99,8 @@ public class Section {
 			case 16: notes = splitNewline(element);
 					 break;
 			
-			case 17: seatsAvailable = element.substring(0, element.indexOf("/") - 1);
+			case 17: if (element.length() < 3){  System.out.println("SMALL:" + element); break;}
+                     seatsAvailable = element.substring(0, element.indexOf("/") - 1);
 					 totalSeats = element.substring(element.indexOf("/") + 2);
 					 break;
 					 
