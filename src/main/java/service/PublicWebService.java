@@ -49,7 +49,7 @@ public class PublicWebService {
   }
 
   public String getCurrentSemester() {
-    return "Spring2014"; //ToDo: change this
+    return "Winter2015"; //ToDo: change this
   }
 
     public void handleRegistration(String courseInfo, String ticket) {
