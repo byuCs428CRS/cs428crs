@@ -127,7 +127,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.isLoadingCourses = false;
         });
         // popular courses to be shown when there are no filters applied
-        $scope.popularCourses = [];
+        $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
 
         var autoSave = $interval(function () {
             $scope._savePlan()
@@ -140,13 +140,13 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         $scope.initStuff = function() {
             $scope.courseLevels = ['100', '200', '300', '400', '500', '600'];
-            $scope.currentSemester = "Summer 2014" //Should do some kind of logic or API call here
+            $scope.currentSemester = "Winter 2015" //Should do some kind of logic or API call here
             $scope.initPlannedCourses();
             $scope.saved = false;
             $scope.filterOptions = {
                 levels: {}
             };
-            $scope.sortBy = 'dept.shortCode';
+            $scope.sortBy = 'courseNumber';
             $scope.filteredDept = '';
             $scope.selectedCourse = undefined;
 

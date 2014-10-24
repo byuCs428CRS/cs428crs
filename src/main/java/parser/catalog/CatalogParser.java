@@ -99,7 +99,7 @@ public class CatalogParser {
             replaceAllCourseData(db, courseObjects);
 
             // Immediately after inserting all courses, try printing them out FROM the db
-            //printCoursesFromDB(db);
+            printCoursesFromDB(db);
         }
         else
             System.out.println("No Sections to insert!");
@@ -309,7 +309,7 @@ public class CatalogParser {
 
         // Connect to our database
         MongoClientURI uri = new MongoClientURI("mongodb://" + dbUser + ":" + dbPassword +
-                "@mongo.andyetitcompiles.com/classreg");
+                "@mongo.registerbyu.com:27017/classreg");
         MongoClient client;
 		try {
 			client = new MongoClient(uri);

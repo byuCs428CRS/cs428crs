@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tomcat-embed-logging-juli-7.0.52">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-logging-juli/7.0.52/8e2ddda36a6a5b4692e87be143e730df218a8976/tomcat-embed-logging-juli-7.0.52-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

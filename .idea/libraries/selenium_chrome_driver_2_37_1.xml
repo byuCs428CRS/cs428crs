@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="selenium-chrome-driver-2.37.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.seleniumhq.selenium/selenium-chrome-driver/2.37.1/59a346a6b832eefa8b58c7a16e2ae3644d8b7c6a/selenium-chrome-driver-2.37.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.seleniumhq.selenium/selenium-chrome-driver/2.37.1/a39e653299eb8f841149b13de62cb92f423cf8c9/selenium-chrome-driver-2.37.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
