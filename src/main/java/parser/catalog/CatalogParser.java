@@ -206,7 +206,6 @@ public class CatalogParser {
     		newCourse.put("registrationType", c.registrationType);
     		newCourse.put("courseNumber", c.courseNumber);
     		newCourse.put("sections", curCourse.getValue());
-    		
     		courseObjects.add(newCourse);
     	}
     	

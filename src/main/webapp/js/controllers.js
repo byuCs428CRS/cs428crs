@@ -146,7 +146,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.filterOptions = {
                 levels: {}
             };
-            $scope.sortBy = 'courseNumber';
+            $scope.sortBy = ['dept.shortCode','courseNumber'];
             $scope.filteredDept = '';
             $scope.selectedCourse = undefined;
 
