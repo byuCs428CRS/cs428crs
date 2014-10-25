@@ -1,7 +1,14 @@
+build/
+.gradle/
+*.DS_Store
+*.classpath
+*.project
+.settings/
+/bin
 .idea
 .idea/*
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
-!.elasticbeanstalk/*.env.yml
+!.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
