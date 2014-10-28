@@ -75,7 +75,10 @@ public class Section {
 					
 			case 10: if (element.equals(""))
 						professor = "Staff";
-					 else
+					 else if (element.contains("[+]")){ //Todo Handle Multiple teachers
+                        professor = element.substring(0, element.indexOf(' ', element.indexOf(' ')+1));
+                     }
+                     else
 						professor = element;
 					 break;
 					

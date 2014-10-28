@@ -115,7 +115,7 @@ function registrationComplete() {
 }
 
 function getTerm() {
-    return '20145'
+    return '20151'    //TODO Auto update this value = 2015 Winter             20145 = 2014 Fall
 }
 
 function recaptchaHelp() {

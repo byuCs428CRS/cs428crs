@@ -5,6 +5,7 @@ import parser.catalog.CatalogParser;
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.util.Scanner;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,11 +26,25 @@ public class UpdateDatabase {
         //yearTerm= 20145 & CreditType = A -> Fall
         //CreditTypes - A = All, S = Semester Block, 1 = Term 1, 2 = Term 2
 
-        //A - All offering
-//        httpCourseDownloader.createCourseDataFile(fileName, semesterCode);
-        System.out.println("<<<<<<<<<<<<<<<< DOWNLOAD COMPLETE >>>>>>>>>>>>>>>>");
-        CatalogParser.parseAndUpdateDatabase(fileName);
-        System.out.println("<<<<<<<<<<<<<<<< DATABASE UPDATED >>>>>>>>>>>>>>>>");
+        Scanner sc = new Scanner(System.in);
+        String option = "";
+        while(!(option.equals("p") || option.equals("b") || option.equals("u") || option.equals("a"))) {
+            System.out.println("Please select an option - Pull data (p), build objects (b), Update database (u), or all (a)");
+            option = sc.next();
+        }
+
+        if(option.equals("p") || option.equals("a")){
+            httpCourseDownloader.createCourseDataFile(fileName, semesterCode);
+            System.out.println("<<<<<<<<<<<<<<<< DOWNLOAD COMPLETE >>>>>>>>>>>>>>>>");
+        }
+        if (option.equals("u") || option.equals("a")){
+            CatalogParser.parseAndUpdateDatabase(fileName, true);
+            System.out.println("<<<<<<<<<<<<<<<< DATABASE UPDATED >>>>>>>>>>>>>>>>");
+        }
+        else if (option.equals("b")) {
+            CatalogParser.parseAndUpdateDatabase(fileName, false);
+            System.out.println("<<<<<<<<<<<<<<<< DATABASE NOT UPDATED >>>>>>>>>>>>>>>>");
+        }
     }
 
 }

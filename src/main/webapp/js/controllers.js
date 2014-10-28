@@ -64,7 +64,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                     section.sectionId = apiSection.sectionID
                     section.professor = apiSection.professor
                     if( apiSection.pid === "undefined" || apiSection.pid === undefined || apiSection.pid === null || apiSection.pid === "" ) {
-                        section.rateMyProfessorQuery = "SelectTeacher.jsp?searchName="+section.professor.split(",")[0]+"&search_submit1=Search&sid=135"
+                        section.rateMyProfessorQuery = "search.jsp?query=BYU%20" + section.professor.split(",")[0] + " " + section.professor.split(",")[1] //"SelectTeacher.jsp?searchName="+section.professor.split(",")[0]+"&search_submit1=Search&sid=135"
                     } else
                         section.rateMyProfessorQuery = "ShowRatings.jsp?tid="+apiSection.pid
 

@@ -22,10 +22,10 @@ public class CatalogParser {
     public static void main(String[] args) throws UnknownHostException, JSONException {
 
         String fileName = System.getProperty("user.dir") + "/ParseableFall2014Catalog.txt";
-        parseAndUpdateDatabase(fileName);
+        parseAndUpdateDatabase(fileName, true);
     }
 
-    public static void parseAndUpdateDatabase(String fileName) throws JSONException {
+    public static void parseAndUpdateDatabase(String fileName, boolean updateDatabse) throws JSONException {
         index = 0;
         File file = new File(fileName);
         Map professorMap = InstructorParser.getInstructorMap();
@@ -68,7 +68,7 @@ public class CatalogParser {
                  if(s.professor.equals("") || s.professor.equalsIgnoreCase("staff"))
                      staffSections++;
                  else {
-                    System.out.println(s.professor);
+                    System.out.println("Unmatched: " + s.professor);
                  }
                  s.rateMyProfId = "";
              }
@@ -85,7 +85,7 @@ public class CatalogParser {
 
 
         // Insert the courses into the database
-        if (sections.size() > 0) {
+        if (sections.size() > 0 && updateDatabse) {
 
             DB db = getDB();
 
