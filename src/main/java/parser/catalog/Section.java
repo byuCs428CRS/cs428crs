@@ -103,13 +103,20 @@ public class Section {
 			case 16: notes = splitNewline(element);
 					 break;
 			
-			case 17: if (element.length() < 3){  System.out.println("SMALL:" + element); break;}
+			case 17: if (element.length() <= 3 || element.indexOf("/") == -1){
+                System.out.println("SMALL:" + element);
+                seatsAvailable = "N";
+                totalSeats = "A";
+                break;
+            }
+                     System.out.println("Seats:" + element);
                      seatsAvailable = element.substring(0, element.indexOf("/") - 1);
 					 totalSeats = element.substring(element.indexOf("/") + 2);
 					 break;
 					 
-			case 18: waitList = element;
-					 break;
+			case 18: if(!seatsAvailable.equals("N"))
+                        waitList = element;
+					    break;
 					
 			default: System.out.println("ERROR: Your index isn't between 0 and 18!");
 					 break;

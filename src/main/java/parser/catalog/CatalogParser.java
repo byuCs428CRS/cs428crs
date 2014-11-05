@@ -285,6 +285,10 @@ public class CatalogParser {
     	
     	// Set the element using the current index before incrementing the index
     	curSection.setElement(index, nextElement);
+        if (index == 17 && nextElement.equals("N/A")){
+            curSection.waitList = "0";
+            index++;
+        }
     	index++;
     	
     	// If index equals this max index variable, this means the parser has finished one section
