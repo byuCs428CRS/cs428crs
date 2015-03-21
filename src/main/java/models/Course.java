@@ -1,6 +1,8 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,8 +23,11 @@ public class Course {
     private List<String> outcomes;
     private List<Section> sections;
 
-    public Course() {
+    private String credit;
 
+    public Course() {
+    	sections = new ArrayList<Section>();
+    	outcomes = new ArrayList<String>();
     }
 
     public String toString(){
@@ -69,6 +74,7 @@ public class Course {
         this.sections = sections;
     }
 
+    public void setCredit(String tmp) { this.credit = tmp;}
 
     public String getCourseID() {
         return courseID;
@@ -102,7 +108,41 @@ public class Course {
         return departmentCode;
     }
 
+    public String getCredit() { return credit; }
+
     public void setDepartmentCode(String departmentCode) {
         this.departmentCode = departmentCode;
+    }
+    
+    public void addSection(Section s)
+    {
+    	sections.add(s);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(courseID, courseName, newTitleCode, department, departmentCode, registrationType, courseNumber, outcomes, sections);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final Course other = (Course) obj;
+        return Objects.equals(this.courseID, other.courseID)
+                && Objects.equals(this.courseName, other.courseName)
+                && Objects.equals(this.newTitleCode, other.newTitleCode)
+                && Objects.equals(this.department, other.department)
+                && Objects.equals(this.departmentCode, other.departmentCode)
+                && Objects.equals(this.registrationType, other.registrationType)
+                && Objects.equals(this.courseNumber, other.courseNumber)
+                && Objects.equals(this.outcomes, other.outcomes)
+                && Objects.equals(this.sections, other.sections);
     }
 }

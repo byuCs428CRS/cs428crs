@@ -177,3 +177,23 @@ h2 {
     height: 65vh;
     overflow: scroll;
 }
+#loadByuCoursesModal{
+	background:rgba(0,0,0,0.5);
+	display:none;
+}
+#jsonPlannedClasses, #byuPlannedClassesIFrame{
+	width:300px;
+}
+.innerModal{
+	margin-left: auto;
+	margin-right: auto;
+	width: 40%;
+	text-align: center;
+	margin-top: 14%;
+	margin-bottom: auto;
+	border: 2px solid #a1a1a1;
+	padding: 10px 40px;
+	background: #dddddd;
+	border-radius: 15px;
+}
+#semesterSelect{ margin-top: 10px;}

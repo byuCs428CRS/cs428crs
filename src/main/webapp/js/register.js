@@ -111,7 +111,7 @@ function registrationComplete() {
     //expire all cookies except the recaptcha response
     Cookies.set('classes', 'this should expire', {expires: -1})
     Cookies.set('c', 'this should expire', {expires: -1})
-    Cookies.set('e', 'this shoudl expire', {expires: -1})
+    Cookies.set('e', 'this should expire', {expires: -1})
 }
 
 function getTerm() {

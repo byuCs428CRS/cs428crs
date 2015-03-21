@@ -4,6 +4,7 @@ import exceptions.AccountAlreadyExistsException;
 import models.Course;
 import models.Department;
 import models.Schedule;
+import models.Student;
 import models.UserCredentials;
 import models.requirements.Requirement;
 
@@ -134,5 +135,5 @@ public interface RegistrationStore {
 	 */
 	public int getUserId(String username);
 
-
+	public Student getStudent(String id);
 }

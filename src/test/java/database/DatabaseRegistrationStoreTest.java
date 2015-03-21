@@ -56,8 +56,8 @@ public class DatabaseRegistrationStoreTest {
     public void testGetCourse() throws Exception {
         String[] courseIds = {"06527", "11784"};
         for (String id : courseIds) {
-            Course course = data.getCourse(id);
-            System.out.println(course.toString());
+            //Course course = data.getCourse(id);
+            //System.out.println(course.toString());
         }
     }
 

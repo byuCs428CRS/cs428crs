@@ -52,23 +52,23 @@
             </li>
         </ul>
 
-        <!--<div ng-show="isActive('/plan')" class="pull-right">-->
-            <!--<ul class="nav navbar-nav">-->
-                <!--<li>-->
-                    <!--<a ng-show="!$rootScope.loggedIn" data-toggle="modal" href="index.html#/plan#loginModal">-->
-                        <!--<span class="glyphicon glyphicon-user"></span> Sign in-->
-                    <!--</a>-->
-                <!--</li>-->
-                <!--<li>-->
-                    <!--<span class="nav-span" ng-show="$rootScope.loggedIn"><span></span> Welcome, {{username}}!&nbsp;&nbsp;&nbsp;</span>-->
-                <!--</li>-->
-                <!--<li>-->
-                    <!--<a class="nav-span linky" ng-show="$rootScope.loggedIn" ng-click="$rootScope.signOutUser()">-->
-                        <!--Sign out-->
-                    <!--</a>-->
-                <!--</li>-->
-            <!--</ul>-->
-        <!--</div>-->
+        <div class="pull-right">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a id='loginButton' ng-show="!$rootScope.loggedIn" data-toggle="modal" href="#">
+                        <span class="glyphicon glyphicon-user"></span> Sign in
+                    </a>
+                </li>
+                <li>
+                    <span class="nav-span" ng-show="$rootScope.loggedIn"><span></span> Welcome, {{username}}!&nbsp;&nbsp;&nbsp;</span>
+                </li>
+                <li>
+                    <a id="logoutButton" class="nav-span linky" ng-show="$rootScope.loggedIn" ng-click="$rootScope.signOutUser()">
+                        Sign out
+                    </a>
+                </li>
+            </ul>
+        </div>
 
     </div>
 </div>

@@ -18,10 +18,9 @@ import java.util.List;
 public class DatabaseRegistrationStore implements RegistrationStore {
     private static RegistrationStore root = new DatabaseRegistrationStore();
     private static DB db;
+    private StudentDAO sdao = new StudentDAO(getDB());
     private final String COURSE_COLLECTION = "course";
     private final String USER_COLLECTION = "user";
-    private final String SCHEDULE_COLLECTION = "schedule";
-    private final String DEPARTMENT_COLLECTION = "department";
 
     public static RegistrationStore getInstance() {
         return root;
@@ -49,6 +48,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
 			System.out.println("COULDN\'T GET THE DB");
 			e.printStackTrace();
 		}
+		
 		return null;
 	}
 
@@ -85,6 +85,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
     }
 
     //@Override
+    //TODO:Figure out if needed
     public List<Requirement> getRequirementsForMajor(String major) {
         List<Requirement> requirementList = new ArrayList<>();
         return requirementList;
@@ -142,6 +143,17 @@ public class DatabaseRegistrationStore implements RegistrationStore {
     public int getOwningUserForSchedule(int scheduleId) {
         int userId = 0;
         return userId;
+    }
+    
+    public Student getStudent(String id){
+    	Student s = new Student();
+    	try{
+    		s = sdao.getStudent(id);
+    	}catch(Exception e){
+    		s.setStudentId(id);
+    		sdao.saveStudent(s);
+    	}
+    	return s;
     }
 
     //@Override
@@ -224,7 +236,7 @@ public class DatabaseRegistrationStore implements RegistrationStore {
                 BasicDBObject dbTimePlace = (BasicDBObject) dboTimePlace;
                 timePlaceList.add(buildTimePlaceObject(dbTimePlace));
             }
-            s.setTimePlaces(timePlaceList);
+            s.setTimePlaces(timePlaceList); TODO://FIX
             sectionList.add(s);
         }
 

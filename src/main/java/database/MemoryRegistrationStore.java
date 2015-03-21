@@ -18,10 +18,10 @@ public class MemoryRegistrationStore implements RegistrationStore {
 	private Map<String, UserCredentials> userLogins;
 	private Map<Integer, UserCredentials> userList;
 	private Map<String, Integer> idLookup;
-  private Map<Integer, Schedule> schedules;
-  private Map<Integer, Integer> scheduleUserMappings;
+    private Map<Integer, Schedule> schedules;
+    private Map<Integer, Integer> scheduleUserMappings;
 	private int userIdCount;
-  private int scheduleIdCount;
+    private int scheduleIdCount;
 
 
 	private MemoryRegistrationStore() {
@@ -30,10 +30,10 @@ public class MemoryRegistrationStore implements RegistrationStore {
 		userLogins = new HashMap<>();
 		userList = new HashMap<>();
 		idLookup = new HashMap<>();
-    schedules = new HashMap<>();
-    scheduleUserMappings = new HashMap<>();
+        schedules = new HashMap<>();
+        scheduleUserMappings = new HashMap<>();
 		userIdCount = 1;
-    scheduleIdCount = 1;
+        scheduleIdCount = 1;
 	}
 
 	public static MemoryRegistrationStore getInstance() {
@@ -162,6 +162,12 @@ public class MemoryRegistrationStore implements RegistrationStore {
 	public int getUserId(String username) {
 		int i = idLookup.get(username);
 		return i;
+	}
+
+	@Override
+	public Student getStudent(String id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -36,6 +36,8 @@ repositories {
 }
 
 dependencies {
+    compile("org.jongo:jongo:1.1")
+    compile("org.jasig.cas.client:cas-client-core:3.3.3")
     compile("org.springframework.boot:spring-boot-starter-web:1.1.1.RELEASE")
     compile("com.fasterxml.jackson.core:jackson-databind")
     compile("org.mongodb:mongo-java-driver:2.11.3")

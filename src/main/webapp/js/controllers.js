@@ -8,35 +8,41 @@ var conflictingEventColor = '#C25151';
 /* Controllers */
 var classregControllers = angular.module('classregControllers', []);
 
-classregControllers.controller('HeaderController', ['$scope', '$rootScope', '$location',
-    function($scope, $rootScope, $location) {
+classregControllers.controller('HeaderController', ['$scope', '$http', '$rootScope', '$location',
+    function($scope, $http, $rootScope, $location) {
         $scope.isActive = function(viewLocation) {
             return viewLocation === $location.path();
         };
+		
+		//check if logged in
+		$http.get('auth/service').success(function (data) {
+            if(data._id!==null){
+				$rootScope.loggedIn = true;
+				$rootScope.username = data._id;
+				$rootScope.schedules = data.schedules;
+			}
+        });
     }
 ]);
 
 classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval', '$timeout',
     function ($scope, $http, $cookies, $rootScope, $interval, $timeout) {
 
-        $scope.isLoadingCourses = true;
-        $http.get('public-api/courses/all').success(function (data) {
-            var previouslySavedPlan = {}
-            if( $cookies.classes !== undefined && $cookies.classes !== "undefined" && $cookies.classes !== null )
-            {
-                try {
-                    var classes = JSON.parse($cookies.classes)
-                    for (var i = 0; i < classes.length; i++)
-                        previouslySavedPlan[classes[i].courseNumber] = classes[i].sectionId
-                } catch( exception ) { /* don't die */}
-            }
-            $scope.departments = []
-            $scope.courses = []
-            angular.forEach(data.courses, function (apiCourse) {
-                var course = {}
-                course.title = apiCourse.courseName
-                course.courseNumber = apiCourse.courseNumber
-                course.outcomes = apiCourse.outcomes
+		$scope.loadSemesterCourses = function(data){
+			$scope.departments = []
+            $scope.courses = data.courses;
+			angular.forEach(data.courses, function (apiCourse) {
+				if ($scope.departments.indexOf(apiCourse.departmentCode) < 0)
+                    $scope.departments.push(apiCourse.departmentCode)
+                     angular.forEach(apiCourse.sections, function (apiSection) {
+                         if( apiSection.pid === "undefined" || apiSection.pid === undefined
+                                        || apiSection.pid === null || apiSection.pid === "" ){
+                            apiSection.professor = (apiSection.professor==null)? 'Staff' : apiSection.professor;
+                            apiSection.rateMyProfessorQuery = "search.jsp?query=BYU%20" + apiSection.professor.split(",")[0] + " " + apiSection.professor.split(",")[1]
+                          }else
+                            apiSection.rateMyProfessorQuery = "ShowRatings.jsp?tid="+apiSection.pid
+                     });
+
                 if (apiCourse.sections !== null && apiCourse.sections !== undefined && apiCourse.sections.length > 0) {
                     var minCredits = 1000, maxCredits = -1;
                     for( var i=0; i<apiCourse.sections.length; i++ ) {
@@ -47,88 +53,82 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                             maxCredits = sectionCredits
                     }
                     if( minCredits == maxCredits )
-                        course.credits = minCredits
+                        apiCourse.creditRange = minCredits
                     else
-                        course.credits = minCredits+' - '+maxCredits
+                        apiCourse.creditRange = minCredits+' - '+maxCredits
                 }
-                course.dept = {}
-                course.dept.title = apiCourse.department == null ? '' : apiCourse.department
-                course.dept.shortCode = apiCourse.departmentCode
-                if ($scope.departments.indexOf(apiCourse.departmentCode) < 0)
-                    $scope.departments.push(apiCourse.departmentCode)
-                course.titleCode = apiCourse.newTitleCode
-                course.byuId = apiCourse.courseID
-                course.sections = []
-                angular.forEach(apiCourse.sections, function (apiSection) {
-                    var section = {}
-                    section.sectionId = apiSection.sectionID
-                    section.professor = apiSection.professor
-                    if( apiSection.pid === "undefined" || apiSection.pid === undefined || apiSection.pid === null || apiSection.pid === "" ) {
-                        section.rateMyProfessorQuery = "search.jsp?query=BYU%20" + section.professor.split(",")[0] + " " + section.professor.split(",")[1] //"SelectTeacher.jsp?searchName="+section.professor.split(",")[0]+"&search_submit1=Search&sid=135"
-                    } else
-                        section.rateMyProfessorQuery = "ShowRatings.jsp?tid="+apiSection.pid
 
-                    section.room = '' //TODO refactor
-                    section.buildingAbbreviation = '' //TODO refactor
-                    var roomPrefix = '' //TODO refactor
-                    var buildingAbbreviationPrefix = '' //TODO refactor
-                    section.classPeriods = [];
-                    section.classSize = apiSection.totalSeats;
-                    section.waitlistCount = apiSection.waitList;
-                    section.seatsAvailable = parseInt(apiSection.seatsAvailable, 10)
-                    section.sectionType = apiSection.sectionType === undefined || apiSection.sectionType === null ? "DAY" : apiSection.sectionType;
-                    angular.forEach(apiSection.timePlaces, function (timePlace) {
-                        var timeOfDay = timePlace.startTime.substring(0, timePlace.startTime.length - 2) + '-' + timePlace.endTime.substring(0, timePlace.endTime.length - 2);
-                        var prefix
-                        if (!(timeOfDay in section.classPeriods)) {
-                            section.classPeriods[timeOfDay] = ''
-                            prefix = ''
-                        } else {
-                            prefix = ', '
-                        }
-                        if (timePlace.day.indexOf('M') >= 0 && section.classPeriods[timeOfDay].indexOf('M') < 0) {
-                            section.classPeriods[timeOfDay] += prefix + 'M'
-                            prefix = ', '
-                        }
-                        if (timePlace.day.indexOf('T') >= 0 && section.classPeriods[timeOfDay].indexOf('Tu') < 0) {
-                            section.classPeriods[timeOfDay] += prefix + 'Tu'
-                            prefix = ', '
-                        }
-                        if (timePlace.day.indexOf('W') >= 0 && section.classPeriods[timeOfDay].indexOf('W') < 0) {
-                            section.classPeriods[timeOfDay] += prefix + 'W'
-                            prefix = ', '
-                        }
-                        if (timePlace.day.indexOf('Th') >= 0 && section.classPeriods[timeOfDay].indexOf('Th') < 0) {
-                            section.classPeriods[timeOfDay] += prefix + 'Th'
-                            prefix = ', '
-                        }
-                        if (timePlace.day.indexOf('F') >= 0 && section.classPeriods[timeOfDay].indexOf('F') < 0) {
-                            section.classPeriods[timeOfDay] += prefix + 'F'
-                        }
-                        var location = timePlace.location.trim()
-                        if (location === 'TBA') {
-                            section.room = 'TBA'
-                            section.buildingAbbreviation = 'TBA'
-                        } else {
-                            var splitLocation = location.split(' ')
-                            section.room += roomPrefix + splitLocation[1]
-                            section.buildingAbbreviation += buildingAbbreviationPrefix + splitLocation[0]
-                            roomPrefix = ', '
-                            buildingAbbreviationPrefix = ', '
-                        }
-                    });
-                    course.sections.push(section)
-                    if( previouslySavedPlan[course.byuId] === section.sectionId ) {
-                        $scope.addCourseToPlan(course, section)
-                    }
-                });
-                $scope.courses.push(course)
-            });
-            $scope.isLoadingCourses = false;
-        });
+                if (apiCourse.department == null)
+                    apiCourse.department = '';
+                if (apiCourse.courseName == null)
+                    apiCourse.courseName = '';
+			});
+			if($scope.importedClasses!=undefined)
+				$scope.loadByuPlannedCoursesToSidebar();
+		}
+		
+		$scope.semesterNames = function(year){
+			var sType = year.substring(4,5);
+			var sYear = year.substring(0,4);
+			if(sType === "1"){
+				return "Winter "+sYear;
+			}
+			if(sType === "3"){
+				return "Spring "+sYear;
+			}
+			if(sType === "4"){
+				return "Summer "+sYear;
+			}
+			if(sType === "5"){
+				return "Fall "+sYear;
+			}
+			return year;
+		};
+		
+		$scope.loadSemeseters = function(){
+			$scope.previouslySavedPlan = {}
+			$http.get('public-api/semesters').success(function (data) {
+				$scope.semesters = [];
+				for(var i=0;i<data.length;i++){
+					var se = {};
+					se["name"] = $scope.semesterNames(data[i]);
+					se["value"] = data[i];
+					if(parseInt(se["value"].substring(0,4))>=(new Date().getFullYear()))
+						$scope.semesters.push(se);
+				}
+				$scope.selectedSemester = $scope.semesters[$scope.semesters.length-1];
+				$scope.changeCurrentSemester($scope.selectedSemester);
+			});
+		};
+		
+		$scope.loadPreviouslySavedMyMap = function(){
+			$http.get('public-api/loadCoursesFromMyMap').success(function (data) {
+				$scope.importedClasses = JSON.parse(data.mymapPlanned);
+				$scope.loadByuPlannedCoursesToSidebar();
+			});
+		};
+		
+		$scope.loadPreviouslySavedSchedule = function(semId){
+			$scope.$broadcast("removeAllCourses");
+			if($scope.plannedSemesterSchedules[semId]==undefined)
+				$http.get('public-api/loadSchedule/'+semId).success(function (data) {
+					if(data.classes!==undefined){
+						$scope.plannedSemesterSchedules[semId] = data;
+						angular.forEach($scope.plannedSemesterSchedules[semId].classes, function (section) {
+							$scope.$broadcast("courseAdded", {course: $scope.getCID(section), classPeriods: section.timePlaces, color: eventColor });
+						});
+					}
+				});
+			else
+				angular.forEach($scope.plannedSemesterSchedules[semId].classes, function (section) {
+					$scope.$broadcast("courseAdded", {course: $scope.getCID(section), classPeriods: section.timePlaces, color: eventColor });
+				});
+		};
+		
         // popular courses to be shown when there are no filters applied
         $scope.popularCourses = ['REL A121', 'REL A122', 'A HTG100', 'BIO100', 'C S142', 'MATH112', 'MATH113', 'WRTG150', 'CHEM111', 'CHEM101', 'PHSCS121', 'COMMS101', 'ACC200', 'EL ED202'];
-
+		$scope.defaultCourses = $scope.popularCourses;
+		
         var autoSave = $interval(function () {
             $scope._savePlan()
         }, 5000);
@@ -139,17 +139,25 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
 
         $scope.initStuff = function() {
+			$scope.semesters = [];
             $scope.courseLevels = ['100', '200', '300', '400', '500', '600'];
-            $scope.currentSemester = "Winter 2015" //Should do some kind of logic or API call here
+			$scope.currentSemesterId = "20155"
+            $scope.currentSemester = "Fall 2015" //updated after the load semesters is called
             $scope.initPlannedCourses();
             $scope.saved = false;
             $scope.filterOptions = {
                 levels: {}
             };
-            $scope.sortBy = ['dept.shortCode','courseNumber'];
+            $scope.sortBy = ['departmentCode','courseNumber'];
             $scope.filteredDept = '';
             $scope.selectedCourse = undefined;
-
+			
+			if($rootScope.initLoadingCourses!=true){//prevent 2 calls during init
+				$scope.loadSemeseters();
+				$scope.loadPreviouslySavedMyMap();
+			}
+			$rootScope.initLoadingCourses = true;
+			
             angular.forEach($scope.courseLevels, function(level) {
                 $scope.filterOptions.levels[level] = true;
             });
@@ -171,7 +179,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         })
 
         $scope.initPlannedCourses = function() {
-            $scope.plannedCourses = [];
+            $scope.plannedSemesterSchedules = [];
             $scope.sumPlannedCredits = 0.0;
             $scope.$broadcast("removeAllCourses");
         };
@@ -179,24 +187,24 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         $scope.initStuff();
 
         $scope.allFilter = function(course) {
-            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.popularCourses.indexOf(course.dept.shortCode + course.courseNumber) > -1);
+            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.defaultCourses.indexOf(course.departmentCode + course.courseNumber) > -1);
         };
 
         // Searches both course name and course description fields
         $scope.searchQueryFilter = function(course) {
             var q = angular.lowercase($scope.filterText);
             return (!angular.isDefined(q) || q == "" ||
-                (angular.lowercase(course.title).indexOf(q) >= 0 ||
-                    angular.lowercase(course.dept.shortCode.replace(/\s/g, '')).indexOf(q) >= 0 ||
-                    angular.lowercase(course.dept.title).indexOf(q) >= 0 ||
+                (angular.lowercase(course.courseName).indexOf(q) >= 0 ||
+                    angular.lowercase(course.departmentCode.replace(/\s/g, '')).indexOf(q) >= 0 ||
+                    angular.lowercase(course.department).indexOf(q) >= 0 ||
                     angular.lowercase(course.courseNumber).indexOf(q) >= 0 ||
-                    angular.lowercase(course.dept.shortCode + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0 ||
-                    angular.lowercase(course.dept.shortCode.replace(/\s/g,'') + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0));
+                    angular.lowercase(course.departmentCode + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0 ||
+                    angular.lowercase(course.departmentCode.replace(/\s/g,'') + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0));
         };
 
         //Filters by department
         $scope.departmentFilter = function(course) {
-            return $scope.filteredDept === /* all departments */ '' || $scope.filteredDept === course.dept.shortCode
+            return $scope.filteredDept === /* all departments */ '' || $scope.filteredDept === course.departmentCode
         };
 
         // Filters by course level
@@ -216,8 +224,9 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             return $scope.sortBy == selected ? ($scope.desc ? 'sorted-desc' : 'sorted-asc') : '';
         };
 
-        $scope.updateSelectedCourse = function(dept, id) {
-            var course = $.grep($scope.courses, function(c){ return c.dept.shortCode == dept && c.courseNumber == id; });
+        $scope.updateSelectedCourse = function(section) {
+			var thisCourse = $scope.getCourseObject(section.courseID);
+            var course = $.grep($scope.courses, function(c){ return c.departmentCode == thisCourse.departmentCode && c.courseNumber == thisCourse.courseNumber; });
             if (course) {
                 $scope.selectedCourse = course[0];
             }
@@ -235,7 +244,17 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             var result = ''
             var prefix = ''
             for(var key in classPeriods) {
-                result += prefix + classPeriods[key] + ' ' + key
+                result += prefix+classPeriods[key].day+' '+classPeriods[key].startTime+'-'+classPeriods[key].endTime
+                prefix = ', '
+            }
+            return result
+        };
+		
+		$scope.classPeriodsToLocation = function(classPeriods) {
+            var result = ''
+            var prefix = ''
+            for(var key in classPeriods) {
+                result += prefix+classPeriods[key].location
                 prefix = ', '
             }
             return result
@@ -243,8 +262,9 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         // check if a course is planned, where cid is a course/section id that looks like this: "CS256-1" for section 1
         $scope.isPlanned = function(cid) {
-            for (var i = 0; i < $scope.plannedCourses.length; i++) {
-                if ($scope.plannedCourses[i].cid == cid) {
+			if($scope.plannedSemesterSchedules[$scope.currentSemesterId]!== undefined)
+            for (var i = 0; i < $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.length; i++) {
+                if ($scope.getCID($scope.plannedSemesterSchedules[$scope.currentSemesterId].classes[i]) == cid) {
                     return true;
                 }
             }
@@ -253,26 +273,84 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
         // gets the planned section of a course. if no planned section, returns null.
         $scope.getPlannedCourse = function(dept, num) {
-            for (var i = 0; i < $scope.plannedCourses.length; i++) {
-                if ($scope.plannedCourses[i].dept.shortCode == dept && $scope.plannedCourses[i].courseNumber == num) {
-                    return $scope.plannedCourses[i];
+            for (var i = 0; i < $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.length; i++) {
+				var thisCourse = $scope.getCourseObject($scope.plannedSemesterSchedules[$scope.currentSemesterId].classes[i].courseID);
+                if (thisCourse.departmentCode == dept && thisCourse.courseNumber == num) {
+                    return $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes[i];
                 }
             }
             return null;
         };
+		
+		$scope.loadByuCourses = function(){
+			if($rootScope.loggedIn){
+				$('#loadByuCoursesModal').show();
+			}else{
+				alert('please login before loading classes');
+			}
+		};
+		
+		$scope.changeCurrentSemester = function(selected){
+			$scope.sortBy = ['departmentCode','courseNumber'];
+            $scope.filteredDept = '';
+            $scope.selectedCourse = undefined;
+			$scope.currentSemesterId = selected.value;
+			$scope.currentSemester = selected.name;
+			$scope.isLoadingCourses = true;
+			$http.get('public-api/courses/'+selected.value).success(function (data) {
+				$scope.loadPreviouslySavedSchedule(selected.value);
+				$scope.loadSemesterCourses(data);
+				$scope.isLoadingCourses = false;
+			});
+		};
+		
+		$scope.loadByuPlannedCoursesToSidebar = function(){
+			var plans = $scope.importedClasses.plans;
+			$scope.defaultCourses = [];
+			for(var i=0; i< plans.length; i++){
+				if(plans[i]["yearTerm"]==$scope.selectedSemester.value){
+					var courseTitle = plans[i]["title"];
+					$scope.defaultCourses.push(courseTitle.substr(0,courseTitle.length-4) + courseTitle.substr(courseTitle.length-3,3));
+				}
+			}
+			if($scope.defaultCourses.length==0)
+				$scope.defaultCourses = $scope.popularCourses;
+		};
+				
+		$scope.loadByuCoursesOkay = function(){
+			try{
+				$scope.importedClasses = JSON.parse($('#jsonPlannedClasses')[0].value);
+				$http.post('public-api/saveCoursesFromMyMap', {mymapPlanned:$scope.importedClasses}).success(function (data) {
+					//success!
+				});
+				$scope.loadByuPlannedCoursesToSidebar();
+			}catch(e){
+				//silently die, should tell users we couldn't parse their classes.
+			}
+			$('#loadByuCoursesModal').hide();
+		};
 
         $scope.addCourseToPlan = function(course, section) {
             $scope.saved = false;
             $scope.added = false;
+			if($scope.plannedSemesterSchedules[$scope.currentSemesterId]==undefined || $scope.plannedSemesterSchedules[$scope.currentSemesterId] == null){
+				var newSemester = new Object();
+				newSemester._id = $scope.currentSemesterId;
+				newSemester.semesterID = $scope.currentSemesterId;
+				newSemester.name = $scope.currentSemester;
+				newSemester.classes = [];
+				$scope.plannedSemesterSchedules[$scope.currentSemesterId] = newSemester;
+			}
+			
             // when the class is added, remove its temporary calendar event
             $scope.hideTempEvent(course, section);
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
-            var cid = fullCourseName + "-" + section.sectionId;
+            var fullCourseName = course.departmentCode + ' ' + course.courseNumber;
+            var cid = fullCourseName + "-" + section._id;
             var classLocation = section.buildingAbbreviation + ' ' + section.room;
 
-            $scope.$broadcast("courseAdded", {course: cid, classPeriods: section.classPeriods, classLocation: classLocation, color: eventColor });
+            $scope.$broadcast("courseAdded", {course: cid, classPeriods: section.timePlaces, color: eventColor });
 
-            var theCourse = $scope.getPlannedCourse(course.dept.shortCode, course.courseNumber);
+            var theCourse = $scope.getPlannedCourse(course.departmentCode, course.courseNumber);
             if (theCourse) {
                 // if there's already another section of the same course, just replace it
                 $scope.removeCourseFromPlan(theCourse);
@@ -280,23 +358,25 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 
             if (!$scope.isPlanned(cid)) {
                 var plannedCourse = new Object();
-                plannedCourse.cid = cid;
-                plannedCourse.dept = course.dept;
-                plannedCourse.courseNumber = course.courseNumber;
-                plannedCourse.sectionId = section.sectionId;
-                plannedCourse.instructor = section.professor;
-                plannedCourse.classPeriods = section.classPeriods;
-                plannedCourse.byuId = course.byuId;
-                plannedCourse.titleCode = course.titleCode;
-                plannedCourse.credits = course.credits;
+                //plannedCourse.cid = cid;
+                //plannedCourse.department = course.department;
+				//plannedCourse.departmentCode = course.departmentCode;
+                //plannedCourse.courseNumber = course.courseNumber;
+                plannedCourse._id = section._id;
+                plannedCourse.professor = section.professor;
+                plannedCourse.timePlaces = section.timePlaces;
+                plannedCourse.courseID = course.courseID;
+                //plannedCourse.newTitleCode = course.newTitleCode;
+                plannedCourse.credits = section.credits;
                 plannedCourse.sectionType = section.sectionType;
-                plannedCourse.title = course.title;
-                $scope.plannedCourses.push(plannedCourse);
+                //plannedCourse.courseName = course.courseName;
+				plannedCourse.semesterID = $scope.currentSemesterId;
+                $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.push(plannedCourse);
             }
             $scope.savePlan()
             $scope.sumPlannedCredits += course.credits;
 
-            var elId = '#plannedCourse-' + ($scope.plannedCourses.length - 1).toString();
+            var elId = '#plannedCourse-' + ($scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.length - 1).toString();
 
             setTimeout(function() {
                 $(elId).effect("highlight", {}, 1000);
@@ -307,48 +387,74 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.saved = false;
             $scope.added = false;
 
-            $scope.$broadcast("courseRemoved", {course: course.cid, temp: false});
+            $scope.$broadcast("courseRemoved", {course: $scope.getCID(course), temp: false});
 
-            var i = $scope.plannedCourses.indexOf(course);
+            var i = $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.indexOf(course);
             if (i > -1)
-                $scope.plannedCourses.splice(i, 1);
+                $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.splice(i, 1);
 
             $scope.savePlan()
             $scope.sumPlannedCredits -= course.credits;
         };
 
         $scope.showTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
-            var cid = fullCourseName + "-" + section.sectionId;
+            var fullCourseName = course.departmentCode + ' ' + course.courseNumber;
+            var cid = fullCourseName + "-" + section._id;
             if (!$scope.isPlanned(cid)) {
                 // change color of other sections of this course to gray
                 $scope.$broadcast("changeEventColor", {course: cid.split('-')[0], color: greyedOutEventColor});
                 // show temp event on the calendar
-                $scope.$broadcast("courseAdded", {course: cid, classPeriods: section.classPeriods, color: tempEventColor, className: 'temp' });
+                $scope.$broadcast("courseAdded", {course: cid, classPeriods: section.timePlaces, color: tempEventColor, className: 'temp' });
             }
         };
 
         $scope.hideTempEvent = function(course, section) {
-            var fullCourseName = course.dept.shortCode + ' ' + course.courseNumber;
-            var cid = fullCourseName + "-" + section.sectionId;
+            var fullCourseName = course.departmentCode + ' ' + course.courseNumber;
+            var cid = fullCourseName + "-" + section._id;
             $scope.$broadcast("courseRemoved", {course: cid, temp: true});
             // change color of other sections of this course back to default
             $scope.$broadcast("changeEventColor", {course: cid.split('-')[0], color: eventColor});
         };
+		
+		$scope.savePlanToServer = function(){
+			var scheduleToSend = angular.toJson($scope.plannedSemesterSchedules[$scope.currentSemesterId]);
+			$http.post('public-api/saveSchedule', scheduleToSend).success(function (data) {
+					//success!
+				});
+		};
+		
+		$scope.getCourseObject = function(inCourseID){
+			var thisCourse = null;
+			angular.forEach($scope.courses, function (course) {
+				if(course.courseID == inCourseID) 
+					thisCourse = course;
+			});
+			return thisCourse;
+		};
+		
+		$scope.getCID = function(inSection){
+			var thisCourse = $scope.getCourseObject(inSection.courseID);
+			var fullCourseName = thisCourse.departmentCode + ' ' + thisCourse.courseNumber;
+            return fullCourseName + "-" + inSection._id;
+		};
 
         $scope.savePlan = function() {
+			$scope.savePlanToServer();
+			//this classes object needs to be set in the cookie this way for the registration process
+			//look at register.js before making any changes.
             var classes = []
-            for( var i=0; i<$scope.plannedCourses.length; i++ ) {
+            for( var i=0; i<$scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.length; i++ ) {
+				var thisCourse = $scope.getCourseObject($scope.plannedSemesterSchedules[$scope.currentSemesterId].classes[i].courseID);
                 var klass = {}
                 klass.e = '@AddClass';
 //                klass.e = '@ConfirmWaitlist'
-                klass.courseNumber = $scope.plannedCourses[i].byuId;
-                klass.titleCode = $scope.plannedCourses[i].titleCode;
-                klass.credits = $scope.plannedCourses[i].credits;
-                klass.sectionType = $scope.plannedCourses[i].sectionType;
-                klass.sectionId = $scope.plannedCourses[i].sectionId;
-                klass.dept = $scope.plannedCourses[i].dept.shortCode
-                klass.title = $scope.plannedCourses[i].title;
+                klass.courseNumber = thisCourse.courseID;
+                klass.titleCode = thisCourse.newTitleCode;
+                klass.credits = $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes[i].credits;
+                klass.sectionType = $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes[i].sectionType;
+                klass.sectionId = $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes[i]._id;
+                klass.dept = thisCourse.departmentCode;
+                klass.title = thisCourse.courseName;
                 classes.push(klass)
             }
             $cookies.classes = JSON.stringify(classes)
@@ -380,7 +486,7 @@ classregControllers.controller('CalendarCtrl', ['$scope',
         var d = sunday.getDate();
         var m = sunday.getMonth();
         var y = sunday.getFullYear();
-        var dayOffsets = {'M': 1, 'Tu': 2, 'W': 3, 'Th': 4, 'F': 5};
+        var dayOffsets = {'M': 1, 'T': 2, 'W': 3, 'Th': 4, 'F': 5};
 
         $scope.uiConfig = {
             calendar:{
@@ -421,8 +527,8 @@ classregControllers.controller('CalendarCtrl', ['$scope',
                     element.qtip({
                         content:{
                             text: '<h5>' + courseName + ', Section ' + sectionNum + '</h5>' +
-                                '<p>' + eventTime + '</p>' +
-                                '<p>' + event.description + '</p>'
+                                '<p>' + eventTime + '</p>' //+
+                                //'<p>' + event.description + '</p>'
                         },
                         position:{
                             my:'top center',
@@ -440,14 +546,17 @@ classregControllers.controller('CalendarCtrl', ['$scope',
 
         $scope.addCourseToCalendar = function(course, classPeriods, classLocation, color, className) {
             for (var k in classPeriods) {
-                var timespan = k.split('-');
-                var days = classPeriods[k];
-                days = days.split(/[ ,]+/);
-                for (var day in days) {
-                    day = days[day];
+                var classPeriod = classPeriods[k];
+				//For each day classPeriod.day is like "MW"
+				for (var i = 0, len = classPeriod.day.length; i < len; i++) {
+                    var thisDay = classPeriod.day[i];
+					if(thisDay=="T" && classPeriod.day[i+1]=="h"){
+						thisDay = "Th";
+						i++;
+					}
                     // ["1", "00"]
-                    var startTime = (timespan[0]).split(':');
-                    var endTime = (timespan[1]).split(':');
+                    var startTime = (classPeriod.startTime).split(':');
+                    var endTime = (classPeriod.endTime).split(':');
 
                     var startHrs = parseInt(startTime[0]);
                     if (startHrs >= 1 && startHrs <= 6) {
@@ -462,8 +571,8 @@ classregControllers.controller('CalendarCtrl', ['$scope',
 
                     var event = new Object();
                     event.title = course;
-                    event.start = new Date(y, m, d + dayOffsets[day], startHrs, startMins);
-                    event.end = new Date(y, m, d + dayOffsets[day], endHrs, endMins);
+                    event.start = new Date(y, m, d + dayOffsets[thisDay], startHrs, startMins);
+                    event.end = new Date(y, m, d + dayOffsets[thisDay], endHrs, endMins);
                     event.description = classLocation;
                     event.allDay = false;
 
@@ -586,6 +695,26 @@ classregControllers.controller('CalendarCtrl', ['$scope',
 
     }]);
 
+function getParameterByName(name) {
+	name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+	var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+		results = regex.exec(location.search);
+	return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+if(getParameterByName('ticket')){
+	window.location.replace('/auth/service?ticket='+getParameterByName('ticket'));
+}
+
+$(function() {
+	$('#loginButton')[0].href = "https://cas.byu.edu/cas/login?service="+encodeURIComponent("http://"+window.location.host+"/");//must exactly match WebApplication.java:service
+	$('#logoutButton').click(function(event){
+		event.preventDefault();
+		$.ajax('auth/logout').done(function () {
+				location.replace('https://cas.byu.edu/cas/logout'); 
+			});
+	});
+});
+	
 function loadRegistrationPage() {
     var domain = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
     $("#registration-iframe").attr("src", domain + '/byu-login-landing.html')

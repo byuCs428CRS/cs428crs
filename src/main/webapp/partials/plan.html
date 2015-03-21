@@ -1,5 +1,12 @@
 <div class="container plan-container main-content" ng-controller="CourseListCtrl">
-
+	<div class="row">
+		<div class="col-md-3">
+			<div class="col-md-4"><h4>Semester:</h4></div>
+			<div class="col-md-8">
+				<select id="semesterSelect" ng-model="selectedSemester" ng-options="sem.name for sem in semesters" ng-change="changeCurrentSemester(selectedSemester)"></select>
+			</div>
+		</div>
+	</div>
     <div class="row">
         <div class="col-md-3">
             <div class="row">
@@ -35,37 +42,46 @@
                 <table ng-show="!isLoadingCourses" id="coursesTable" class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th class="sortable-header" ng-class="sortedClass('dept.shortCode')" ng-click="updateSort(['dept.shortCode','courseNumber'])">Dept</th>
+                        <th class="sortable-header" ng-class="sortedClass('departmentCode')" ng-click="updateSort(['departmentCode','courseNumber'])">Dept</th>
                         <th class="sortable-header" ng-class="sortedClass('courseNumber')" ng-click="updateSort('courseNumber')">ID</th>
                         <th class="sortable-header" ng-class="sortedClass('title')" ng-click="updateSort('title')">Name</th>
                     </tr>
                     </thead>
                     <tbody class="selectable-tbody" ng-click="$parent.selectedCourse = course" ng-class="course == selectedCourse ? 'selected-tbody' : ''" ng-repeat="course in filtered = (courses | filter:allFilter | filter:searchQueryFilter | filter:courseLevelFilter | filter:departmentFilter | orderBy:sortBy:desc)">
                     <tr>
-                        <td class="selectable-td">{{ course.dept.shortCode }}</td>
+                        <td class="selectable-td">{{ course.departmentCode }}</td>
                         <td class="selectable-td">{{ course.courseNumber }}</td>
-                        <td class="selectable-td">{{ course.title }}</td>
+                        <td class="selectable-td">{{ course.courseName }}</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
 
         </div>
+		<div id='loadByuCoursesModal' class='modal'>
+			<div class='innerModal'>
+				<h4>To load your classes, please copy the text in this box:</h4>
+				<iframe id='byuPlannedClassesIFrame' src='https://home.byu.edu/webapp/mymap/organize/data.json'></iframe>
+				<h4>To this box:</h4>
+				<textarea id='jsonPlannedClasses'></textarea><br/><br/>
+				<a ng-click="loadByuCoursesOkay()" class="btn btn-success btn-xs">Ok</a>
+			</div>
+		</div>
         <div class="col-md-5">
             <div class="well">
-                <h4 ng-show="!selectedCourse">&larr; Start typing a course name or choose a department from the dropdown.</h4>
+                <h4 ng-show="!selectedCourse">&larr; Start typing a course name, choose a department from the dropdown, or <a ng-click="loadByuCourses()">load your already planned classes from BYU.</a></h4>
                 <div ng-show="selectedCourse">
                     <h3 class="text-center"><span class="glyphicon glyphicon-list-alt"></span>
-                        {{ selectedCourse.dept.shortCode + " " + selectedCourse.courseNumber}}
+                        {{ selectedCourse.departmentCode + " " + selectedCourse.courseNumber}}
                     </h3>
-                    <h5>{{ selectedCourse.title }}</h5>
+                    <h5>{{ selectedCourse.courseName }}</h5>
                     <span ng-show="selectedCourse.outcomes.length > 0">
                         <p>Learning Outcomes:</p>
                         <ul>
                             <div ng-repeat="outcome in selectedCourse.outcomes"><li>{{ outcome }}</li></div>
                         </ul>
                     </span>
-                    <p>Credit hours: {{ selectedCourse.credits }}</p>
+                    <p>Credit hours: {{ selectedCourse.creditRange }}</p>
                     <div class="sections-table-container">
                         <table class="table table-condensed">
                             <thead>
@@ -86,18 +102,18 @@
                             </tbody>
                             <tbody class="selectable-special" ng-repeat="section in selectedCourse.sections" ng-mouseenter="showTempEvent(selectedCourse, section)" ng-mouseleave="hideTempEvent(selectedCourse, section)">
                             <tr class="selectable-td">
-                                <td>{{ section.sectionId }}</td>
+                                <td>{{ section._id }}</td>
                                 <td><a target="_blank" href="http://www.ratemyprofessors.com/{{section.rateMyProfessorQuery}}">{{ section.professor }}</a></td>
                                 <td>
-                                    {{ classPeriodsToString(section.classPeriods) }}
+                                    {{ classPeriodsToString(section.timePlaces) }}
                                 </td>
-                                <td>{{section.room}} {{ section.buildingAbbreviation }}</td>
-                                <td>{{section.seatsAvailable}} / {{section.classSize}}</td>
-                                <td>{{section.waitlistCount}}</td>
-                                <td ng-show="!isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseNumber + '-' + section.sectionId)">
+                                <td>{{ classPeriodsToLocation(section.timePlaces) }}</td>
+                                <td>{{section.seatsAvailable}} / {{section.totalSeats}}</td>
+                                <td>{{section.waitList}}</td>
+                                <td ng-show="!isPlanned(selectedCourse.departmentCode + ' ' + selectedCourse.courseNumber + '-' + section._id)">
                                     <a ng-click="addCourseToPlan(selectedCourse, section)" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></a>
                                 </td>
-                                <td ng-show="isPlanned(selectedCourse.dept.shortCode + ' ' + selectedCourse.courseNumber + '-' + section.sectionId)">
+                                <td ng-show="isPlanned(selectedCourse.departmentCode + ' ' + selectedCourse.courseNumber + '-' + section._id)">
                                     <div style="height: 22px;"><span class="glyphicon glyphicon-ok btn-xs"></span></div>
                                 <td>
                             </tr>
@@ -109,12 +125,12 @@
         </div>
         <div class="col-md-4 col-sm-4">
             <div class="well">
-                <h3 class="text-center">My Planned Classes (Winter 2015)</h3>
+                <h3 class="text-center">My Planned Classes ({{ currentSemester }})</h3>
                 <!--<h5>{{currentSemester}}</h5>-->
-                <p ng-show="!plannedCourses.length">Add some classes you want to take next semester!</p>
+                <p ng-show="!plannedSemesterSchedules[currentSemesterId].classes.length">Add some classes you want to take next semester!</p>
                 <table class="table table-condensed">
                     <thead>
-                    <tr ng-show="plannedCourses.length">
+                    <tr ng-show="plannedSemesterSchedules[currentSemesterId].classes.length">
                             <th>Course</th>
                             <th>Instructor</th>
                             <th>Class Periods</th>
@@ -122,11 +138,11 @@
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody class="selectable-tbody" ng-click="updateSelectedCourse(course.dept.shortCode, course.courseNumber)" ng-class="course.courseNumber == selectedCourse.courseNumber && course.dept.shortCode == selectedCourse.dept.shortCode ? 'selected-tbody' : ''" ng-repeat="course in plannedCourses">
+                        <tbody class="selectable-tbody" ng-click="updateSelectedCourse(course)" ng-repeat="course in plannedSemesterSchedules[currentSemesterId].classes">
                         <tr class="selectable-td" id="plannedCourse-{{$index}}">
-                            <td>{{ course.dept.shortCode }} {{ course.courseNumber }}</td>
-                            <td>{{ course.instructor }}</td>
-                            <td>{{ classPeriodsToString(course.classPeriods) }}</td>
+                            <td>{{ getCID(course) }}</td>
+                            <td>{{ course.professor }}</td>
+                            <td>{{ classPeriodsToString(course.timePlaces) }}</td>
                             <td>{{ course.credits }}</td>
                             <td><a ng-click="removeCourseFromPlan(course)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></a></td>
                         </tr>
@@ -141,11 +157,11 @@
                     </table>
                 </div>
                 <div id="register-buttons" class="pull-right">
-                    <button ng-show="plannedCourses.length" ng-click="registerClasses()" class="btn btn-xs btn-primary" ng-class="{ disabled: added }" data-toggle="modal" data-target="#registrationIframeModal">
+                    <button ng-show="plannedSemesterSchedules[currentSemesterId].classes.length" ng-click="registerClasses()" class="btn btn-xs btn-primary" ng-class="{ disabled: added }" data-toggle="modal" data-target="#registrationIframeModal">
                         <span ng-show="!added"><span class="glyphicon glyphicon-ok"></span>  Register All Courses</span>
                         <span ng-show="added"><span class="glyphicon glyphicon-thumbs-up"></span>  Courses Registered!</span>
                     </button>
-                    <button ng-show="plannedCourses.length" ng-click="savePlan()" class="btn btn-xs btn-primary" ng-class="{ disabled: saved }">
+                    <button ng-show="plannedSemesterSchedules[currentSemesterId].classes.length" ng-click="savePlan()" class="btn btn-xs btn-primary" ng-class="{ disabled: saved }">
                         <span ng-show="!saved"><span class="glyphicon glyphicon-save"></span>  Save Plan</span>
                         <span ng-show="saved"><span class="glyphicon glyphicon-saved"></span>  Plan saved!</span>
                     </button>
