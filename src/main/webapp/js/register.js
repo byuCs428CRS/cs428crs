@@ -88,7 +88,7 @@ function register(useRecaptcha, klass, formToSubmit) {
 
     var brownie = ''
 
-    brownie += 'new_year_term=' + getTerm()
+    brownie += 'new_year_term=' + klass.term
     brownie += '&curr_id=' + klass.courseNumber
     brownie += '&new_title_code=' + klass.titleCode
     brownie += '&page_sequence=' + '1016452204'
@@ -112,10 +112,6 @@ function registrationComplete() {
     Cookies.set('classes', 'this should expire', {expires: -1})
     Cookies.set('c', 'this should expire', {expires: -1})
     Cookies.set('e', 'this should expire', {expires: -1})
-}
-
-function getTerm() {
-    return '20151'    //TODO Auto update this value = 2015 Winter             20145 = 2014 Fall
 }
 
 function recaptchaHelp() {
