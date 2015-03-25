@@ -58,7 +58,7 @@
             </div>
 
         </div>
-		<div id='loadByuCoursesModal' class='modal'>
+		<!--<div id='loadByuCoursesModal' class='modal'>
 			<div class='innerModal'>
 				<h4>To load your classes, please copy the text in this box:</h4>
 				<iframe id='byuPlannedClassesIFrame' src='https://home.byu.edu/webapp/mymap/organize/data.json'></iframe>
@@ -66,10 +66,10 @@
 				<textarea id='jsonPlannedClasses'></textarea><br/><br/>
 				<a ng-click="loadByuCoursesOkay()" class="btn btn-success btn-xs">Ok</a>
 			</div>
-		</div>
+		</div>-->
         <div class="col-md-5">
             <div class="well">
-                <h4 ng-show="!selectedCourse">&larr; Start typing a course name, choose a department from the dropdown, or <a ng-click="loadByuCourses()">load your already planned classes from BYU.</a></h4>
+                <h4 ng-show="!selectedCourse">&larr; Start typing a course name or choose a department from the dropdown.</h4>
                 <div ng-show="selectedCourse">
                     <h3 class="text-center"><span class="glyphicon glyphicon-list-alt"></span>
                         {{ selectedCourse.departmentCode + " " + selectedCourse.courseNumber}}
