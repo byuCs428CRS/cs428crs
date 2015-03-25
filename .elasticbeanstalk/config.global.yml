@@ -4,7 +4,7 @@ branch-defaults:
   release:
     environment: classreg-blue
 deploy:
-  artifact: build/libs/crs-rest-service-0.1.0.war
+  artifact: build/libs/crs-rest-service-1.1.5.war
 global:
   application_name: classreg
   default_ec2_keyname: classreg

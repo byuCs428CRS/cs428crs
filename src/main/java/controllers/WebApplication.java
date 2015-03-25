@@ -24,12 +24,10 @@ import java.util.*;
 @EnableAutoConfiguration
 public class WebApplication
 {
-    // Since "http://localhost" doesn't work when redirecting from the CAS server, the IP address of the server is given here
-    private static String service;
+    private static String service = "http://dev.registerbyu.com/";
 
 	public static void main(String[] args)
     {
-		service = "http://dev.registerbyu.com/";//auth/service
 		SpringApplication app = new SpringApplication(WebApplication.class);
 		System.out.print("Starting app with System Args: [" );
         for (String s : args)
