@@ -1,8 +1,0 @@
-#POM properties
-#Mon Jan 13 17:53:15 MST 2014
-version=0.3
-groupId=net.rubygrapefruit
-debianVersion=debian
-type=jar
-classifier=
-artifactId=native-platform

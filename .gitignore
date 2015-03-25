@@ -1,5 +1,7 @@
 build/
 .gradle/
+gradle/
+.metadata/
 *.DS_Store
 *.classpath
 *.project

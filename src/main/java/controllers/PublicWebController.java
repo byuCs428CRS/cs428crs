@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import packages.Courses;
 import packages.Schedules;
 import service.PublicWebService;
-
+import exceptions.*;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,6 +54,38 @@ public class PublicWebController
         replaceWithImplementatedBYUPlannedCourses = "";
         webService = new PublicWebService();
     }
+
+  @RequestMapping(value = "/shutdown", method = POST)
+  @ResponseStatus(value = HttpStatus.OK)
+  public void shutdown(HttpServletRequest req)
+  {
+    //for temparary testing
+    //System.out.println(req.getRemoteAddr());
+
+    if (!req.getRemoteAddr().matches("172[.]31[.]\\d{1,3}[.]\\d{1,3}|localhost|127[.]0[.]0[.]1")) {
+      throw new ResourceNotFoundException();
+    }
+    shuttingDown = true;
+  }
+
+  @RequestMapping(value = "/health", method = GET)
+  @ResponseStatus(value = HttpStatus.OK)
+  public void healthCheck(HttpServletRequest req)
+  {
+    //for temporary testing
+    //System.out.println(req.getRemoteAddr());
+
+    if (!req.getRemoteAddr().matches("172[.]31[.]\\d{1,3}[.]\\d{1,3}|localhost|127[.]0[.]0[.]1")) {
+      throw new ResourceNotFoundException();
+    }
+    if (shuttingDown) {
+      if (countdown-- <= 0) {
+        System.exit(0);
+      }
+      //ToDo: should probably be changed to a 503 instead of a 500
+      throw new ServerException("Server Shutting Down");
+    }
+  }
 
 
     //TODO:: change this method to return semesters that

@@ -1,1 +1,0 @@
-debian/native-platform.pom --has-package-version --artifact=build/native-platform.jar --java-lib

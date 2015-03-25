@@ -1,5 +1,0 @@
-rootProject.name = 'native-platform'
-
-include 'testApp'
-
-project(':testApp').projectDir = new File(rootDir, 'test-app')
