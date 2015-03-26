@@ -103,7 +103,12 @@ public class PublicWebController
     {
         if (cachedSemesters == null)
         {
-            cachedSemesters = SemesterDownloader.getSemesterCodes();
+        	cachedSemesters = new ArrayList<String>();
+        	cachedSemesters.add("20151");
+        	cachedSemesters.add("20153");
+        	cachedSemesters.add("20154");
+        	cachedSemesters.add("20155");
+            //cachedSemesters = SemesterDownloader.getSemesterCodes();
         }
         return cachedSemesters;
     }

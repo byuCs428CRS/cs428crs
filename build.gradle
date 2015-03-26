@@ -22,7 +22,7 @@ mainClassName = "controllers.TomcatConfiguration"
 
 war {
     baseName = 'crs-rest-service'
-    version =  '1.2.2'
+    version =  '1.2.5.prod.1'
 }
 
 //jar.into('static') {

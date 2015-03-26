@@ -91,7 +91,8 @@ public class StudentDAO implements IStudentDAO
         Student student = this.students.findOne(studentIdQuery, id).as(Student.class);
         if(student == null)
         {
-            throw new DatabaseException("Could not find student");
+        	// silently die for the frontend.
+            //throw new DatabaseException("Could not find student");
         }
 
         return student;
