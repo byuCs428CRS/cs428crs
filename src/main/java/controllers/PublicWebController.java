@@ -249,7 +249,7 @@ public class PublicWebController
         StringBuilder result = new StringBuilder();
         try
         {
-            url = new URL("https://www.google.com/recaptcha/api/challenge?k=6LfoisoSAAAAAFBP_LvBQ4YlpPTBOf12MnGsjk4z");
+            url = new URL("https://www.google.com/recaptcha/api/challenge?k=6LfoisoSAAAAAFBP_LvBQ4YlpPTBOf12MnGsjk4z&cachestop="+Math.random()*1000000+1);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             InputStreamReader reader = new InputStreamReader(conn.getInputStream());

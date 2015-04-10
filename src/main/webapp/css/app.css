@@ -196,4 +196,42 @@ h2 {
 	background: #dddddd;
 	border-radius: 15px;
 }
-#semesterSelect{ margin-top: 10px;}
+
+
+
+.filterDiv{
+    float:center;
+}
+
+.filterInstructions
+{
+    text-align: left;
+}
+
+.courseModalContent
+{
+    width: 300px;
+}
+
+.sectionModalContent
+{
+    width : 350px;
+}
+
+.checkbox
+{
+    width: 50px;
+}
+
+.sectionFormGroup
+{
+    padding-left: 15px;
+}
+
+.timeOfDayCheck
+{
+    width: 120px;
+}
+
+
+

@@ -25,8 +25,8 @@ classregControllers.controller('HeaderController', ['$scope', '$http', '$rootSco
     }
 ]);
 
-classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval', '$timeout',
-    function ($scope, $http, $cookies, $rootScope, $interval, $timeout) {
+classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies', '$rootScope', '$interval', '$timeout','classPeriodParser',
+    function ($scope, $http, $cookies, $rootScope, $interval, $timeout, classPeriodParser) {
 
 		$scope.loadSemesterCourses = function(data){
 			$scope.departments = []
@@ -187,9 +187,24 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         $scope.initStuff();
 
         $scope.allFilter = function(course) {
-            return (($scope.filterText && $scope.filterText.length) || ($scope.filteredDept && $scope.filteredDept.length) || $scope.defaultCourses.indexOf(course.departmentCode + course.courseNumber) > -1);
+            return (($scope.filterText && $scope.filterText.length) || 
+					($rootScope.creditFilter && $rootScope.creditFilter.length) ||
+					($rootScope.profName && $rootScope.profName.length > 2) ||
+					($scope.filteredDept && $scope.filteredDept.length) || 
+					$scope.defaultCourses.indexOf(course.departmentCode + course.courseNumber) > -1);
         };
-
+		
+		$scope.profTeachesSection = function(course,profName){
+			var found = false;
+			angular.forEach(course.sections, function (apiSection) {
+				if(!found)
+					if(angular.lowercase(apiSection.professor).indexOf(angular.lowercase(profName)) > -1){
+							found = true;
+					}
+			 });
+			 return found;
+		};
+		
         // Searches both course name and course description fields
         $scope.searchQueryFilter = function(course) {
             var q = angular.lowercase($scope.filterText);
@@ -199,9 +214,17 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                     angular.lowercase(course.department).indexOf(q) >= 0 ||
                     angular.lowercase(course.courseNumber).indexOf(q) >= 0 ||
                     angular.lowercase(course.departmentCode + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0 ||
-                    angular.lowercase(course.departmentCode.replace(/\s/g,'') + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0));
+                    angular.lowercase(course.departmentCode.replace(/\s/g,'') + course.courseNumber).indexOf(q.replace(/\s/g,'')) >= 0))
+					&&
+						(!angular.isDefined($rootScope.creditFilter) || 
+						(angular.isDefined($rootScope.creditFilter) && $rootScope.creditFilter.length==0) || 
+						course.creditRange==$rootScope.creditFilter)
+					&&
+						(!angular.isDefined($rootScope.profName) ||
+						(angular.isDefined($rootScope.profName) && $rootScope.profName.length < 3) ||
+						($rootScope.profName.length > 2 && $scope.profTeachesSection(course,$rootScope.profName)));
         };
-
+		
         //Filters by department
         $scope.departmentFilter = function(course) {
             return $scope.filteredDept === /* all departments */ '' || $scope.filteredDept === course.departmentCode
@@ -259,6 +282,74 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             }
             return result
         };
+		
+		$scope.timeIncludes = [];
+		$scope.dayIncludes = [];
+		
+		$scope.includeTimeOfDay = function(timeFrame) {
+			var i = $.inArray(timeFrame, $scope.timeIncludes);
+			if (i > -1) {
+				$scope.timeIncludes.splice(i, 1);
+			} else {
+				$scope.timeIncludes.push(timeFrame);
+			}
+		}
+		
+		$scope.includeDay = function(day) {
+			var i = $.inArray(day, $scope.dayIncludes);
+			if (i > -1) {
+				$scope.dayIncludes.splice(i, 1);
+			} else {
+				$scope.dayIncludes.push(day);
+			}
+		}
+		
+		$scope.sectionFilter = function(section) {
+			if ($scope.timeIncludes.length > 0 || $scope.dayIncludes.length > 0 ){
+				for(var key in section.timePlaces) {
+					if($scope.dayIncludes.length > 0){
+						var days;
+						if(section.timePlaces[key].day=="TTh"){
+							days = ["T","Th"];
+						}else if(section.timePlaces[key].day=="Th"){
+							days = ["Th"];
+						}else{
+							days = section.timePlaces[key].day.split("");
+						}
+						for(var index=0; index < days.length; ++index){
+							if ($.inArray(days[index], $scope.dayIncludes) < 0)
+								return;
+						}
+					}
+					if ($scope.timeIncludes.length > 0){
+						var startTimeLen = section.timePlaces[key].startTime.length;
+						var startRawTime = section.timePlaces[key].startTime.substring(0,startTimeLen-2); //section.timePlaces[key].startTime in the format "09:50am"  
+						var startRawAMPM = section.timePlaces[key].startTime.substring(startTimeLen-2,startTimeLen);
+						var startTime = new Date(Date.parse("2015/01/01 "+startRawTime+" "+startRawAMPM)); //converted to comparable date
+						var startsInTimeConstraint = false;
+						var compareTime;
+						if($.inArray("Evening",$scope.timeIncludes)>-1){
+							compareTime = new Date(Date.parse("2015/01/01 5:00 PM"));
+							if(compareTime<startTime) 
+								startsInTimeConstraint = true;
+						}
+						if($.inArray("Afternoon",$scope.timeIncludes)>-1){
+							compareTime = new Date(Date.parse("2015/01/01 5:00 PM"));
+							var compareTime2 = new Date(Date.parse("2015/01/01 11:59 AM"));
+							if(startTime<compareTime && compareTime2<startTime) 
+								startsInTimeConstraint = true;
+						}
+						if($.inArray("Morning",$scope.timeIncludes)>-1){
+							compareTime = new Date(Date.parse("2015/01/01 11:59 AM"));
+							if(startTime<compareTime) 
+								startsInTimeConstraint = true;
+						}
+						if(!startsInTimeConstraint)return;
+					}
+				}
+			}
+			return section;
+		}
 
         // check if a course is planned, where cid is a course/section id that looks like this: "CS256-1" for section 1
         $scope.isPlanned = function(cid) {
@@ -373,8 +464,16 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 				plannedCourse.semesterID = $scope.currentSemesterId;
                 $scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.push(plannedCourse);
             }
-            $scope.savePlan()
-            $scope.sumPlannedCredits += course.credits;
+            $scope.savePlan();
+
+
+
+            $scope.sumPlannedCredits += Number(section.credits);
+
+            // put a cap on generating schedules or it will get way out of hand
+            if($scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.length >1 && $scope.sumPlannedCredits < 18) {
+                $scope.generateAlternateSchedules();
+            }
 
             var elId = '#plannedCourse-' + ($scope.plannedSemesterSchedules[$scope.currentSemesterId].classes.length - 1).toString();
 
@@ -382,6 +481,150 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
                 $(elId).effect("highlight", {}, 1000);
             }, 100);
         };
+
+        $scope.generateAlternateSchedules = function()
+        {
+            $scope.generatedSchedules = []; // reset generated schedules
+            var courses = $scope.getCourses();
+            $scope.exploreCourses([], courses);
+            if($scope.generatedSchedules.length == 0)
+            {
+                return;
+            }
+
+            angular.forEach($scope.generatedSchedules, function(schedule){
+                var emptySpace = $scope.findEmptySpace(schedule);
+                schedule.emptySpace = emptySpace.empty;
+                schedule.freeDays = emptySpace.freeDays;
+            });
+
+            $scope.generatedSchedules.sort(function(a,b) {
+                return a.emptySpace - b.emptySpace;
+            })
+
+            // Can sort by free days as well
+            //$scope.generatedSchedules.sort(function(a,b) {
+            //    return b.freeDays - a.freeDays;
+            //})
+
+            console.log("Best Schedule is:");
+            console.log($scope.generatedSchedules[0]);
+
+        }
+
+        /**
+         * Finds the number of hours that are not spent in class from the start of the first class to the end of the last class
+         * @param section
+         * @return number of hours that are not spent in class
+         */
+        $scope.findEmptySpace = function(schedule)
+        {
+            var totalEmptyMins = 0;
+            var freeDays = 0;
+            var days = {"M":[], "T":[], "W":[], "Th":[], "F":[]};
+
+            // place each class period in an imaginary calendar
+            angular.forEach(schedule, function(section){
+                var parsedPeriods = classPeriodParser.parse(section.timePlaces); // TODO: This should either be done on the server or done right when it comes from the server.
+                // we make too many of these calls
+
+                // assign each class period to its respective day
+                angular.forEach(parsedPeriods, function(classPeriod)
+                {
+                    days[classPeriod.day].push(classPeriod);
+                });
+            });
+
+            // iterate over each day of the "calendar" and find how much space is between each class
+            var previousDaysClass = null;
+            for(var dayLetter in days){
+                var day = days[dayLetter];
+                // sort by start time (and end time if necessary)
+                day.sort(function(a,b){
+                    var startDiff = (a.startHrs*60+ a.startMins) - (b.startHrs*60+ b.startMins);
+                    if(startDiff == 0) {
+                        // start times equal
+                        return (a.endHrs*60+ a.endMins) - (b.endHrs*60+ b.endMins);
+                    }
+
+                    return startDiff;
+                });
+
+                // TODO: How do I get a schedule that prefers classes all on the same day - make this a separate objective
+                if(day.length == 0)
+                {
+                    freeDays++;
+                }
+                if(day.length == 1)
+                {
+                    if(previousDaysClass == null){
+                        totalEmptyMins += 18*60; // penalize for being on a different day than other days - it's better than a conflicting schedule, but worse than late/early
+                    }
+                    else{
+                        totalEmptyMins += (24*60 - $scope.getTimeDifference(day[0], previousDaysClass)); // If you have a late class on M and early on T, it is better
+                    }
+                }
+
+                for(var i=0; i < day.length-1; i++)
+                {
+                    var classPeriod = day[i];
+                    var nextClass = day[i+1];
+
+                    totalEmptyMins += $scope.getTimeDifference(classPeriod, nextClass);
+                }
+                previousDaysClass = nextClass;
+
+            }
+
+            return {empty:(totalEmptyMins/60.0), freeDays:freeDays};
+        }
+
+        $scope.getCourses = function()
+        {
+            var courses = [];
+            angular.forEach($scope.plannedSemesterSchedules[$scope.currentSemesterId].classes, function (section) {
+                courses.push($scope.getCourseObject(section.courseID));
+            });
+
+            return courses;
+        }
+
+        $scope.getTimeDifference = function(classPeriod, nextClass)
+        {
+            var nextStartTime = nextClass.startHrs*60 + nextClass.startMins;
+            var classEndTime = classPeriod.endHrs*60 + classPeriod.endMins;
+
+            var emptyMins = nextStartTime - classEndTime; // find difference from when one class ends to when another class begins
+            if(emptyMins < 0) { // has same (or conflicting) start time as the previous one
+                emptyMins += (24*60) // penalize by a whole day - an arbitrarily large amount for conflicting schedules
+            }
+
+            return emptyMins;
+        }
+
+
+        /**
+         * DFS to explore all the sections in coursesLeftToPlan
+         * @param currentSchedule the current schedule
+         * @param coursesLeftToPlan which courses to plan for
+         */
+        $scope.exploreCourses = function(currentSchedule, coursesLeftToPlan)
+        {
+            if(coursesLeftToPlan.length == 0)
+            {
+                $scope.generatedSchedules.push(currentSchedule);
+                return;
+            }
+
+            var newCoursesLeftToPlan = coursesLeftToPlan.slice(0); //
+            var course = newCoursesLeftToPlan.shift(); // removes first element from array
+            angular.forEach(course.sections, function(section){
+
+                var newSchedule = currentSchedule.slice(0); // deep copy not needed since we're not changing the array elements
+                newSchedule.push(section); // make sure currentSchedule doesn't get added to
+                $scope.exploreCourses(newSchedule, newCoursesLeftToPlan);
+            });
+        }
 
         $scope.removeCourseFromPlan = function(course) {
             $scope.saved = false;
@@ -416,9 +659,10 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             $scope.$broadcast("changeEventColor", {course: cid.split('-')[0], color: eventColor});
         };
 		
-		$scope.savePlanToServer = function(){
+		$scope.savePlanToServer = function(semId){
 			var scheduleToSend = angular.toJson($scope.plannedSemesterSchedules[$scope.currentSemesterId]);
-			$http.post('public-api/saveSchedule', scheduleToSend).success(function (data) {
+			$http.post('public-api/saveSchedule/'+semId, scheduleToSend).success(function (data) {
+
 					//success!
 				});
 		};
@@ -439,7 +683,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 		};
 
         $scope.savePlan = function() {
-			$scope.savePlanToServer();
+			$scope.savePlanToServer($scope.currentSemesterId);
 			//this classes object needs to be set in the cookie this way for the registration process
 			//look at register.js before making any changes.
             var classes = []
@@ -480,8 +724,8 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
         };
     }]);
 
-classregControllers.controller('CalendarCtrl', ['$scope',
-    function($scope) {
+classregControllers.controller('CalendarCtrl', ['$scope', 'classPeriodParser',
+    function($scope, classPeriodParser) {
         var calendar = $('#calendar');
         var sunday = new Date(moment().startOf('week'));
         var d = sunday.getDate();
@@ -546,50 +790,29 @@ classregControllers.controller('CalendarCtrl', ['$scope',
         $scope.eventSources = [];
 
         $scope.addCourseToCalendar = function(course, classPeriods, classLocation, color, className) {
-            for (var k in classPeriods) {
-                var classPeriod = classPeriods[k];
-				//For each day classPeriod.day is like "MW"
-				for (var i = 0, len = classPeriod.day.length; i < len; i++) {
-                    var thisDay = classPeriod.day[i];
-					if(thisDay=="T" && classPeriod.day[i+1]=="h"){
-						thisDay = "Th";
-						i++;
-					}
-                    // ["1", "00"]
-                    var startTime = (classPeriod.startTime).split(':');
-                    var endTime = (classPeriod.endTime).split(':');
 
-                    var startHrs = parseInt(startTime[0]);
-                    if (startHrs >= 1 && startHrs <= 6) {
-                        startHrs += 12;
-                    }
-                    var startMins = parseInt(startTime[1]);
-                    var endHrs = parseInt(endTime[0]);
-                    if (endHrs >= 1 && endHrs <= 6 || (endHrs >= 1 && endHrs <= 10 && startHrs >= 1 && startHrs <= 6)) {
-                        endHrs += 12;
-                    }
-                    var endMins = parseInt(endTime[1]);
+            var parsedPeriods = classPeriodParser.parse(classPeriods);
+            for (var k in parsedPeriods) {
+                var period = parsedPeriods[k];
+                var event = new Object();
+                event.title = course;
+                event.start = new Date(y, m, d + dayOffsets[period.day], period.startHrs, period.startMins);
+                event.end = new Date(y, m, d + dayOffsets[period.day], period.endHrs, period.endMins);
+                event.description = classLocation;
+                event.allDay = false;
 
-                    var event = new Object();
-                    event.title = course;
-                    event.start = new Date(y, m, d + dayOffsets[thisDay], startHrs, startMins);
-                    event.end = new Date(y, m, d + dayOffsets[thisDay], endHrs, endMins);
-                    event.description = classLocation;
-                    event.allDay = false;
-
-                    // when you add a section, new conflicts may be introduced
-                    var conflictingEvents = $scope.eventConflicts(event, null);
-                    if (conflictingEvents.length) {
-                        color = conflictingEventColor;
-                        if (className != 'temp')
-                            $scope.updateConflictsOnAdd(conflictingEvents);
-                    }
-
-                    event.color = color;
-                    event.className = className;
-
-                    calendar.fullCalendar('renderEvent', event);
+                // when you add a section, new conflicts may be introduced
+                var conflictingEvents = $scope.eventConflicts(event, null);
+                if (conflictingEvents.length) {
+                    color = conflictingEventColor;
+                    if (className != 'temp')
+                        $scope.updateConflictsOnAdd(conflictingEvents);
                 }
+
+                event.color = color;
+                event.className = className;
+
+                calendar.fullCalendar('renderEvent', event);
             }
         };
 

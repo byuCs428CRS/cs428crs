@@ -1,26 +1,24 @@
 <div class="container plan-container main-content" ng-controller="CourseListCtrl">
-	<div class="row">
-		<div class="col-md-3">
-			<div class="col-md-4"><h4>Semester:</h4></div>
-			<div class="col-md-8">
-				<select id="semesterSelect" ng-model="selectedSemester" ng-options="sem.name for sem in semesters" ng-change="changeCurrentSemester(selectedSemester)"></select>
-			</div>
-		</div>
-	</div>
     <div class="row">
         <div class="col-md-3">
             <div class="row">
-                <form class="form-inline" role="form">
-                    <div class="col-md-4">
-                        <select id="filterByDepartment" class="form-control" ng-model="filteredDept" ng-change="filterOptions.searchQuery = ''">
-                            <option value="">All</option>
-                            <option ng-repeat="dept in departments.sort()" value="{{dept}}">{{dept}}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-8">
-                        <input id="filterByDescriptionQuery" class="form-control" ng-model="searchText" placeholder="Search">
-                    </div>
-                </form>
+                    <form class="form-inline">
+                        <div class="col-md-7">
+                            <select class="form-control" id="semesterSelect" ng-model="selectedSemester" ng-options="sem.name for sem in semesters" ng-change="changeCurrentSemester(selectedSemester)"></select>
+                        </div>
+                        <div class="col-md-5">
+                            <select id="filterByDepartment" class="form-control" ng-model="filteredDept" ng-change="filterOptions.searchQuery = ''">
+                                <option value="">All</option>
+                                <option ng-repeat="dept in departments.sort()" value="{{dept}}">{{dept}}</option>
+                            </select>
+                        </div>
+                    </form>
+
+            </div><br>
+            <div class="row">
+                <div class="col-md-12">
+                    <input id="filterByDescriptionQuery" class="form-control" ng-model="searchText" placeholder="Search">
+                </div>
             </div>
             <!-- example of a course level filter, it's not very good though -->
             <!-- <div class="row" id="courseLevelFilter">
@@ -37,6 +35,69 @@
             </div> -->
 
             <br>
+            <div class="row filterDiv">
+                <div class="col-md-8"><a data-toggle="modal" data-target="#courseModal">Filters</a></div>
+            </div>
+
+            <!-- Course Modal -->
+            <div class="modal fade" id="courseModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-controller="FilterCtrl">
+                <div class="modal-dialog">
+                    <div class="modal-content courseModalContent">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Add a Course Filter</h4>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="row">
+                                <div>
+                                    <div class = col-md-9>
+                                        <div class="form-group">
+                                            <label for="credits">Credit Hours</label>
+                                            <input type="creditsType" class="form-control courseFilterOption" id="credits" placeholder="2.0" ng-model="$rootScope.creditFilter">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Professor Filter-->
+                            <div class="row">
+                                <div>
+                                    <div class = col-md-9>
+                                        <div class="form-group">
+                                            <label for="professor">Professor</label>
+                                            <input type="professorType" class="form-control courseFilterOption" id="professor" placeholder="Last Name, First Name" ng-model="$rootScope.profName">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Block Filter
+                            <label>Block</label>
+                            <div class="row">
+                                <div class="form-inline">
+                                    <div class="form-group sectionFormGroup">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="courseFilterOption"> 1st
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="courseFilterOption"> 2nd
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>-->
+                            <div class="modal-footer">
+								<button class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="reset" class="btn btn-default" onclick="clearCourseFilter()">Clear</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             <div id="course-table-container">
                 <span ng-show="isLoadingCourses"><img src="../img/spinner.gif" width="20"> Loading course data</span>
                 <table ng-show="!isLoadingCourses" id="coursesTable" class="table table-striped table-bordered">
@@ -67,9 +128,100 @@
 				<a ng-click="loadByuCoursesOkay()" class="btn btn-success btn-xs">Ok</a>
 			</div>
 		</div>-->
+
+        <!-- Section Modal Filter button-->
+
+
+
         <div class="col-md-5">
+
+            <div class="row filterDiv">
+                <div class="col-md-8"><a data-toggle="modal" data-target="#sectionModal">Filters</a></div>
+            </div>
+
+            <!-- Section Modal -->
+            <div class="modal fade" id="sectionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content sectionModalContent ">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="sectionLabel">Add a Section Filter</h4>
+                        </div>
+                        <div class="modal-body">
+                            <!--Time of Day Filter-->
+                            <label>Time of Day</label>
+                            <div class="row daysOfWeek">
+                                <div class="form-inline">
+                                    <div class="form-group sectionFormGroup">
+                                        <div class="checkbox timeOfDayCheck">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeTimeOfDay('Morning')"> Morning(7-12)
+                                            </label>
+                                        </div>
+                                        <div class="checkbox timeOfDayCheck">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeTimeOfDay('Afternoon')"> Afternoon(12-5)
+                                            </label>
+                                        </div>
+                                        <div class="checkbox timeOfDayCheck">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeTimeOfDay('Evening')"> Evening(5-10)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                           <!-- Day of the Week Filter -->
+                            <label>Days of the Week</label>
+                            <div class="row daysOfWeek">
+                                <div class="form-inline">
+                                    <div class="form-group sectionFormGroup">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeDay('M')"> Mon
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeDay('T')"> Tue
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeDay('W')"> Wed
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeDay('Th')"> Th
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeDay('F')"> Fri
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="sectionCheck" ng-click="includeDay('S')"> Sat
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+							<button class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="reset" class="btn btn-default sectionClear " onclick="clearSectionFilter()">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
             <div class="well">
-                <h4 ng-show="!selectedCourse">&larr; Start typing a course name or choose a department from the dropdown.</h4>
+                <h4 ng-show="!selectedCourse">&larr; Start typing a course name or choose a department from the dropdown.</a></h4>
                 <div ng-show="selectedCourse">
                     <h3 class="text-center"><span class="glyphicon glyphicon-list-alt"></span>
                         {{ selectedCourse.departmentCode + " " + selectedCourse.courseNumber}}
@@ -100,7 +252,7 @@
                                 <td colspan="4">No sections offered this semester!</td>
                             </tr>
                             </tbody>
-                            <tbody class="selectable-special" ng-repeat="section in selectedCourse.sections" ng-mouseenter="showTempEvent(selectedCourse, section)" ng-mouseleave="hideTempEvent(selectedCourse, section)">
+                            <tbody class="selectable-special" ng-repeat="section in selectedCourse.sections | filter:sectionFilter" ng-mouseenter="showTempEvent(selectedCourse, section)" ng-mouseleave="hideTempEvent(selectedCourse, section)">
                             <tr class="selectable-td">
                                 <td>{{ section._id }}</td>
                                 <td><a target="_blank" href="http://www.ratemyprofessors.com/{{section.rateMyProfessorQuery}}">{{ section.professor }}</a></td>
