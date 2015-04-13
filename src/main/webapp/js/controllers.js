@@ -218,7 +218,7 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 					&&
 						(!angular.isDefined($rootScope.creditFilter) || 
 						(angular.isDefined($rootScope.creditFilter) && $rootScope.creditFilter.length==0) || 
-						course.creditRange==$rootScope.creditFilter)
+						course.credit==$rootScope.creditFilter)
 					&&
 						(!angular.isDefined($rootScope.profName) ||
 						(angular.isDefined($rootScope.profName) && $rootScope.profName.length < 3) ||
@@ -283,31 +283,31 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
             return result
         };
 		
-		$scope.timeIncludes = [];
-		$scope.dayIncludes = [];
+		$rootScope.timeIncludes = [];
+		$rootScope.dayIncludes = [];
 		
 		$scope.includeTimeOfDay = function(timeFrame) {
-			var i = $.inArray(timeFrame, $scope.timeIncludes);
+			var i = $.inArray(timeFrame, $rootScope.timeIncludes);
 			if (i > -1) {
-				$scope.timeIncludes.splice(i, 1);
+				$rootScope.timeIncludes.splice(i, 1);
 			} else {
-				$scope.timeIncludes.push(timeFrame);
+				$rootScope.timeIncludes.push(timeFrame);
 			}
 		}
 		
 		$scope.includeDay = function(day) {
-			var i = $.inArray(day, $scope.dayIncludes);
+			var i = $.inArray(day, $rootScope.dayIncludes);
 			if (i > -1) {
-				$scope.dayIncludes.splice(i, 1);
+				$rootScope.dayIncludes.splice(i, 1);
 			} else {
-				$scope.dayIncludes.push(day);
+				$rootScope.dayIncludes.push(day);
 			}
 		}
 		
 		$scope.sectionFilter = function(section) {
-			if ($scope.timeIncludes.length > 0 || $scope.dayIncludes.length > 0 ){
+			if ($rootScope.timeIncludes.length > 0 || $rootScope.dayIncludes.length > 0 ){
 				for(var key in section.timePlaces) {
-					if($scope.dayIncludes.length > 0){
+					if($rootScope.dayIncludes.length > 0){
 						var days;
 						if(section.timePlaces[key].day=="TTh"){
 							days = ["T","Th"];
@@ -317,29 +317,29 @@ classregControllers.controller('CourseListCtrl', ['$scope', '$http', '$cookies',
 							days = section.timePlaces[key].day.split("");
 						}
 						for(var index=0; index < days.length; ++index){
-							if ($.inArray(days[index], $scope.dayIncludes) < 0)
+							if ($.inArray(days[index], $rootScope.dayIncludes) < 0)
 								return;
 						}
 					}
-					if ($scope.timeIncludes.length > 0){
+					if ($rootScope.timeIncludes.length > 0){
 						var startTimeLen = section.timePlaces[key].startTime.length;
 						var startRawTime = section.timePlaces[key].startTime.substring(0,startTimeLen-2); //section.timePlaces[key].startTime in the format "09:50am"  
 						var startRawAMPM = section.timePlaces[key].startTime.substring(startTimeLen-2,startTimeLen);
 						var startTime = new Date(Date.parse("2015/01/01 "+startRawTime+" "+startRawAMPM)); //converted to comparable date
 						var startsInTimeConstraint = false;
 						var compareTime;
-						if($.inArray("Evening",$scope.timeIncludes)>-1){
+						if($.inArray("Evening",$rootScope.timeIncludes)>-1){
 							compareTime = new Date(Date.parse("2015/01/01 5:00 PM"));
 							if(compareTime<startTime) 
 								startsInTimeConstraint = true;
 						}
-						if($.inArray("Afternoon",$scope.timeIncludes)>-1){
+						if($.inArray("Afternoon",$rootScope.timeIncludes)>-1){
 							compareTime = new Date(Date.parse("2015/01/01 5:00 PM"));
 							var compareTime2 = new Date(Date.parse("2015/01/01 11:59 AM"));
 							if(startTime<compareTime && compareTime2<startTime) 
 								startsInTimeConstraint = true;
 						}
-						if($.inArray("Morning",$scope.timeIncludes)>-1){
+						if($.inArray("Morning",$rootScope.timeIncludes)>-1){
 							compareTime = new Date(Date.parse("2015/01/01 11:59 AM"));
 							if(startTime<compareTime) 
 								startsInTimeConstraint = true;
