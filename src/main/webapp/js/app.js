@@ -21,7 +21,10 @@ classregApp.config(['$routeProvider',
         templateUrl: 'partials/plan.html'
       }).
       when('/about', {
-      	templateUrl: 'partials/about.html'
+        templateUrl: 'partials/about.html'
+      }).
+      when('/donate', {
+        templateUrl: 'partials/donate.html'
       }).
       otherwise({
         redirectTo: '/home'
